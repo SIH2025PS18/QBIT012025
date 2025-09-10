@@ -1,0 +1,58 @@
+# Handle line endings automatically for files detected as text
+# and leave all files detected as binary untouched.
+* text=auto
+
+# The above will handle all files NOT listed below.
+
+# These files are text and should be normalized (Convert crlf => lf)
+*.dart text
+*.yaml text
+*.yml text
+*.json text
+*.md text
+*.txt text
+*.xml text
+*.html text
+*.css text
+*.js text
+*.ts text
+*.tsx text
+*.jsx text
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# These files are binary and should be left untouched
+# (binary is a macro for -text -diff)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.flv binary
+*.fla binary
+*.swf binary
+*.gz binary
+*.zip binary
+*.7z binary
+*.ttf binary
+*.eot binary
+*.woff binary
+*.woff2 binary
+*.pyc binary
+*.pdf binary
+*.ez binary
+*.bz2 binary
+*.swp binary
+*.jar binary
+*.class binary
+*.so binary
+*.dll binary
+*.exe binary
+
+# Dart specific
+*.dart.js text
+*.dart.js.map text
+*.dart.js.deps text
