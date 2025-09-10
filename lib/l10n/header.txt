@@ -1,0 +1,4 @@
+// This file is generated automatically. Do not edit.
+// 
+// TeleMed Multilingual Support
+// Supported languages: English (en), Hindi (hi), Punjabi (pa)

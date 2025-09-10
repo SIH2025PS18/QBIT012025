@@ -81,3 +81,7 @@ out/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Embedded git repositories (add as submodules if needed)
+Predictive-Health-Moniterning/
+Telemedicine-Backend-main/

@@ -1,0 +1,87 @@
+name: telemed
+description: "A comprehensive telemedicine platform with video consultations, queue management, and waiting room functionality."
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # UI Components
+  cupertino_icons: ^1.0.8
+
+  # Supabase dependencies
+  supabase_flutter: ^2.7.0
+  storage_client: ^2.0.1
+  functions_client: ^2.0.1
+
+  # State Management
+  provider: ^6.1.2
+
+  # Video SDK - Agora Integration
+  agora_rtc_engine: ^6.3.2
+
+  # Permissions
+  permission_handler: ^12.0.1
+
+  # UI and form handling
+  fluttertoast: ^8.2.8
+
+  # MVP Basic Features Dependencies
+  sqflite: ^2.3.3+1
+  intl: ^0.20.2
+  image_picker: ^1.0.7
+  shared_preferences: ^2.2.3
+  crypto: ^3.0.3
+
+  # Enhanced Dependencies for Architecture
+  get_it: ^8.2.0 # Service Locator
+  connectivity_plus: ^6.1.5 # Network connectivity
+  cached_network_image: ^3.3.1 # Image caching
+  flutter_svg: ^2.0.9 # SVG support
+  file_picker: ^8.3.7 # File picking - using compatible version
+  path_provider: ^2.1.1 # Path utilities
+  url_launcher: ^6.2.1 # URL launching
+  package_info_plus: ^8.3.1 # App info
+  device_info_plus: ^11.5.0 # Device info
+
+  # Offline-first architecture dependencies
+  drift: ^2.16.0 # Modern SQLite for Flutter
+  sqlite3_flutter_libs: ^0.5.0 # SQLite binaries
+  path: ^1.8.3 # Path manipulation
+  uuid: ^4.4.0 # UUID generation
+  rxdart: ^0.28.0 # Reactive streams for sync
+  workmanager: ^0.9.0+3 # Background tasks
+
+  # JSON serialization
+  json_annotation: ^4.9.0
+  socket_io_client: ^3.1.2
+  http: ^1.5.0
+
+  # PDF Printing
+  printing: ^5.12.2
+  pdf: ^3.11.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  mockito: ^5.4.4
+  build_runner: ^2.7.1
+
+  # Code generation for offline database
+  drift_dev: ^2.16.0
+  json_serializable: ^6.7.1
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/
+    - assets/complete_symptoms_data.json

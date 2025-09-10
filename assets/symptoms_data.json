@@ -1,0 +1,501 @@
+[
+  {
+    "disease": "Fungal infection",
+    "description": "Fungal infection is a common skin condition caused by fungi.",
+    "symptoms": ["itching", "skin_rash", "nodal_skin_eruptions", "dischromic_patches"],
+    "precautions": [
+      "bath twice",
+      "use detol or neem in bathing water",
+      "keep infected area dry",
+      "use clean cloths"
+    ],
+    "medications": [
+      "Antifungal Cream",
+      "Fluconazole",
+      "Terbinafine",
+      "Clotrimazole",
+      "Ketoconazole"
+    ],
+    "diets": [
+      "Antifungal Diet",
+      "Probiotics",
+      "Garlic",
+      "Coconut oil",
+      "Turmeric"
+    ]
+  },
+  {
+    "disease": "Allergy",
+    "description": "Allergy is an immune system reaction to a substance in the environment.",
+    "symptoms": ["continuous_sneezing", "shivering", "chills", "watering_from_eyes"],
+    "precautions": [
+      "apply calamine",
+      "cover area with bandage",
+      "use ice to compress itching"
+    ],
+    "medications": [
+      "Antihistamines",
+      "Decongestants",
+      "Epinephrine",
+      "Corticosteroids",
+      "Immunotherapy"
+    ],
+    "diets": [
+      "Elimination Diet",
+      "Omega-3-rich foods",
+      "Vitamin C-rich foods",
+      "Quercetin-rich foods",
+      "Probiotics"
+    ]
+  },
+  {
+    "disease": "GERD",
+    "description": "GERD (Gastroesophageal Reflux Disease) is a digestive disorder that affects the lower esophageal sphincter.",
+    "symptoms": ["stomach_pain", "acidity", "ulcers_on_tongue", "vomiting", "cough"],
+    "precautions": [
+      "avoid fatty spicy food",
+      "avoid lying down after eating",
+      "maintain healthy weight",
+      "exercise"
+    ],
+    "medications": [
+      "Proton Pump Inhibitors (PPIs)",
+      "H2 Blockers",
+      "Antacids",
+      "Prokinetics",
+      "Antibiotics"
+    ],
+    "diets": [
+      "Low-Acid Diet",
+      "Fiber-rich foods",
+      "Ginger",
+      "Licorice",
+      "Aloe vera juice"
+    ]
+  },
+  {
+    "disease": "Chronic cholestasis",
+    "description": "Chronic cholestasis is a condition where bile flow from the liver is reduced for a prolonged period.",
+    "symptoms": ["itching", "vomiting", "yellowish_skin", "nausea", "loss_of_appetite"],
+    "precautions": [
+      "cold baths",
+      "anti itch medicine",
+      "consult doctor",
+      "eat healthy"
+    ],
+    "medications": [
+      "Ursodeoxycholic acid",
+      "Cholestyramine",
+      "Methotrexate",
+      "Corticosteroids",
+      "Liver transplant"
+    ],
+    "diets": [
+      "Low-Fat Diet",
+      "High-Fiber Diet",
+      "Lean proteins",
+      "Whole grains",
+      "Fresh fruits and vegetables"
+    ]
+  },
+  {
+    "disease": "Drug Reaction",
+    "description": "Drug Reaction occurs when the body reacts adversely to a medication.",
+    "symptoms": ["itching", "skin_rash", "stomach_pain", "burning_micturition", "spotting_urination"],
+    "precautions": [
+      "stop irritation",
+      "consult nearest hospital",
+      "stop taking drug",
+      "follow up"
+    ],
+    "medications": [
+      "Antihistamines",
+      "Epinephrine",
+      "Corticosteroids",
+      "Antibiotics",
+      "Antifungal Cream"
+    ],
+    "diets": [
+      "Antihistamine Diet",
+      "Omega-3-rich foods",
+      "Vitamin C-rich foods",
+      "Quercetin-rich foods",
+      "Probiotics"
+    ]
+  },
+  {
+    "disease": "Peptic ulcer disease",
+    "description": "Peptic ulcer disease involves sores that develop on the inner lining of the stomach and small intestine.",
+    "symptoms": ["vomiting", "loss_of_appetite", "abdominal_pain", "passage_of_gases", "indigestion"],
+    "precautions": [
+      "avoid fatty spicy food",
+      "consume probiotic food",
+      "eliminate milk",
+      "limit alcohol"
+    ],
+    "medications": [
+      "Antibiotics",
+      "Proton Pump Inhibitors (PPIs)",
+      "H2 Blockers",
+      "Antacids",
+      "Cytoprotective agents"
+    ],
+    "diets": [
+      "Low-Acid Diet",
+      "Fiber-rich foods",
+      "Ginger",
+      "Licorice",
+      "Aloe vera juice"
+    ]
+  },
+  {
+    "disease": "AIDS",
+    "description": "AIDS (Acquired Immunodeficiency Syndrome) is a disease caused by HIV that weakens the immune system.",
+    "symptoms": ["muscle_wasting", "patches_in_throat", "high_fever", "extra_marital_contacts"],
+    "precautions": [
+      "avoid open cuts",
+      "wear ppe if possible",
+      "consult doctor",
+      "follow up"
+    ],
+    "medications": [
+      "Antiretroviral drugs",
+      "Protease inhibitors",
+      "Integrase inhibitors",
+      "Entry inhibitors",
+      "Fusion inhibitors"
+    ],
+    "diets": [
+      "Balanced Diet",
+      "Protein-rich foods",
+      "Fruits and vegetables",
+      "Whole grains",
+      "Healthy fats"
+    ]
+  },
+  {
+    "disease": "Diabetes",
+    "description": "Diabetes is a chronic condition that affects how the body processes blood sugar.",
+    "symptoms": ["fatigue", "weight_loss", "restlessness", "lethargy", "irregular_sugar_level"],
+    "precautions": [
+      "have balanced diet",
+      "exercise",
+      "consult doctor",
+      "follow up"
+    ],
+    "medications": [
+      "Insulin",
+      "Metformin",
+      "Sulfonylureas",
+      "DPP-4 inhibitors",
+      "GLP-1 receptor agonists"
+    ],
+    "diets": [
+      "Low-Glycemic Diet",
+      "Fiber-rich foods",
+      "Lean proteins",
+      "Healthy fats",
+      "Low-fat dairy"
+    ]
+  },
+  {
+    "disease": "Gastroenteritis",
+    "description": "Gastroenteritis is an inflammation of the stomach and intestines, typically caused by a virus or bacteria.",
+    "symptoms": ["vomiting", "sunken_eyes", "dehydration", "diarrhoea"],
+    "precautions": [
+      "stop eating solid food for while",
+      "try taking small sips of water",
+      "rest",
+      "ease back into eating"
+    ],
+    "medications": [
+      "Antibiotics",
+      "Antiemetic drugs",
+      "Antidiarrheal drugs",
+      "IV fluids",
+      "Probiotics"
+    ],
+    "diets": [
+      "Bland Diet",
+      "Bananas",
+      "Rice",
+      "Applesauce",
+      "Toast"
+    ]
+  },
+  {
+    "disease": "Bronchial Asthma",
+    "description": "Bronchial Asthma is a respiratory condition characterized by inflammation of the airways.",
+    "symptoms": ["fatigue", "cough", "high_fever", "breathlessness", "family_history"],
+    "precautions": [
+      "switch to loose clothing",
+      "take deep breaths",
+      "get away from trigger",
+      "seek help"
+    ],
+    "medications": [
+      "Bronchodilators",
+      "Inhaled corticosteroids",
+      "Leukotriene modifiers",
+      "Mast cell stabilizers",
+      "Anticholinergics"
+    ],
+    "diets": [
+      "Anti-Inflammatory Diet",
+      "Omega-3-rich foods",
+      "Fruits and vegetables",
+      "Whole grains",
+      "Lean proteins"
+    ]
+  },
+  {
+    "disease": "Hypertension",
+    "description": "Hypertension, or high blood pressure, is a common cardiovascular condition.",
+    "symptoms": ["headache", "chest_pain", "dizziness", "loss_of_balance", "lack_of_concentration"],
+    "precautions": [
+      "meditation",
+      "salt baths",
+      "reduce stress",
+      "get proper sleep"
+    ],
+    "medications": [
+      "Antihypertensive medications",
+      "Diuretics",
+      "Beta-blockers",
+      "ACE inhibitors",
+      "Calcium channel blockers"
+    ],
+    "diets": [
+      "DASH Diet",
+      "Low-sodium foods",
+      "Fruits and vegetables",
+      "Whole grains",
+      "Lean proteins"
+    ]
+  },
+  {
+    "disease": "Migraine",
+    "description": "Migraine is a type of headache that often involves severe pain and sensitivity to light and sound.",
+    "symptoms": ["acidity", "indigestion", "headache", "blurred_and_distorted_vision", "excessive_hunger"],
+    "precautions": [
+      "meditation",
+      "reduce stress",
+      "use polaroid glasses in sun",
+      "consult doctor"
+    ],
+    "medications": [
+      "Analgesics",
+      "Triptans",
+      "Ergotamine derivatives",
+      "Preventive medications",
+      "Biofeedback"
+    ],
+    "diets": [
+      "Migraine Diet",
+      "Low-Tyramine Diet",
+      "Caffeine withdrawal",
+      "Hydration",
+      "Magnesium-rich foods"
+    ]
+  },
+  {
+    "disease": "Cervical spondylosis",
+    "description": "Cervical spondylosis is a degenerative condition of the cervical spine.",
+    "symptoms": ["back_pain", "weakness_in_limbs", "neck_pain", "dizziness", "loss_of_balance"],
+    "precautions": [
+      "use heating pad or cold pack",
+      "exercise",
+      "take otc pain reliever",
+      "consult doctor"
+    ],
+    "medications": [
+      "Pain relievers",
+      "Muscle relaxants",
+      "Physical therapy",
+      "Neck braces",
+      "Corticosteroids"
+    ],
+    "diets": [
+      "Arthritis Diet",
+      "Anti-Inflammatory Diet",
+      "Omega-3-rich foods",
+      "Fruits and vegetables",
+      "Whole grains"
+    ]
+  },
+  {
+    "disease": "Paralysis (brain hemorrhage)",
+    "description": "Paralysis (brain hemorrhage) refers to the loss of muscle function due to bleeding in the brain.",
+    "symptoms": ["vomiting", "headache", "weakness_of_one_body_side", "altered_sensorium"],
+    "precautions": [
+      "massage",
+      "eat healthy",
+      "exercise",
+      "consult doctor"
+    ],
+    "medications": [
+      "Blood thinners",
+      "Clot-dissolving medications",
+      "Anticonvulsants",
+      "Physical therapy",
+      "Occupational therapy"
+    ],
+    "diets": [
+      "Heart-Healthy Diet",
+      "Low-sodium foods",
+      "Fruits and vegetables",
+      "Whole grains",
+      "Lean proteins"
+    ]
+  },
+  {
+    "disease": "Jaundice",
+    "description": "Jaundice is a yellow discoloration of the skin and eyes, often indicating liver problems.",
+    "symptoms": ["itching", "vomiting", "fatigue", "weight_loss", "high_fever"],
+    "precautions": [
+      "drink plenty of water",
+      "consume milk thistle",
+      "eat fruits and high fiberous food",
+      "medication"
+    ],
+    "medications": [
+      "IV fluids",
+      "Blood transfusions",
+      "Liver transplant",
+      "Medications for itching",
+      "Antiviral medications"
+    ],
+    "diets": [
+      "Liver-Healthy Diet",
+      "Low-fat Diet",
+      "Fruits and vegetables",
+      "Whole grains",
+      "Lean proteins"
+    ]
+  },
+  {
+    "disease": "Malaria",
+    "description": "Malaria is a mosquito-borne infectious disease affecting humans and other animals.",
+    "symptoms": ["chills", "vomiting", "high_fever", "sweating", "headache"],
+    "precautions": [
+      "Consult nearest hospital",
+      "avoid oily food",
+      "avoid non veg food",
+      "keep mosquitos out"
+    ],
+    "medications": [
+      "Antimalarial drugs",
+      "Antipyretics",
+      "Antiemetic drugs",
+      "IV fluids",
+      "Blood transfusions"
+    ],
+    "diets": [
+      "Malaria Diet",
+      "Hydration",
+      "High-Calorie Diet",
+      "Soft and bland foods",
+      "Oral rehydration solutions"
+    ]
+  },
+  {
+    "disease": "Chicken pox",
+    "description": "Chicken pox is a highly contagious viral infection causing an itchy rash.",
+    "symptoms": ["itching", "skin_rash", "fatigue", "lethargy", "high_fever"],
+    "precautions": [
+      "use neem in bathing",
+      "consume neem leaves",
+      "take vaccine",
+      "avoid public places"
+    ],
+    "medications": [
+      "Antiviral drugs",
+      "Pain relievers",
+      "IV fluids",
+      "Blood transfusions",
+      "Platelet transfusions"
+    ],
+    "diets": [
+      "Chicken Pox Diet",
+      "High-Calorie Diet",
+      "Soft and bland foods",
+      "Hydration",
+      "Protein-rich foods"
+    ]
+  },
+  {
+    "disease": "Dengue",
+    "description": "Dengue is a mosquito-borne viral infection causing flu-like symptoms.",
+    "symptoms": ["skin_rash", "chills", "joint_pain", "vomiting", "fatigue"],
+    "precautions": [
+      "drink papaya leaf juice",
+      "avoid fatty spicy food",
+      "keep mosquitos away",
+      "keep hydrated"
+    ],
+    "medications": [
+      "Antibiotics",
+      "Antipyretics",
+      "Analgesics",
+      "IV fluids",
+      "Corticosteroids"
+    ],
+    "diets": [
+      "Dengue Diet",
+      "Hydration",
+      "High-Calorie Diet",
+      "Soft and bland foods",
+      "Protein-rich foods"
+    ]
+  },
+  {
+    "disease": "Typhoid",
+    "description": "Typhoid is a bacterial infection that can lead to a high fever and gastrointestinal symptoms.",
+    "symptoms": ["chills", "vomiting", "fatigue", "high_fever", "headache"],
+    "precautions": [
+      "eat high calorie vegetables",
+      "antibiotic therapy",
+      "consult doctor",
+      "medication"
+    ],
+    "medications": [
+      "Vaccination",
+      "Antiviral drugs",
+      "IV fluids",
+      "Blood transfusions",
+      "Liver transplant"
+    ],
+    "diets": [
+      "Typhoid Diet",
+      "High-Calorie Diet",
+      "Soft and bland foods",
+      "Hydration",
+      "Protein-rich foods"
+    ]
+  },
+  {
+    "disease": "hepatitis A",
+    "description": "hepatitis A is a viral liver disease.",
+    "symptoms": ["joint_pain", "vomiting", "yellowish_skin", "dark_urine", "nausea"],
+    "precautions": [
+      "Consult nearest hospital",
+      "wash hands through",
+      "avoid fatty spicy food",
+      "medication"
+    ],
+    "medications": [
+      "Vaccination",
+      "Antiviral drugs",
+      "IV fluids",
+      "Blood transfusions",
+      "Liver transplant"
+    ],
+    "diets": [
+      "Hepatitis A Diet",
+      "High-Calorie Diet",
+      "Soft and bland foods",
+      "Hydration",
+      "Protein-rich foods"
+    ]
+  }
+]

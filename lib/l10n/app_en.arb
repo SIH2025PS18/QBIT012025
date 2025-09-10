@@ -1,0 +1,901 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2025-09-04T20:01:00Z",
+  
+  "appTitle": "TeleMed",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome message"
+  },
+  
+  "welcomeMessage": "Welcome to TeleMed - Your Health, Our Priority",
+  "@welcomeMessage": {
+    "description": "Main welcome message on splash screen"
+  },
+  
+  "getStarted": "Get Started",
+  "@getStarted": {
+    "description": "Get started button text"
+  },
+  
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  
+  "register": "Register",
+  "@register": {
+    "description": "Register button text"
+  },
+  
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+  
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password field label"
+  },
+  
+  "fullName": "Full Name",
+  "@fullName": {
+    "description": "Full name field label"
+  },
+  
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "description": "Phone number field label"
+  },
+  
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {
+    "description": "Forgot password link text"
+  },
+  
+  "dontHaveAccount": "Don't have an account?",
+  "@dontHaveAccount": {
+    "description": "Text asking if user doesn't have account"
+  },
+  
+  "alreadyHaveAccount": "Already have an account?",
+  "@alreadyHaveAccount": {
+    "description": "Text asking if user already has account"
+  },
+  
+  "signUp": "Sign Up",
+  "@signUp": {
+    "description": "Sign up link text"
+  },
+  
+  "signIn": "Sign In",
+  "@signIn": {
+    "description": "Sign in link text"
+  },
+  
+  "home": "Home",
+  "@home": {
+    "description": "Home navigation item"
+  },
+  
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile navigation item"
+  },
+  
+  "appointments": "Appointments",
+  "@appointments": {
+    "description": "Appointments navigation item"
+  },
+  
+  "doctors": "Doctors",
+  "@doctors": {
+    "description": "Doctors navigation item"
+  },
+  
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings navigation item"
+  },
+  
+  "myProfile": "My Profile",
+  "@myProfile": {
+    "description": "My profile screen title"
+  },
+  
+  "patientProfile": "Patient Profile",
+  "@patientProfile": {
+    "description": "Patient profile screen title"
+  },
+  
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  
+  "age": "Age",
+  "@age": {
+    "description": "Age field label"
+  },
+  
+  "gender": "Gender",
+  "@gender": {
+    "description": "Gender field label"
+  },
+  
+  "male": "Male",
+  "@male": {
+    "description": "Male gender option"
+  },
+  
+  "female": "Female",
+  "@female": {
+    "description": "Female gender option"
+  },
+  
+  "other": "Other",
+  "@other": {
+    "description": "Other gender option"
+  },
+  
+  "bloodGroup": "Blood Group",
+  "@bloodGroup": {
+    "description": "Blood group field label"
+  },
+  
+  "address": "Address",
+  "@address": {
+    "description": "Address field label"
+  },
+  
+  "emergencyContact": "Emergency Contact",
+  "@emergencyContact": {
+    "description": "Emergency contact field label"
+  },
+  
+  "medicalHistory": "Medical History",
+  "@medicalHistory": {
+    "description": "Medical history section title"
+  },
+  
+  "allergies": "Allergies",
+  "@allergies": {
+    "description": "Allergies section title"
+  },
+  
+  "currentMedications": "Current Medications",
+  "@currentMedications": {
+    "description": "Current medications section title"
+  },
+  
+  "medicalNotes": "Medical Notes",
+  "@medicalNotes": {
+    "description": "Medical notes section title"
+  },
+  
+  "bookAppointment": "Book Appointment",
+  "@bookAppointment": {
+    "description": "Book appointment button text"
+  },
+  
+  "findDoctors": "Find Doctors",
+  "@findDoctors": {
+    "description": "Find doctors button text"
+  },
+  
+  "myAppointments": "My Appointments",
+  "@myAppointments": {
+    "description": "My appointments button text"
+  },
+  
+  "quickActions": "Quick Actions",
+  "@quickActions": {
+    "description": "Quick actions section title"
+  },
+  
+  "upcomingAppointments": "Upcoming Appointments",
+  "@upcomingAppointments": {
+    "description": "Upcoming appointments section title"
+  },
+  
+  "recentActivity": "Recent Activity",
+  "@recentActivity": {
+    "description": "Recent activity section title"
+  },
+  
+  "doctorName": "Doctor Name",
+  "@doctorName": {
+    "description": "Doctor name field label"
+  },
+  
+  "specialization": "Specialization",
+  "@specialization": {
+    "description": "Specialization field label"
+  },
+  
+  "experience": "Experience",
+  "@experience": {
+    "description": "Experience field label"
+  },
+  
+  "rating": "Rating",
+  "@rating": {
+    "description": "Rating field label"
+  },
+  
+  "selectDate": "Select Date",
+  "@selectDate": {
+    "description": "Select date button text"
+  },
+  
+  "selectTime": "Select Time",
+  "@selectTime": {
+    "description": "Select time button text"
+  },
+  
+  "appointmentReason": "Reason for Appointment",
+  "@appointmentReason": {
+    "description": "Appointment reason field label"
+  },
+  
+  "confirmAppointment": "Confirm Appointment",
+  "@confirmAppointment": {
+    "description": "Confirm appointment button text"
+  },
+  
+  "appointmentDetails": "Appointment Details",
+  "@appointmentDetails": {
+    "description": "Appointment details section title"
+  },
+  
+  "appointmentDate": "Appointment Date",
+  "@appointmentDate": {
+    "description": "Appointment date field label"
+  },
+  
+  "appointmentTime": "Appointment Time",
+  "@appointmentTime": {
+    "description": "Appointment time field label"
+  },
+  
+  "status": "Status",
+  "@status": {
+    "description": "Status field label"
+  },
+  
+  "pending": "Pending",
+  "@pending": {
+    "description": "Pending status"
+  },
+  
+  "confirmed": "Confirmed",
+  "@confirmed": {
+    "description": "Confirmed status"
+  },
+  
+  "completed": "Completed",
+  "@completed": {
+    "description": "Completed status"
+  },
+  
+  "cancelled": "Cancelled",
+  "@cancelled": {
+    "description": "Cancelled status"
+  },
+  
+  "language": "Language",
+  "@language": {
+    "description": "Language setting label"
+  },
+  
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Select language button text"
+  },
+  
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  
+  "hindi": "हिंदी",
+  "@hindi": {
+    "description": "Hindi language option"
+  },
+  
+  "punjabi": "ਪੰਜਾਬੀ",
+  "@punjabi": {
+    "description": "Punjabi language option"
+  },
+  
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading message"
+  },
+  
+  "error": "Error",
+  "@error": {
+    "description": "Error message"
+  },
+  
+  "success": "Success",
+  "@success": {
+    "description": "Success message"
+  },
+  
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  
+  "noInternetConnection": "No internet connection",
+  "@noInternetConnection": {
+    "description": "No internet connection error message"
+  },
+  
+  "somethingWentWrong": "Something went wrong",
+  "@somethingWentWrong": {
+    "description": "Generic error message"
+  },
+  
+  "pleaseWait": "Please wait...",
+  "@pleaseWait": {
+    "description": "Please wait message"
+  },
+  
+  "fieldRequired": "This field is required",
+  "@fieldRequired": {
+    "description": "Field required validation message"
+  },
+  
+  "invalidEmail": "Please enter a valid email",
+  "@invalidEmail": {
+    "description": "Invalid email validation message"
+  },
+  
+  "passwordTooShort": "Password must be at least 6 characters",
+  "@passwordTooShort": {
+    "description": "Password too short validation message"
+  },
+  
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Passwords do not match validation message"
+  },
+  
+  "loginSuccessful": "Login successful",
+  "@loginSuccessful": {
+    "description": "Login successful message"
+  },
+  
+  "registrationSuccessful": "Registration successful",
+  "@registrationSuccessful": {
+    "description": "Registration successful message"
+  },
+  
+  "profileUpdated": "Profile updated successfully",
+  "@profileUpdated": {
+    "description": "Profile updated success message"
+  },
+  
+  "appointmentBooked": "Appointment booked successfully",
+  "@appointmentBooked": {
+    "description": "Appointment booked success message"
+  },
+  
+  "noAppointmentsFound": "No appointments found",
+  "@noAppointmentsFound": {
+    "description": "No appointments found message"
+  },
+  
+  "noDoctorsFound": "No doctors found",
+  "@noDoctorsFound": {
+    "description": "No doctors found message"
+  },
+  
+  "searchDoctors": "Search Doctors",
+  "@searchDoctors": {
+    "description": "Search doctors placeholder text"
+  },
+  
+  "healthRecords": "Health Records",
+  "@healthRecords": {
+    "description": "Health records section title"
+  },
+  
+  "prescriptions": "Prescriptions",
+  "@prescriptions": {
+    "description": "Prescriptions section title"
+  },
+  
+  "testReports": "Test Reports",
+  "@testReports": {
+    "description": "Test reports section title"
+  },
+  
+  "uploadPhoto": "Upload Photo",
+  "@uploadPhoto": {
+    "description": "Upload photo button text"
+  },
+  
+  "takePhoto": "Take Photo",
+  "@takePhoto": {
+    "description": "Take photo option"
+  },
+  
+  "chooseFromGallery": "Choose from Gallery",
+  "@chooseFromGallery": {
+    "description": "Choose from gallery option"
+  },
+  
+  "healthJourney": "Your health journey continues here",
+  "@healthJourney": {
+    "description": "Health journey subtitle text"
+  },
+  
+  "memberSince": "Member Since",
+  "@memberSince": {
+    "description": "Member since label"
+  },
+  
+  "notProvided": "Not provided",
+  "@notProvided": {
+    "description": "Not provided default text"
+  },
+  
+  "medicalHistoryComingSoon": "Medical history coming soon! 📋",
+  "@medicalHistoryComingSoon": {
+    "description": "Medical history coming soon message"
+  },
+  
+  "createAccount": "Create Account",
+  "@createAccount": {
+    "description": "Create account button text"
+  },
+  
+  "termsAndPrivacy": "By signing up, you agree to our Terms of Service and Privacy Policy",
+  "@termsAndPrivacy": {
+    "description": "Terms and privacy policy text"
+  },
+  
+  "or": "OR",
+  "@or": {
+    "description": "OR divider text"
+  },
+  
+  "user": "User",
+  "@user": {
+    "description": "Default user name"
+  },
+  
+  "checkingAuthentication": "Checking authentication...",
+  "@checkingAuthentication": {
+    "description": "Checking authentication message"
+  },
+  
+  "bookAppointmentWith": "Book Appointment with",
+  "@bookAppointmentWith": {
+    "description": "Book appointment with doctor text"
+  },
+  
+  "pleaseSelectDateTime": "Please select date and time",
+  "@pleaseSelectDateTime": {
+    "description": "Please select date and time validation message"
+  },
+  
+  "appointmentBookedWith": "Appointment booked with",
+  "@appointmentBookedWith": {
+    "description": "Appointment booked with doctor message"
+  },
+  
+  "cancelAppointment": "Cancel Appointment",
+  "@cancelAppointment": {
+    "description": "Cancel appointment dialog title"
+  },
+  
+  "areYouSureCancel": "Are you sure you want to cancel this appointment?",
+  "@areYouSureCancel": {
+    "description": "Cancel appointment confirmation message"
+  },
+  
+  "no": "No",
+  "@no": {
+    "description": "No button text"
+  },
+  
+  "yesCancel": "Yes, Cancel",
+  "@yesCancel": {
+    "description": "Yes cancel button text"
+  },
+  
+  "joinCall": "Join Call",
+  "@joinCall": {
+    "description": "Join call button text"
+  },
+  
+  "videoConsultationComingSoon": "Video consultation coming soon!",
+  "@videoConsultationComingSoon": {
+    "description": "Video consultation coming soon message"
+  },
+  
+  "checkYourEmail": "Check Your Email",
+  "@checkYourEmail": {
+    "description": "Check your email dialog title"
+  },
+  
+  "emailVerificationSent": "We've sent a verification email to your address. Please check your inbox and click the verification link to activate your account.",
+  "@emailVerificationSent": {
+    "description": "Email verification sent message"
+  },
+  
+  "resendEmail": "Resend Email",
+  "@resendEmail": {
+    "description": "Resend email button text"
+  },
+  
+  "continueToSignIn": "Continue to Sign In",
+  "@continueToSignIn": {
+    "description": "Continue to sign in button text"
+  },
+  
+  "errorLoadingAppointments": "Error loading appointments",
+  "@errorLoadingAppointments": {
+    "description": "Error loading appointments message"
+  },
+  
+  "errorLoadingDoctors": "Error loading doctors",
+  "@errorLoadingDoctors": {
+    "description": "Error loading doctors message"
+  },
+  
+  "clearFilters": "Clear Filters",
+  "@clearFilters": {
+    "description": "Clear filters button text"
+  },
+  
+  "addSampleDoctors": "Add Sample Doctors",
+  "@addSampleDoctors": {
+    "description": "Add sample doctors button text"
+  },
+  
+  "viewDetails": "View Details",
+  "@viewDetails": {
+    "description": "View details button text"
+  },
+  
+  "bookNow": "Book Now",
+  "@bookNow": {
+    "description": "Book now button text"
+  },
+  
+  "synced": "Synced",
+  "@synced": {
+    "description": "Sync completed status"
+  },
+  
+  "syncing": "Syncing...",
+  "@syncing": {
+    "description": "Sync in progress status"
+  },
+  
+  "pendingSync": "Pending Sync",
+  "@pendingSync": {
+    "description": "Sync pending status"
+  },
+  
+  "offline": "Offline",
+  "@offline": {
+    "description": "Offline status"
+  },
+  
+  "syncError": "Sync Error",
+  "@syncError": {
+    "description": "Sync error status"
+  },
+  
+  "syncInProgress": "Sync in progress...",
+  "@syncInProgress": {
+    "description": "Sync in progress tooltip"
+  },
+  
+  "tapToSync": "Tap to sync pending changes",
+  "@tapToSync": {
+    "description": "Tap to sync tooltip"
+  },
+  
+  "syncFailed": "Sync failed. Tap to retry",
+  "@syncFailed": {
+    "description": "Sync failed tooltip"
+  },
+  
+  "tapToRefresh": "Tap to refresh data",
+  "@tapToRefresh": {
+    "description": "Tap to refresh tooltip"
+  },
+  
+  "syncStatus": "Sync Status",
+  "@syncStatus": {
+    "description": "Sync status dialog title"
+  },
+  
+  "connectionStatus": "Connection",
+  "@connectionStatus": {
+    "description": "Connection status label"
+  },
+  
+  "pendingChanges": "Pending Changes",
+  "@pendingChanges": {
+    "description": "Pending changes label"
+  },
+  
+  "lastSync": "Last Sync",
+  "@lastSync": {
+    "description": "Last sync time label"
+  },
+  
+  "syncNow": "Sync Now",
+  "@syncNow": {
+    "description": "Sync now button text"
+  },
+  
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+  
+  "videoConsultation": "Video Consultation",
+  "@videoConsultation": {
+    "description": "Video consultation screen title"
+  },
+  
+  "waitingForDoctor": "Waiting for Doctor",
+  "@waitingForDoctor": {
+    "description": "Waiting for doctor message"
+  },
+  
+  "waitingRoom": "Waiting Room",
+  "@waitingRoom": {
+    "description": "Waiting room title"
+  },
+  
+  "joinQueue": "Join Queue",
+  "@joinQueue": {
+    "description": "Join queue button text"
+  },
+  
+  "queuePosition": "Queue Position",
+  "@queuePosition": {
+    "description": "Queue position label"
+  },
+  
+  "totalInQueue": "Total in Queue",
+  "@totalInQueue": {
+    "description": "Total in queue label"
+  },
+  
+  "estimatedWaitTime": "Estimated wait: {time}",
+  "@estimatedWaitTime": {
+    "description": "Estimated wait time message",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "description": "Wait time duration"
+      }
+    }
+  },
+  
+  "scheduledFor": "Scheduled for {time}",
+  "@scheduledFor": {
+    "description": "Scheduled for time message",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "description": "Scheduled time"
+      }
+    }
+  },
+  
+  "waitingRoomMessage": "Please wait while the doctor prepares for your consultation",
+  "@waitingRoomMessage": {
+    "description": "Waiting room status message"
+  },
+  
+  "inQueueMessage": "You are in the consultation queue",
+  "@inQueueMessage": {
+    "description": "In queue status message"
+  },
+  
+  "consultationScheduled": "Your consultation is scheduled",
+  "@consultationScheduled": {
+    "description": "Consultation scheduled message"
+  },
+  
+  "preparingConsultation": "Preparing consultation...",
+  "@preparingConsultation": {
+    "description": "Preparing consultation message"
+  },
+  
+  "instructions": "Instructions",
+  "@instructions": {
+    "description": "Instructions section title"
+  },
+  
+  "waitingRoomInstructions": "Ensure you have a stable internet connection\nMake sure your camera and microphone are working\nKeep your health documents ready\nWait for the doctor to start the consultation",
+  "@waitingRoomInstructions": {
+    "description": "Waiting room instructions text"
+  },
+  
+  "joinedQueue": "Successfully joined the queue",
+  "@joinedQueue": {
+    "description": "Joined queue success message"
+  },
+  
+  "failedToJoinQueue": "Failed to join queue",
+  "@failedToJoinQueue": {
+    "description": "Failed to join queue error message"
+  },
+  
+  "cancelConsultation": "Cancel Consultation",
+  "@cancelConsultation": {
+    "description": "Cancel consultation dialog title"
+  },
+  
+  "confirmCancelConsultation": "Are you sure you want to cancel this consultation?",
+  "@confirmCancelConsultation": {
+    "description": "Cancel consultation confirmation message"
+  },
+  
+  "failedToCancelConsultation": "Failed to cancel consultation",
+  "@failedToCancelConsultation": {
+    "description": "Failed to cancel consultation error message"
+  },
+  
+  "mute": "Mute",
+  "@mute": {
+    "description": "Mute button tooltip"
+  },
+  
+  "unmute": "Unmute",
+  "@unmute": {
+    "description": "Unmute button tooltip"
+  },
+  
+  "muted": "Muted",
+  "@muted": {
+    "description": "Muted status label"
+  },
+  
+  "videoOff": "Video Off",
+  "@videoOff": {
+    "description": "Video off status label"
+  },
+  
+  "endCall": "End Call",
+  "@endCall": {
+    "description": "End call button text"
+  },
+  
+  "endConsultation": "End Consultation",
+  "@endConsultation": {
+    "description": "End consultation dialog title"
+  },
+  
+  "participants": "Participants",
+  "@participants": {
+    "description": "Participants dialog title"
+  },
+  
+  "chat": "Chat",
+  "@chat": {
+    "description": "Chat button text"
+  },
+  
+  "pictureInPicture": "Picture in Picture",
+  "@pictureInPicture": {
+    "description": "Picture in picture option"
+  },
+  
+  "fullScreen": "Full Screen",
+  "@fullScreen": {
+    "description": "Full screen option"
+  },
+  
+  "recordConsultation": "Record Consultation",
+  "@recordConsultation": {
+    "description": "Record consultation option"
+  },
+  
+  "manageParticipants": "Manage Participants",
+  "@manageParticipants": {
+    "description": "Manage participants option"
+  },
+  
+  "queueManagement": "Queue Management",
+  "@queueManagement": {
+    "description": "Queue management screen title"
+  },
+  
+  "queue": "Queue",
+  "@queue": {
+    "description": "Queue tab title"
+  },
+  
+  "active": "Active",
+  "@active": {
+    "description": "Active tab title"
+  },
+  
+  "queueStatistics": "Queue Statistics",
+  "@queueStatistics": {
+    "description": "Queue statistics dialog title"
+  },
+  
+  "startConsultation": "Start Consultation",
+  "@startConsultation": {
+    "description": "Start consultation button text"
+  },
+  
+  "turnOffVideo": "Turn Off Video",
+  "@turnOffVideo": {
+    "description": "Turn off video tooltip"
+  },
+  
+  "turnOnVideo": "Turn On Video",
+  "@turnOnVideo": {
+    "description": "Turn on video tooltip"
+  },
+  
+  "useHeadphones": "Use Headphones",
+  "@useHeadphones": {
+    "description": "Use headphones tooltip"
+  },
+  
+  "useSpeaker": "Use Speaker",
+  "@useSpeaker": {
+    "description": "Use speaker tooltip"
+  },
+  
+  "moreOptions": "More Options",
+  "@moreOptions": {
+    "description": "More options tooltip"
+  },
+  
+  "confirmEndConsultation": "Are you sure you want to end this consultation?",
+  "@confirmEndConsultation": {
+    "description": "Confirm end consultation message"
+  },
+  
+  "statistics": "Statistics",
+  "@statistics": {
+    "description": "Statistics button text"
+  },
+  
+  "noPatients": "No patients in queue",
+  "@noPatients": {
+    "description": "No patients message"
+  }
+}
