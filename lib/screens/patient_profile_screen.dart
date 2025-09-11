@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/patient_profile.dart';
-import '../services/supabase_patient_profile_service.dart';
-import '../services/supabase_auth_service.dart';
+import '../providers/patient_profile_provider.dart';
+import '../services/auth_service.dart';
 import '../services/image_upload_service.dart';
+import '../services/patient_profile_service.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import 'medical_details_screen.dart';
 import 'medical_records_screen.dart';
+import 'package:provider/provider.dart';
 
 class PatientProfileScreen extends StatefulWidget {
   const PatientProfileScreen({super.key});
@@ -63,12 +65,20 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Try to load from online service first
+      // Try to load from provider
       PatientProfile? profile;
       try {
-        profile = await PatientProfileService.getCurrentPatientProfile();
+        await Provider.of<PatientProfileProvider>(
+          context,
+          listen: false,
+        ).loadProfile();
+
+        profile = Provider.of<PatientProfileProvider>(
+          context,
+          listen: false,
+        ).profile;
       } catch (e) {
-        print('Failed to load profile online: $e');
+        print('Failed to load profile: $e');
       }
 
       if (profile != null) {
@@ -77,52 +87,61 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
           _populateFields();
         });
       } else {
-        // Fallback to offline data
-        final userData = await AuthService.getUserData();
-        if (userData != null) {
-          // Create profile from stored user data
+        // Fallback to user service
+        final user = await AuthService().getCurrentUser();
+        if (user != null) {
+          // Create profile from user data
           _profile = PatientProfile(
-            id: userData['id'] ?? '',
-            fullName: userData['full_name'] ?? userData['name'] ?? 'User',
-            email: userData['email'] ?? '',
-            phoneNumber: userData['phone'] ?? userData['phone_number'] ?? '',
-            dateOfBirth:
-                _parseDate(userData['date_of_birth']) ??
-                DateTime.now().subtract(const Duration(days: 365 * 25)),
-            gender: userData['gender'] ?? 'Not specified',
-            bloodGroup: userData['blood_group'] ?? '',
-            address: userData['address'] ?? '',
-            emergencyContact: userData['emergency_contact'] ?? '',
-            emergencyContactPhone: userData['emergency_contact_phone'] ?? '',
-            profilePhotoUrl:
-                userData['profile_image'] ?? userData['avatar_url'] ?? '',
-            allergies: _parseStringList(userData['allergies']),
-            medications: _parseStringList(userData['medications']),
-            medicalHistory: _parseMap(userData['medical_history']),
-            lastVisit: _parseDate(userData['last_visit']),
-            createdAt: _parseDate(userData['created_at']) ?? DateTime.now(),
-            updatedAt: _parseDate(userData['updated_at']) ?? DateTime.now(),
+            id: user.id,
+            fullName: user.name,
+            email: user.email ?? '',
+            phoneNumber: user.email ?? '',
+            dateOfBirth: DateTime.now().subtract(
+              const Duration(days: 365 * 25),
+            ),
+            gender: 'Not specified',
+            bloodGroup: '',
+            address: '',
+            emergencyContact: '',
+            emergencyContactPhone: '',
+            profilePhotoUrl: '',
+            allergies: [],
+            medications: [],
+            medicalHistory: {},
+            lastVisit: null,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
           );
 
           setState(() {
             _populateFields();
           });
         } else {
-          // Create initial profile if no data available
-          final currentUser = AuthService.currentUser;
-          if (currentUser != null) {
-            final newProfile = await PatientProfileService.createInitialProfile(
-              userId: currentUser.id,
-              fullName: currentUser.userMetadata?['full_name'] ?? 'User',
-              email: currentUser.email ?? '',
-            );
-            if (newProfile != null) {
-              setState(() {
-                _profile = newProfile;
-                _populateFields();
-              });
-            }
-          }
+          // Create default profile if no data available
+          _profile = PatientProfile(
+            id: 'default',
+            fullName: 'User',
+            email: '',
+            phoneNumber: '',
+            dateOfBirth: DateTime.now().subtract(
+              const Duration(days: 365 * 25),
+            ),
+            gender: 'Not specified',
+            bloodGroup: '',
+            address: '',
+            emergencyContact: '',
+            emergencyContactPhone: '',
+            profilePhotoUrl: '',
+            allergies: [],
+            medications: [],
+            medicalHistory: {},
+            lastVisit: null,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+          setState(() {
+            _populateFields();
+          });
         }
       }
     } finally {
@@ -198,15 +217,15 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
         emergencyContactPhone: _emergencyPhoneController.text.trim(),
       );
 
-      final success = await PatientProfileService.savePatientProfile(
-        updatedProfile,
-      );
-      if (success) {
-        setState(() {
-          _profile = updatedProfile;
-          _isEditing = false;
-        });
-      }
+      await Provider.of<PatientProfileProvider>(
+        context,
+        listen: false,
+      ).updateProfile(updatedProfile);
+
+      setState(() {
+        _profile = updatedProfile;
+        _isEditing = false;
+      });
     } finally {
       setState(() => _isLoading = false);
     }
@@ -238,7 +257,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
           await ImageUploadService.showImagePickerOptions();
       if (imageFile == null) return;
 
-      final currentUser = AuthService.currentUser;
+      final currentUser = await AuthService().getCurrentUser();
       if (currentUser == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

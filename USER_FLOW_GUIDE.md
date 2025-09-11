@@ -523,178 +523,668 @@ _For technical support or medical emergencies, please contact our 24/7 helpline 
 
 ### Welcome to TeleMed Doctor Dashboard
 
-The TeleMed Doctor Dashboard is designed to help you efficiently manage patient consultations, prescriptions, and medical records from a single, intuitive interface. This guide will walk you through all the features available to you.
+The TeleMed Doctor Dashboard is your comprehensive platform for managing patient consultations, prescriptions, and medical records. This guide will walk you through all features to help you provide excellent patient care efficiently.
 
 ---
 
-## 🔐 Getting Started
+## 🔐 Getting Started as a Doctor
 
-### Step 1: Login to Your Dashboard
+### Step 1: Account Registration
 
-1. **Navigate to** your TeleMed Doctor Dashboard URL
-2. **Enter your credentials** (email/username and password)
-3. **Complete 2FA** if enabled for enhanced security
-4. **Set your availability status** (Available, Busy, Away)
+**New Doctor Registration:**
 
-### Step 2: Dashboard Overview
+1. **Visit** the TeleMed Doctor Dashboard at `http://localhost:5173`
+2. **Click "Register as Doctor"**
+3. **Fill registration form**:
+   - Full Name and Email
+   - Phone Number
+   - Medical Registration Number
+   - Specialization (from dropdown)
+   - Years of Experience
+   - Medical Qualifications
+   - Consultation Fee
+   - Available Time Slots
+4. **Submit for verification**
+5. **Wait for admin approval** (you'll receive email notification)
+6. **Account activated** once verified by admin
 
-Upon login, you'll see the main dashboard with these key sections:
+**Registration Requirements:**
 
-- **Patient Queue Management**: Real-time view of patients waiting for consultation
-- **Active Consultations**: Ongoing video calls with patients
-- **Consultation History**: Past consultations with patients
-- **Patient Search**: Quick access to any patient's records
-- **Analytics**: Performance metrics and system insights
+- Valid medical registration number
+- Professional email address
+- Phone number for patient communication
+- Scanned copy of medical license (upload)
+- Professional photo (recommended)
+
+### Step 2: First Login
+
+1. **Navigate to** `http://localhost:5173`
+2. **Select "Doctor" role** from dropdown
+3. **Enter your credentials**:
+   - Email: Your registered email
+   - Password: Your chosen password
+4. **Click "Sign In"**
+5. **Complete profile setup** if prompted
+
+### Step 3: Dashboard Overview
+
+Upon successful login, you'll see:
+
+- **Patient Queue**: Real-time list of waiting patients
+- **Today's Statistics**: Consultation counts and performance metrics
+- **Active Consultations**: Ongoing video calls
+- **Profile Status**: Online/Offline toggle
+- **Quick Actions**: Start consultation, view history, update profile
 
 ---
 
-## 📊 Dashboard Features
+## 📊 Doctor Dashboard Features
 
 ### 1. Real-Time Patient Queue Management
 
-**Color-Coded & Prioritized Queue:**
+**Queue Display:**
 
-- **Critical (Red)**: Emergency cases requiring immediate attention
-- **Urgent (Orange)**: Time-sensitive consultations
-- **Normal (Blue)**: Standard consultations
-
-**Queue Information Displayed:**
-
-- Patient Name and Age
-- Village (for catchment area priority)
-- Wait Time and Queue Position
-- Chief Complaint
-- Medical History Highlights
+- **Patient List**: Shows all patients waiting for you
+- **Priority Indicators**:
+  - 🔴 **Urgent**: High priority cases
+  - 🟠 **High**: Important consultations
+  - 🟢 **Normal**: Standard appointments
+- **Patient Information**:
+  - Name, Age, Gender
+  - Chief Complaint
+  - Symptoms Duration
+  - Wait Time
+  - Consultation Type (Video/Audio)
 
 **Queue Actions:**
 
-- **Start Consultation**: Begin video call with next patient
-- **Cancel Consultation**: Remove patient from queue
-- **Re-prioritize**: Adjust patient priority if needed
+```
+[Start] [View Details] [Cancel]
+```
 
-### 2. Active Consultations
+- **Start**: Begin video consultation immediately
+- **View Details**: See patient's full medical history
+- **Cancel**: Remove patient from queue (with reason)
 
-**Current Consultation Panel:**
+### 2. Patient Consultation Interface
 
-- **Video/Audio Call Interface**: High-quality, secure video conferencing
-- **Patient Profile Panel**: Quick access to medical history, allergies, and current medications
-- **Live Chat**: Real-time text communication during consultation
-- **Prescription Tool**: Dedicated area for creating and sending prescriptions
-- **Quick Actions**: Request lab tests, refer to specialists, book follow-ups
+**Before Starting Consultation:**
+
+1. **Review Patient Profile**:
+   - Medical history and allergies
+   - Current medications
+   - Previous consultations
+   - Uploaded documents (lab reports, X-rays)
+2. **Check Technical Setup**:
+   - Camera and microphone working
+   - Stable internet connection
+   - Prescription tools ready
+
+**During Video Consultation:**
+
+**Video Call Controls:**
+
+- 🎥 **Camera On/Off**: Toggle video
+- 🎤 **Microphone Mute/Unmute**: Control audio
+- 💬 **Chat**: Send text messages
+- 📺 **Screen Share**: Show medical information
+- 📞 **End Call**: Terminate consultation
+
+**Patient Information Panel:**
+
+- **Live patient details** displayed alongside video
+- **Medical history** accessible during call
+- **Previous prescriptions** for reference
+- **Allergy alerts** prominently shown
+
+**Real-time Actions:**
+
+- **Take Notes**: Document consultation findings
+- **Create Prescription**: Add medicines during call
+- **Request Lab Tests**: Generate test orders
+- **Schedule Follow-up**: Book next appointment
 
 ### 3. Digital Prescription System
 
-**Prescription Creation Features:**
+**Creating Prescriptions:**
 
-- **Auto-complete**: For common medicine names and dosages
-- **Templates**: For common ailments (e.g., "Common Cold", "Acute Diarrhea")
-- **E-signature**: Secure digital signature capability
-- **Pharmacy Notification**: Automatic alerts to nearby pharmacies
+1. **Click "Prescription" tab** during consultation
+2. **Add Medications**:
+   ```
+   Medicine Name: [Paracetamol 500mg]
+   Dosage: [1 tablet]
+   Frequency: [Twice daily]
+   Duration: [5 days]
+   Instructions: [Take after meals]
+   ```
+3. **Add Multiple Medicines**: Repeat for each medication
+4. **General Instructions**: Add overall care instructions
+5. **Lab Tests** (if needed): Select from dropdown
+6. **Follow-up**: Specify when patient should return
 
-**Prescription Actions:**
+**Prescription Features:**
 
-- **Save Draft**: Work on prescriptions incrementally
-- **Send to Patient**: Deliver prescription directly to patient's app
-- **Print**: Generate printable version for patient
-- **History**: Access all past prescriptions for this patient
+- **Auto-complete**: Common medicine names
+- **Templates**: Save frequent prescriptions
+- **Drug Interaction Warnings**: Automatic alerts
+- **Dosage Calculator**: Based on patient weight/age
+- **Digital Signature**: Secure e-signature
 
-### 4. Patient Management
+**Sending Prescription:**
 
-**Patient Search & Access:**
+1. **Review** all medications and instructions
+2. **Click "Send to Patient"**: Instant delivery to patient app
+3. **Pharmacy Notification**: Nearby pharmacies alerted automatically
+4. **Print Option**: Generate PDF for patient records
 
-- Search by name, phone number, or patient ID
-- Quick view of patient's medical history
-- Access to all past consultations and prescriptions
-- Ability to update patient information
+### 4. Today's Schedule & Statistics
 
-**Patient Profile Features:**
+**Daily Dashboard Shows:**
 
-- Complete medical history timeline
-- Allergies and current medications
-- Previous prescriptions and lab reports
-- Appointment history and follow-up reminders
+- **Total Consultations**: Completed today
+- **Patients Waiting**: Current queue length
+- **Average Consultation Time**: Performance metric
+- **Pending Follow-ups**: Scheduled appointments
+- **Revenue Today**: Consultation fees earned
 
-### 5. Analytics & Performance Metrics
+**Weekly/Monthly Analytics:**
 
-**Daily Statistics:**
+- **Patient Volume Trends**: Growth over time
+- **Common Conditions Treated**: Most frequent diagnoses
+- **Prescription Patterns**: Medication usage
+- **Patient Satisfaction**: Ratings and feedback
+- **Peak Hours**: Busiest consultation times
 
-- Number of consultations completed
-- Average consultation time
-- Patient satisfaction ratings
-- Queue efficiency metrics
+### 5. Status Management
 
-**Monthly Reports:**
+**Availability Toggle:**
 
-- Patient volume trends
-- Common ailments treated
-- Prescription patterns
-- Performance benchmarks
+- 🟢 **Online**: Available for consultations
+- 🟡 **Busy**: In consultation (auto-set)
+- 🔴 **Offline**: Not accepting patients
+- ⏰ **Away**: Short break (specify return time)
 
----
+**Automatic Status Updates:**
 
-## 📞 Consultation Workflow
-
-### 1. Managing Your Queue
-
-1. **Review Queue**: Check patients waiting for consultation
-2. **Prioritize**: Adjust priority if needed based on new information
-3. **Start Call**: Click "Start" to initiate video consultation
-4. **Patient Notification**: Patient receives call notification in app
-
-### 2. During Consultation
-
-1. **Video Call**: Conduct consultation via secure video connection
-2. **Medical History Review**: Access patient's records in sidebar
-3. **Prescription Creation**: Use prescription tool to create e-prescription
-4. **Lab Requests**: Generate digital lab forms if needed
-5. **Specialist Referral**: Flag patient for colleague consultation
-6. **Follow-up Scheduling**: Book future appointments directly
-
-### 3. Ending Consultation
-
-1. **Send Prescription**: Finalize and send prescription to patient
-2. **Add Notes**: Document key findings and recommendations
-3. **Rate Consultation**: Self-assess consultation quality
-4. **End Call**: Close video connection
-5. **Queue Update**: Patient automatically moved to history
+- **Auto-Busy**: When in video call
+- **Auto-Available**: When call ends
+- **Break Reminder**: After 2+ hours online
+- **End-of-day**: Auto-offline at scheduled time
 
 ---
 
-## ⚙️ Settings & Preferences
+## 📞 Complete Consultation Workflow
+
+### Phase 1: Pre-Consultation (2-3 minutes)
+
+1. **Patient Appears in Queue**
+
+   - Notification sound and visual alert
+   - Patient details displayed in queue panel
+   - Priority level indicated by color
+
+2. **Review Patient Information**
+
+   - **Click patient name** to expand details
+   - **Medical History**: Previous conditions and treatments
+   - **Current Medications**: What patient is already taking
+   - **Allergies**: Important safety information
+   - **Previous Consultations**: Past visits and outcomes
+
+3. **Technical Preparation**
+   - Ensure camera and microphone working
+   - Check internet connection strength
+   - Have prescription pad ready
+   - Clear any background noise
+
+### Phase 2: Starting Consultation (1 minute)
+
+1. **Click "Start Consultation"**
+
+   - Patient receives instant notification
+   - Video call window opens
+   - Patient information panel displayed
+
+2. **Initial Patient Connection**
+   - Wait for patient to join (usually 10-20 seconds)
+   - Greet patient and verify identity
+   - Check audio/video quality
+   - Ask patient if they can see and hear clearly
+
+### Phase 3: Active Consultation (8-15 minutes)
+
+**Professional Consultation Structure:**
+
+1. **Chief Complaint** (2 minutes)
+
+   - "What brings you here today?"
+   - Listen to patient's main concern
+   - Note symptoms and duration
+   - Use chat if language barrier exists
+
+2. **History Taking** (3-4 minutes)
+
+   - **Symptom Details**: When, where, how severe
+   - **Associated Symptoms**: Related issues
+   - **Medication History**: Current and recent medicines
+   - **Relevant Medical History**: Related past conditions
+
+3. **Physical Examination** (3-5 minutes)
+
+   - **Visual Assessment**: General appearance
+   - **Guided Self-Examination**: Ask patient to show areas
+   - **Vital Signs**: Ask patient to check (if possible)
+   - **Specific Examinations**: Based on complaint
+
+4. **Assessment & Plan** (3-5 minutes)
+   - **Explain Diagnosis**: In simple terms
+   - **Treatment Plan**: Medications and care
+   - **Lifestyle Advice**: Diet, rest, activities
+   - **Warning Signs**: When to seek immediate care
+
+**During Consultation Tools:**
+
+- **Screen Share**: Show medical diagrams or information
+- **Chat Messages**: Send written instructions
+- **Photo Capture**: Ask patient to show affected areas
+- **Voice Translation**: If language assistance needed
+
+### Phase 4: Prescription & Instructions (3-5 minutes)
+
+1. **Create Digital Prescription**
+
+   - **Add each medication** with precise instructions
+   - **Check drug interactions** with current medicines
+   - **Include general care instructions**
+   - **Add follow-up timeline** if needed
+
+2. **Patient Education**
+
+   - **Explain each medicine**: Purpose and side effects
+   - **Demonstrate usage**: For inhalers, drops, etc.
+   - **Dietary restrictions**: What to avoid
+   - **Activity limitations**: Rest requirements
+
+3. **Follow-up Planning**
+   - **Schedule next visit** if needed
+   - **Emergency instructions**: When to call back
+   - **Recovery timeline**: What to expect
+   - **Contact information**: How to reach you
+
+### Phase 5: Consultation Closure (1-2 minutes)
+
+1. **Send Prescription**
+
+   - **Click "Send to Patient"**: Instant delivery
+   - **Pharmacy Alert**: Automatically notified
+   - **Patient Confirmation**: Verify received
+
+2. **Final Instructions**
+
+   - **Summarize key points**
+   - **Answer any final questions**
+   - **Provide reassurance**
+   - **Thank patient for their time**
+
+3. **End Consultation**
+   - **Click "End Call"**
+   - **Add consultation notes**
+   - **Rate consultation quality**
+   - **Patient moves to completed list**
+
+### Phase 6: Post-Consultation (2-3 minutes)
+
+1. **Documentation**
+
+   - **Add detailed notes** about findings
+   - **Update patient medical history**
+   - **Note any follow-up requirements**
+   - **Record any concerns or complications**
+
+2. **Administrative Tasks**
+   - **Mark consultation complete**
+   - **Update availability status**
+   - **Prepare for next patient**
+   - **Review queue for urgent cases**
+
+---
+
+## 💊 Advanced Prescription Features
+
+### Smart Prescription Templates
+
+**Common Condition Templates:**
+
+- **Common Cold/Flu**
+- **Hypertension Management**
+- **Diabetes Follow-up**
+- **Skin Conditions**
+- **Gastric Issues**
+- **Respiratory Problems**
+
+**Template Usage:**
+
+1. **Select condition** from dropdown
+2. **Auto-populated prescription** appears
+3. **Customize** dosages and duration
+4. **Add specific instructions**
+5. **Send to patient**
+
+### Drug Interaction Checking
+
+**Automatic Alerts for:**
+
+- **Duplicate medications**: Same drug different brands
+- **Dangerous combinations**: Drugs that shouldn't mix
+- **Allergy warnings**: Patient-specific allergies
+- **Age-related concerns**: Pediatric/geriatric considerations
+- **Pregnancy safety**: Safe medications for pregnant patients
+
+### Pharmacy Integration
+
+**Prescription Delivery:**
+
+1. **Prescription sent** to patient app
+2. **Nearby pharmacies notified** automatically
+3. **Patient gets pharmacy list** with availability
+4. **Real-time stock updates** from pharmacies
+5. **Patient can reserve medicines** before visiting
+
+---
+
+## 📊 Performance Analytics
+
+### Daily Performance Metrics
+
+**Consultation Statistics:**
+
+- **Total Patients Seen**: Daily count
+- **Average Wait Time**: Patient experience metric
+- **Consultation Duration**: Time management
+- **Patient Satisfaction**: Ratings received
+- **No-Show Rate**: Missed appointments
+
+**Financial Metrics:**
+
+- **Total Revenue**: Daily earnings
+- **Consultation Fees**: Per-patient breakdown
+- **Monthly Trends**: Growth tracking
+- **Payment Status**: Pending/completed
+
+### Patient Management Analytics
+
+**Common Conditions Treated:**
+
+- **Respiratory Issues**: 25%
+- **Skin Problems**: 20%
+- **Digestive Issues**: 15%
+- **Cardiovascular**: 12%
+- **Others**: 28%
+
+**Peak Hours Analysis:**
+
+- **Morning Rush**: 9 AM - 11 AM
+- **Lunch Break**: 1 PM - 2 PM (low)
+- **Evening Peak**: 6 PM - 8 PM
+- **Weekend Patterns**: Different timing
+
+### Quality Improvement Insights
+
+**Areas for Improvement:**
+
+- **Consultation time optimization**
+- **Patient satisfaction enhancement**
+- **Prescription accuracy**
+- **Follow-up adherence**
+- **Technical issues resolution**
+
+---
+
+## ⚙️ Profile & Settings Management
+
+### Professional Profile Setup
+
+**Personal Information:**
+
+- **Full Name**: As per medical license
+- **Medical Registration Number**: Verified by admin
+- **Specializations**: Primary and secondary
+- **Years of Experience**: Updated annually
+- **Education & Qualifications**: Degrees and certifications
+- **Languages Spoken**: For patient matching
+
+**Practice Information:**
+
+- **Consultation Fee**: Per-session charge
+- **Available Hours**: Weekly schedule
+- **Break Times**: Lunch and rest periods
+- **Maximum Patients per Day**: Workload limit
+- **Emergency Availability**: After-hours care
+
+**Contact & Communication:**
+
+- **Professional Email**: For official communication
+- **Phone Number**: Emergency contact
+- **Clinic Address**: Physical location (if any)
+- **Social Media**: Professional profiles
 
 ### Availability Management
 
-- **Status Toggle**: Switch between Available, Busy, Away
-- **Schedule Manager**: Block times for scheduled follow-ups
-- **Notification Settings**: Configure alert preferences
+**Schedule Configuration:**
 
-### Profile Management
+```
+Monday:    9:00 AM - 6:00 PM
+Tuesday:   9:00 AM - 6:00 PM
+Wednesday: 9:00 AM - 1:00 PM
+Thursday:  9:00 AM - 6:00 PM
+Friday:    9:00 AM - 6:00 PM
+Saturday:  10:00 AM - 4:00 PM
+Sunday:    Closed
+```
 
-- **Personal Information**: Update contact details and qualifications
-- **Specializations**: Manage displayed specializations
-- **Languages**: Set languages you're comfortable consulting in
+**Break Management:**
 
-### Security Settings
+- **Lunch Break**: 1:00 PM - 2:00 PM
+- **Short Breaks**: 15 minutes every 2 hours
+- **Emergency Override**: Available for urgent cases
+- **Vacation Mode**: Extended time off
 
-- **2FA Configuration**: Enable/disable two-factor authentication
-- **Session Management**: View and manage active sessions
-- **Audit Trail**: Review who accessed your data and when
+**Real-time Status Control:**
+
+- **Manual Override**: Change status anytime
+- **Auto-unavailable**: During scheduled breaks
+- **Emergency Mode**: Override all settings for critical cases
+- **Queue Pause**: Stop accepting new patients temporarily
+
+### Notification Preferences
+
+**Patient Alerts:**
+
+- ✅ **New patient in queue**: Immediate notification
+- ✅ **Urgent cases**: Priority alerts
+- ✅ **Patient no-show**: Missed appointment alerts
+- ✅ **Follow-up reminders**: Scheduled check-ins
+
+**System Notifications:**
+
+- ✅ **System maintenance**: Planned downtime
+- ✅ **New features**: Platform updates
+- ✅ **Security alerts**: Login attempts
+- ✅ **Payment updates**: Fee processing
+
+**Communication Channels:**
+
+- **In-app notifications**: Dashboard alerts
+- **Email notifications**: Official communications
+- **SMS alerts**: Urgent notifications
+- **Push notifications**: Mobile app alerts
 
 ---
 
-## 🆘 Support for Doctors
+## 🔒 Security & Privacy
+
+### Patient Data Protection
+
+**Access Controls:**
+
+- **Role-based permissions**: Doctor-level access only
+- **Session timeouts**: Auto-logout after inactivity
+- **Audit logs**: Track all data access
+- **Encrypted storage**: All data secured
+
+**HIPAA Compliance:**
+
+- **Patient consent**: Explicit permission required
+- **Data minimization**: Only necessary information
+- **Secure transmission**: End-to-end encryption
+- **Right to deletion**: Patient data removal rights
+
+### Account Security
+
+**Authentication:**
+
+- **Strong passwords**: Minimum requirements enforced
+- **Two-factor authentication**: SMS or app-based
+- **Session management**: Active session monitoring
+- **Login alerts**: Suspicious activity notifications
+
+**Professional Verification:**
+
+- **Medical license verification**: Annual renewal
+- **Background checks**: Security clearance
+- **Continuing education**: CME requirements
+- **Peer reviews**: Quality assurance
+
+---
+
+## 🆘 Support & Training
 
 ### Technical Support
 
-- **Help Center**: In-dashboard help documentation
-- **Live Chat**: Direct support during business hours
-- **Email Support**: support@telemed.com for non-urgent issues
+**Getting Help:**
 
-### Medical Support
+- **Live Chat**: In-dashboard support (9 AM - 9 PM)
+- **Email Support**: support@telemed.com
+- **Phone Support**: Emergency technical issues
+- **Video Tutorials**: Step-by-step guides
 
-- **Clinical Guidelines**: Access to treatment protocols
-- **Peer Consultation**: Connect with specialist colleagues
-- **Continuing Education**: Medical updates and training resources
+**Common Issues & Solutions:**
+
+**Video Call Problems:**
+
+- **Poor video quality**: Check internet speed
+- **Audio issues**: Test microphone settings
+- **Connection drops**: Switch to mobile hotspot
+- **Patient can't connect**: Guide through troubleshooting
+
+**Prescription Issues:**
+
+- **Medicine not in database**: Add custom medication
+- **Dosage calculations**: Use built-in calculator
+- **Interaction warnings**: Review patient medications
+- **Pharmacy not receiving**: Verify contact information
+
+### Professional Development
+
+**Continuing Medical Education:**
+
+- **Monthly webinars**: Latest medical updates
+- **Case study reviews**: Learn from colleagues
+- **Technology training**: Platform improvements
+- **Patient communication**: Telemedicine best practices
+
+**Performance Improvement:**
+
+- **Consultation reviews**: Self-assessment tools
+- **Patient feedback analysis**: Areas for improvement
+- **Peer comparisons**: Benchmarking metrics
+- **Quality scores**: Professional development tracking
+
+---
+
+## 📱 Mobile Doctor App (Coming Soon)
+
+### Features in Development
+
+**Mobile Consultation Features:**
+
+- **Smartphone consultations**: Use phone for video calls
+- **Offline prescription access**: View prescriptions without internet
+- **Push notifications**: Patient alerts on mobile
+- **Quick response**: Text patients instantly
+
+**On-the-go Management:**
+
+- **Schedule management**: Update availability anywhere
+- **Patient messages**: Respond to follow-up questions
+- **Emergency consultations**: Handle urgent cases remotely
+- **Voice prescriptions**: Dictate prescriptions hands-free
+
+---
+
+## ✅ Doctor Quick Start Checklist
+
+### Week 1: Account Setup
+
+**Day 1: Registration**
+
+- [ ] Complete doctor registration form
+- [ ] Upload medical license and credentials
+- [ ] Submit for admin verification
+- [ ] Await approval email
+
+**Day 2: Profile Setup**
+
+- [ ] Login to dashboard for first time
+- [ ] Complete professional profile
+- [ ] Set consultation fees
+- [ ] Configure available hours
+- [ ] Upload professional photo
+
+**Day 3: Technical Testing**
+
+- [ ] Test video and audio quality
+- [ ] Practice using prescription system
+- [ ] Configure notification preferences
+- [ ] Review patient management tools
+- [ ] Complete platform tutorial
+
+### Week 2: First Consultations
+
+**Day 1: Preparation**
+
+- [ ] Set status to "Available"
+- [ ] Review emergency procedures
+- [ ] Prepare workspace (lighting, background)
+- [ ] Test internet connection
+
+**Day 2-7: Active Practice**
+
+- [ ] Conduct first patient consultation
+- [ ] Create and send first prescription
+- [ ] Practice queue management
+- [ ] Use consultation templates
+- [ ] Review daily statistics
+- [ ] Collect patient feedback
+- [ ] Optimize consultation workflow
+
+### Ongoing: Quality Improvement
+
+**Weekly Tasks:**
+
+- [ ] Review consultation metrics
+- [ ] Update medical knowledge
+- [ ] Improve patient satisfaction scores
+- [ ] Attend training webinars
+- [ ] Network with colleague doctors
+
+**Monthly Tasks:**
+
+- [ ] Analyze performance trends
+- [ ] Update professional development
+- [ ] Review and update consultation fees
+- [ ] Plan schedule optimization
+- [ ] Participate in quality reviews
 
 ---
 

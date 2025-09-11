@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/doctor.dart';
+import '../services/api_service.dart';
+import '../config/api_config.dart';
 
 class DoctorService {
-  static final SupabaseClient _supabase = Supabase.instance.client;
-  static const String _tableName = 'doctors';
+  static final ApiService _apiService = ApiService();
 
-  /// Get all available doctors
+  /// Get all available doctors from unified backend
   static Future<List<Doctor>> getAllDoctors() async {
     try {
-      final response = await _supabase
-          .from(_tableName)
-          .select()
-          .eq('is_available', true)
-          .order('rating', ascending: false);
+      final response = await _apiService.get(ApiConfig.doctorsAvailable);
 
-      return response.map<Doctor>((data) => Doctor.fromMap(data)).toList();
+      if (response.isSuccess && response.data != null) {
+        final List<dynamic> doctorsData = response.data as List<dynamic>;
+        return doctorsData.map((data) => Doctor.fromMap(data)).toList();
+      } else {
+        _showToast('Error loading doctors: ${response.error}', isError: true);
+        return [];
+      }
     } catch (e) {
       debugPrint('Error fetching doctors: $e');
       _showToast('Error loading doctors', isError: true);
@@ -24,19 +26,22 @@ class DoctorService {
     }
   }
 
-  /// Search doctors by specialization
+  /// Search doctors by specialization using unified backend
   static Future<List<Doctor>> searchDoctorsBySpecialization(
     String specialization,
   ) async {
     try {
-      final response = await _supabase
-          .from(_tableName)
-          .select()
-          .eq('is_available', true)
-          .ilike('specialization', '%$specialization%')
-          .order('rating', ascending: false);
+      final response = await _apiService.get(
+        '${ApiConfig.doctorsList}?speciality=$specialization&available=true',
+      );
 
-      return response.map<Doctor>((data) => Doctor.fromMap(data)).toList();
+      if (response.isSuccess && response.data != null) {
+        final List<dynamic> doctorsData = response.data as List<dynamic>;
+        return doctorsData.map((data) => Doctor.fromMap(data)).toList();
+      } else {
+        _showToast('Error searching doctors: ${response.error}', isError: true);
+        return [];
+      }
     } catch (e) {
       debugPrint('Error searching doctors: $e');
       _showToast('Error searching doctors', isError: true);
@@ -44,17 +49,20 @@ class DoctorService {
     }
   }
 
-  /// Search doctors by name
+  /// Search doctors by name using unified backend
   static Future<List<Doctor>> searchDoctorsByName(String name) async {
     try {
-      final response = await _supabase
-          .from(_tableName)
-          .select()
-          .eq('is_available', true)
-          .ilike('full_name', '%$name%')
-          .order('rating', ascending: false);
+      final response = await _apiService.get(
+        '${ApiConfig.doctorsList}?name=$name&available=true',
+      );
 
-      return response.map<Doctor>((data) => Doctor.fromMap(data)).toList();
+      if (response.isSuccess && response.data != null) {
+        final List<dynamic> doctorsData = response.data as List<dynamic>;
+        return doctorsData.map((data) => Doctor.fromMap(data)).toList();
+      } else {
+        _showToast('Error searching doctors: ${response.error}', isError: true);
+        return [];
+      }
     } catch (e) {
       debugPrint('Error searching doctors by name: $e');
       _showToast('Error searching doctors', isError: true);
@@ -62,17 +70,23 @@ class DoctorService {
     }
   }
 
-  /// Get doctors by availability (online status)
+  /// Get doctors by availability (online status) from unified backend
   static Future<List<Doctor>> getOnlineDoctors() async {
     try {
-      final response = await _supabase
-          .from(_tableName)
-          .select()
-          .eq('is_available', true)
-          .eq('is_online', true)
-          .order('rating', ascending: false);
+      final response = await _apiService.get(
+        '${ApiConfig.doctorsList}?status=online&available=true',
+      );
 
-      return response.map<Doctor>((data) => Doctor.fromMap(data)).toList();
+      if (response.isSuccess && response.data != null) {
+        final List<dynamic> doctorsData = response.data as List<dynamic>;
+        return doctorsData.map((data) => Doctor.fromMap(data)).toList();
+      } else {
+        _showToast(
+          'Error loading online doctors: ${response.error}',
+          isError: true,
+        );
+        return [];
+      }
     } catch (e) {
       debugPrint('Error fetching online doctors: $e');
       _showToast('Error loading online doctors', isError: true);
@@ -80,16 +94,20 @@ class DoctorService {
     }
   }
 
-  /// Get doctor by ID
+  /// Get doctor by ID from unified backend
   static Future<Doctor?> getDoctorById(String doctorId) async {
     try {
-      final response = await _supabase
-          .from(_tableName)
-          .select()
-          .eq('id', doctorId)
-          .single();
+      final response = await _apiService.get(ApiConfig.doctorById(doctorId));
 
-      return Doctor.fromMap(response);
+      if (response.isSuccess && response.data != null) {
+        return Doctor.fromMap(response.data);
+      } else {
+        _showToast(
+          'Error loading doctor details: ${response.error}',
+          isError: true,
+        );
+        return null;
+      }
     } catch (e) {
       debugPrint('Error fetching doctor: $e');
       _showToast('Error loading doctor details', isError: true);
@@ -97,27 +115,46 @@ class DoctorService {
     }
   }
 
-  /// Get unique specializations
+  /// Get unique specializations from unified backend
   static Future<List<String>> getSpecializations() async {
     try {
-      final response = await _supabase
-          .from(_tableName)
-          .select('specialization')
-          .eq('is_available', true);
+      final response = await _apiService.get(
+        '${ApiConfig.doctorsList}/specialties',
+      );
 
-      final Set<String> specializations = {};
-      for (final data in response) {
-        final specialization = data['specialization'] as String?;
-        if (specialization != null && specialization.isNotEmpty) {
-          specializations.add(specialization);
-        }
+      if (response.isSuccess && response.data != null) {
+        final List<dynamic> specialties = response.data as List<dynamic>;
+        return specialties.map((specialty) => specialty.toString()).toList();
+      } else {
+        // Fallback to common specialties if API doesn't have this endpoint
+        return [
+          'Cardiology',
+          'Dermatology',
+          'General Medicine',
+          'Pediatrics',
+          'Orthopedics',
+          'Neurology',
+          'Gynecology',
+          'Psychiatry',
+          'Oncology',
+          'Endocrinology',
+        ];
       }
-
-      final sortedList = specializations.toList()..sort();
-      return sortedList;
     } catch (e) {
       debugPrint('Error fetching specializations: $e');
-      return [];
+      // Return default specializations
+      return [
+        'Cardiology',
+        'Dermatology',
+        'General Medicine',
+        'Pediatrics',
+        'Orthopedics',
+        'Neurology',
+        'Gynecology',
+        'Psychiatry',
+        'Oncology',
+        'Endocrinology',
+      ];
     }
   }
 
@@ -131,48 +168,65 @@ class DoctorService {
     List<String>? languages,
   }) async {
     try {
-      var query = _supabase.from(_tableName).select().eq('is_available', true);
+      // Build query parameters
+      Map<String, String> queryParams = {'available': 'true'};
 
-      // Apply filters
       if (specialization != null && specialization.isNotEmpty) {
-        query = query.eq('specialization', specialization);
+        queryParams['speciality'] = specialization;
       }
 
       if (searchQuery != null && searchQuery.isNotEmpty) {
-        query = query.ilike('full_name', '%$searchQuery%');
+        queryParams['name'] = searchQuery;
       }
 
       if (isOnline == true) {
-        query = query.eq('is_online', true);
+        queryParams['status'] = 'online';
       }
 
       if (minRating != null) {
-        query = query.gte('rating', minRating);
+        queryParams['minRating'] = minRating.toString();
       }
 
       if (maxConsultationFee != null) {
-        query = query.lte('consultation_fee', maxConsultationFee);
+        queryParams['maxFee'] = maxConsultationFee.toString();
       }
 
-      final response = await query.order('rating', ascending: false);
-
-      List<Doctor> doctors = response
-          .map<Doctor>((data) => Doctor.fromMap(data))
-          .toList();
-
-      // Filter by languages if specified
-      if (languages != null && languages.isNotEmpty) {
-        doctors = doctors.where((doctor) {
-          return doctor.languages.any(
-            (doctorLang) => languages.any(
-              (filterLang) =>
-                  doctorLang.toLowerCase().contains(filterLang.toLowerCase()),
-            ),
-          );
-        }).toList();
+      // Build URL with query parameters
+      String url = ApiConfig.doctorsList;
+      if (queryParams.isNotEmpty) {
+        final queryString = queryParams.entries
+            .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+            .join('&');
+        url += '?$queryString';
       }
 
-      return doctors;
+      final response = await _apiService.get(url);
+
+      if (response.isSuccess && response.data != null) {
+        List<Doctor> doctors = (response.data as List<dynamic>)
+            .map((data) => Doctor.fromMap(data))
+            .toList();
+
+        // Filter by languages if specified (client-side filtering)
+        if (languages != null && languages.isNotEmpty) {
+          doctors = doctors.where((doctor) {
+            return doctor.languages.any(
+              (doctorLang) => languages.any(
+                (filterLang) =>
+                    doctorLang.toLowerCase().contains(filterLang.toLowerCase()),
+              ),
+            );
+          }).toList();
+        }
+
+        // Sort by rating
+        doctors.sort((a, b) => b.rating.compareTo(a.rating));
+
+        return doctors;
+      } else {
+        _showToast('Error filtering doctors: ${response.error}', isError: true);
+        return [];
+      }
     } catch (e) {
       debugPrint('Error filtering doctors: $e');
       _showToast('Error filtering doctors', isError: true);
@@ -183,16 +237,31 @@ class DoctorService {
   /// Get top rated doctors
   static Future<List<Doctor>> getTopRatedDoctors({int limit = 10}) async {
     try {
-      final response = await _supabase
-          .from(_tableName)
-          .select()
-          .eq('is_available', true)
-          .gte('rating', 4.0)
-          .order('rating', ascending: false)
-          .order('total_consultations', ascending: false)
-          .limit(limit);
+      final response = await _apiService.get(
+        '${ApiConfig.doctorsList}?available=true&minRating=4.0&limit=$limit&sortBy=rating',
+      );
 
-      return response.map<Doctor>((data) => Doctor.fromMap(data)).toList();
+      if (response.isSuccess && response.data != null) {
+        List<Doctor> doctors = (response.data as List<dynamic>)
+            .map((data) => Doctor.fromMap(data))
+            .toList();
+
+        // Sort by rating and total consultations (client-side if backend doesn't support complex sorting)
+        doctors.sort((a, b) {
+          int ratingComparison = b.rating.compareTo(a.rating);
+          if (ratingComparison != 0) return ratingComparison;
+          return b.totalConsultations.compareTo(a.totalConsultations);
+        });
+
+        // Apply limit if backend doesn't support it
+        return doctors.take(limit).toList();
+      } else {
+        _showToast(
+          'Error loading top doctors: ${response.error}',
+          isError: true,
+        );
+        return [];
+      }
     } catch (e) {
       debugPrint('Error fetching top rated doctors: $e');
       _showToast('Error loading top doctors', isError: true);
@@ -205,79 +274,103 @@ class DoctorService {
     try {
       final sampleDoctors = [
         {
-          'full_name': 'Dr. Rajesh Kumar',
+          'doctorId': 'dr_rajesh_kumar',
+          'name': 'Dr. Rajesh Kumar',
           'email': 'rajesh.kumar@example.com',
-          'phone_number': '+91-9876543210',
-          'specialization': 'General Medicine',
+          'password': 'password123', // This would be hashed by backend
+          'phone': '+91-9876543210',
+          'speciality': 'General Practitioner',
           'qualification': 'MBBS, MD',
-          'experience_years': 8,
-          'consultation_fee': 500.00,
-          'languages': ['Hindi', 'English'],
+          'experience': 8,
+          'licenseNumber': 'DL-GP-12345',
+          'consultationFee': 500.00,
+          'languages': ['hi', 'en'],
           'rating': 4.5,
-          'total_consultations': 250,
-          'is_available': true,
-          'is_online': true,
+          'totalConsultations': 250,
+          'isAvailable': true,
+          'status': 'online',
         },
         {
-          'full_name': 'Dr. Priya Sharma',
+          'doctorId': 'dr_priya_sharma',
+          'name': 'Dr. Priya Sharma',
           'email': 'priya.sharma@example.com',
-          'phone_number': '+91-9876543211',
-          'specialization': 'Pediatrics',
+          'password': 'password123',
+          'phone': '+91-9876543211',
+          'speciality': 'Pediatrician',
           'qualification': 'MBBS, MD (Pediatrics)',
-          'experience_years': 6,
-          'consultation_fee': 600.00,
-          'languages': ['Hindi', 'English', 'Punjabi'],
+          'experience': 6,
+          'licenseNumber': 'DL-PED-67890',
+          'consultationFee': 600.00,
+          'languages': ['hi', 'en', 'pa'],
           'rating': 4.7,
-          'total_consultations': 180,
-          'is_available': true,
-          'is_online': false,
+          'totalConsultations': 180,
+          'isAvailable': true,
+          'status': 'offline',
         },
         {
-          'full_name': 'Dr. Amit Singh',
+          'doctorId': 'dr_amit_singh',
+          'name': 'Dr. Amit Singh',
           'email': 'amit.singh@example.com',
-          'phone_number': '+91-9876543212',
-          'specialization': 'Cardiology',
+          'password': 'password123',
+          'phone': '+91-9876543212',
+          'speciality': 'Cardiologist',
           'qualification': 'MBBS, MD, DM (Cardiology)',
-          'experience_years': 12,
-          'consultation_fee': 1000.00,
-          'languages': ['Hindi', 'English'],
+          'experience': 12,
+          'licenseNumber': 'DL-CARD-54321',
+          'consultationFee': 1000.00,
+          'languages': ['hi', 'en'],
           'rating': 4.8,
-          'total_consultations': 320,
-          'is_available': true,
-          'is_online': true,
+          'totalConsultations': 320,
+          'isAvailable': true,
+          'status': 'online',
         },
         {
-          'full_name': 'Dr. Sneha Patel',
+          'doctorId': 'dr_sneha_patel',
+          'name': 'Dr. Sneha Patel',
           'email': 'sneha.patel@example.com',
-          'phone_number': '+91-9876543213',
-          'specialization': 'Dermatology',
+          'password': 'password123',
+          'phone': '+91-9876543213',
+          'speciality': 'Dermatologist',
           'qualification': 'MBBS, MD (Dermatology)',
-          'experience_years': 5,
-          'consultation_fee': 700.00,
-          'languages': ['Hindi', 'English', 'Gujarati'],
+          'experience': 5,
+          'licenseNumber': 'DL-DERM-98765',
+          'consultationFee': 700.00,
+          'languages': ['hi', 'en'],
           'rating': 4.4,
-          'total_consultations': 150,
-          'is_available': true,
-          'is_online': false,
+          'totalConsultations': 150,
+          'isAvailable': true,
+          'status': 'offline',
         },
         {
-          'full_name': 'Dr. Vikram Reddy',
+          'doctorId': 'dr_vikram_reddy',
+          'name': 'Dr. Vikram Reddy',
           'email': 'vikram.reddy@example.com',
-          'phone_number': '+91-9876543214',
-          'specialization': 'Orthopedics',
+          'password': 'password123',
+          'phone': '+91-9876543214',
+          'speciality': 'Orthopedic',
           'qualification': 'MBBS, MS (Orthopedics)',
-          'experience_years': 10,
-          'consultation_fee': 800.00,
-          'languages': ['Hindi', 'English', 'Telugu'],
+          'experience': 10,
+          'licenseNumber': 'DL-ORTH-13579',
+          'consultationFee': 800.00,
+          'languages': ['hi', 'en'],
           'rating': 4.6,
-          'total_consultations': 200,
-          'is_available': true,
-          'is_online': true,
+          'totalConsultations': 200,
+          'isAvailable': true,
+          'status': 'online',
         },
       ];
 
       for (final doctorData in sampleDoctors) {
-        await _supabase.from(_tableName).insert(doctorData);
+        final response = await _apiService.post(
+          '${ApiConfig.baseUrl}/doctors/seed',
+          body: doctorData,
+        );
+
+        if (!response.isSuccess) {
+          debugPrint(
+            'Failed to create doctor: ${doctorData['name']}, Error: ${response.error}',
+          );
+        }
       }
 
       debugPrint('✅ Sample doctors created successfully');

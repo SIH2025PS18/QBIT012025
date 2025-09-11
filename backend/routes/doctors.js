@@ -1,0 +1,333 @@
+const express = require("express");
+const { auth, authorize, verifiedDoctor } = require("../middleware/auth");
+const Doctor = require("../models/Doctor");
+
+const router = express.Router();
+
+// @desc    Get all doctors (for admin)
+// @route   GET /api/doctors
+// @access  Private (Admin only)
+router.get("/", auth, authorize("admin"), async (req, res) => {
+  try {
+    const { page = 1, limit = 10, speciality, status } = req.query;
+
+    const query = {};
+    if (speciality) query.speciality = speciality;
+    if (status) query.status = status;
+
+    const doctors = await Doctor.find(query)
+      .select("-password")
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: -1 });
+
+    const total = await Doctor.countDocuments(query);
+
+    res.json({
+      success: true,
+      count: doctors.length,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / limit),
+      data: doctors,
+    });
+  } catch (error) {
+    console.error("Error fetching doctors:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error fetching doctors",
+    });
+  }
+});
+
+// @desc    Get available doctors
+// @route   GET /api/doctors/available
+// @access  Public
+router.get("/available", async (req, res) => {
+  try {
+    const { speciality } = req.query;
+
+    const doctors = await Doctor.findAvailable(speciality);
+
+    res.json({
+      success: true,
+      count: doctors.length,
+      data: doctors.map((doctor) => ({
+        id: doctor._id,
+        doctorId: doctor.doctorId,
+        name: doctor.name,
+        speciality: doctor.speciality,
+        qualification: doctor.qualification,
+        experience: doctor.experience,
+        consultationFee: doctor.consultationFee,
+        rating: doctor.rating,
+        totalConsultations: doctor.totalConsultations,
+        languages: doctor.languages,
+        status: doctor.status,
+        isAvailable: doctor.isAvailable,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching available doctors:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error fetching doctors",
+    });
+  }
+});
+
+// @desc    Get single doctor by ID
+// @route   GET /api/doctors/:id
+// @access  Public
+router.get("/:id", async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id).select("-password");
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: doctor,
+    });
+  } catch (error) {
+    console.error("Error fetching doctor:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error fetching doctor",
+    });
+  }
+});
+
+// @desc    Create new doctor (Admin only)
+// @route   POST /api/doctors
+// @access  Private (Admin only)
+router.post("/", auth, authorize("admin"), async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      speciality,
+      qualification,
+      experience,
+      licenseNumber,
+      consultationFee,
+      languages,
+      address,
+      workingHours,
+    } = req.body;
+
+    // Check if doctor already exists
+    const existingDoctor = await Doctor.findOne({
+      $or: [{ email }, { phone }, { licenseNumber }],
+    });
+
+    if (existingDoctor) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Doctor already exists with this email, phone, or license number",
+      });
+    }
+
+    // Generate unique doctor ID
+    const doctorCount = await Doctor.countDocuments();
+    const doctorId = `D${String(doctorCount + 1).padStart(6, "0")}`;
+
+    // Default password for admin-created doctors
+    const bcrypt = require("bcryptjs");
+    const defaultPassword = "doctor123";
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(defaultPassword, salt);
+
+    const doctor = new Doctor({
+      doctorId,
+      name,
+      email,
+      password: hashedPassword,
+      phone,
+      speciality,
+      qualification,
+      experience,
+      licenseNumber,
+      consultationFee,
+      languages: languages || ["en"],
+      address,
+      workingHours,
+      isVerified: true, // Admin-created doctors are auto-verified
+      status: "online",
+      isAvailable: true,
+    });
+
+    await doctor.save();
+
+    // Remove password from response
+    const doctorResponse = doctor.toObject();
+    delete doctorResponse.password;
+
+    res.status(201).json({
+      success: true,
+      message: "Doctor created successfully",
+      data: doctorResponse,
+      defaultPassword, // Send default password to admin
+    });
+  } catch (error) {
+    console.error("Error creating doctor:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error creating doctor",
+    });
+  }
+});
+
+// @desc    Update doctor (Admin or Doctor)
+// @route   PUT /api/doctors/:id
+// @access  Private
+router.put("/:id", auth, async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id);
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    // Check if user is admin or the doctor themselves
+    if (
+      req.user.userType !== "admin" &&
+      req.user._id.toString() !== doctor._id.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to update this doctor",
+      });
+    }
+
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, updatedAt: new Date() },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    res.json({
+      success: true,
+      message: "Doctor updated successfully",
+      data: updatedDoctor,
+    });
+  } catch (error) {
+    console.error("Error updating doctor:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error updating doctor",
+    });
+  }
+});
+
+// @desc    Delete doctor (Admin only)
+// @route   DELETE /api/doctors/:id
+// @access  Private (Admin only)
+router.delete("/:id", auth, authorize("admin"), async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id);
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    await Doctor.findByIdAndDelete(req.params.id);
+
+    res.json({
+      success: true,
+      message: "Doctor deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting doctor:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error deleting doctor",
+    });
+  }
+});
+
+// @desc    Verify doctor (Admin only)
+// @route   PUT /api/doctors/:id/verify
+// @access  Private (Admin only)
+router.put("/:id/verify", auth, authorize("admin"), async (req, res) => {
+  try {
+    const { isVerified } = req.body;
+
+    const doctor = await Doctor.findByIdAndUpdate(
+      req.params.id,
+      { isVerified, updatedAt: new Date() },
+      { new: true }
+    ).select("-password");
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Doctor ${isVerified ? "verified" : "unverified"} successfully`,
+      data: doctor,
+    });
+  } catch (error) {
+    console.error("Error verifying doctor:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error verifying doctor",
+    });
+  }
+});
+
+// @desc    Update doctor status
+// @route   PUT /api/doctors/status
+// @access  Private (Doctor only)
+router.put(
+  "/status",
+  auth,
+  authorize("doctor"),
+  verifiedDoctor,
+  async (req, res) => {
+    try {
+      const { status, isAvailable } = req.body;
+
+      const doctor = await Doctor.findByIdAndUpdate(
+        req.user._id,
+        { status, isAvailable, lastActive: new Date() },
+        { new: true }
+      );
+
+      res.json({
+        success: true,
+        message: "Status updated successfully",
+        data: {
+          status: doctor.status,
+          isAvailable: doctor.isAvailable,
+          lastActive: doctor.lastActive,
+        },
+      });
+    } catch (error) {
+      console.error("Error updating doctor status:", error);
+      res.status(500).json({
+        success: false,
+        message: "Server error updating status",
+      });
+    }
+  }
+);
+
+module.exports = router;

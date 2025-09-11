@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../models/appointment.dart';
 import '../models/doctor.dart';
-import 'supabase_auth_service.dart';
+import '../services/auth_service.dart';
 
 class AppointmentService {
-  static final SupabaseClient _supabase = Supabase.instance.client;
-  static const String _tableName = 'appointments';
+  static const String _baseUrl = 'http://localhost:5001/api';
+  static final AuthService _authService = AuthService();
 
   /// Book a new appointment
   static Future<Appointment?> bookAppointment({
@@ -20,7 +21,7 @@ class AppointmentService {
     String? notes,
   }) async {
     try {
-      final currentUser = AuthService.currentUser;
+      final currentUser = await _authService.getCurrentUser();
       if (currentUser == null) {
         _showToast('Please log in to book appointment', isError: true);
         return null;
@@ -29,29 +30,35 @@ class AppointmentService {
       final appointmentId = 'apt_${DateTime.now().millisecondsSinceEpoch}';
       final now = DateTime.now();
 
-      final appointment = Appointment(
-        id: appointmentId,
-        patientId: currentUser.id,
-        doctorId: doctorId,
-        doctorName: doctorName,
-        doctorSpecialization: doctorSpecialization,
-        appointmentDate: appointmentDate,
-        appointmentTime: appointmentTime,
-        status: 'scheduled',
-        notes: notes,
-        consultationFee: consultationFee,
-        createdAt: now,
-        updatedAt: now,
+      final appointmentData = {
+        'id': appointmentId,
+        'patientId': currentUser.id,
+        'doctorId': doctorId,
+        'doctorName': doctorName,
+        'doctorSpecialization': doctorSpecialization,
+        'appointmentDate': appointmentDate.toIso8601String(),
+        'appointmentTime':
+            '${appointmentTime.hour}:${appointmentTime.minute.toString().padLeft(2, '0')}',
+        'status': 'scheduled',
+        'notes': notes,
+        'consultationFee': consultationFee,
+        'createdAt': now.toIso8601String(),
+        'updatedAt': now.toIso8601String(),
+      };
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/appointments'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(appointmentData),
       );
 
-      final response = await _supabase
-          .from(_tableName)
-          .insert(appointment.toMap())
-          .select()
-          .single();
-
-      _showToast('Appointment booked successfully!', isError: false);
-      return Appointment.fromMap(response);
+      if (response.statusCode == 201) {
+        _showToast('Appointment booked successfully!', isError: false);
+        final data = jsonDecode(response.body);
+        return Appointment.fromMap(data);
+      } else {
+        throw Exception('Failed to book appointment: ${response.body}');
+      }
     } catch (e) {
       debugPrint('Error booking appointment: $e');
       _showToast('Failed to book appointment', isError: true);
@@ -65,30 +72,32 @@ class AppointmentService {
     bool upcomingOnly = false,
   }) async {
     try {
-      final currentUser = AuthService.currentUser;
+      final currentUser = await _authService.getCurrentUser();
       if (currentUser == null) {
         return [];
       }
 
-      var query = _supabase
-          .from(_tableName)
-          .select()
-          .eq('patient_id', currentUser.id);
-
+      String url = '$_baseUrl/appointments?patientId=${currentUser.id}';
       if (status != null && status.isNotEmpty) {
-        query = query.eq('status', status);
+        url += '&status=$status';
       }
-
       if (upcomingOnly) {
         final today = DateTime.now().toIso8601String().split('T')[0];
-        query = query.gte('appointment_date', today);
+        url += '&from=$today';
       }
 
-      final response = await query.order('appointment_date', ascending: true);
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      return response
-          .map<Appointment>((data) => Appointment.fromMap(data))
-          .toList();
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data
+            .map<Appointment>((item) => Appointment.fromMap(item))
+            .toList();
+      }
+      return [];
     } catch (e) {
       debugPrint('Error fetching appointments: $e');
       _showToast('Error loading appointments', isError: true);
@@ -99,7 +108,7 @@ class AppointmentService {
   /// Get upcoming appointments (next 7 days)
   static Future<List<Appointment>> getUpcomingAppointments() async {
     try {
-      final currentUser = AuthService.currentUser;
+      final currentUser = await _authService.getCurrentUser();
       if (currentUser == null) {
         return [];
       }
@@ -107,19 +116,20 @@ class AppointmentService {
       final today = DateTime.now();
       final nextWeek = today.add(const Duration(days: 7));
 
-      final response = await _supabase
-          .from(_tableName)
-          .select()
-          .eq('patient_id', currentUser.id)
-          .eq('status', 'scheduled')
-          .gte('appointment_date', today.toIso8601String().split('T')[0])
-          .lte('appointment_date', nextWeek.toIso8601String().split('T')[0])
-          .order('appointment_date', ascending: true)
-          .order('appointment_time', ascending: true);
+      final response = await http.get(
+        Uri.parse(
+          '$_baseUrl/appointments?patientId=${currentUser.id}&status=scheduled&from=${today.toIso8601String().split('T')[0]}&to=${nextWeek.toIso8601String().split('T')[0]}',
+        ),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      return response
-          .map<Appointment>((data) => Appointment.fromMap(data))
-          .toList();
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data
+            .map<Appointment>((item) => Appointment.fromMap(item))
+            .toList();
+      }
+      return [];
     } catch (e) {
       debugPrint('Error fetching upcoming appointments: $e');
       return [];
@@ -129,16 +139,21 @@ class AppointmentService {
   /// Cancel an appointment
   static Future<bool> cancelAppointment(String appointmentId) async {
     try {
-      await _supabase
-          .from(_tableName)
-          .update({
-            'status': 'cancelled',
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', appointmentId);
+      final response = await http.put(
+        Uri.parse('$_baseUrl/appointments/$appointmentId'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'status': 'cancelled',
+          'updatedAt': DateTime.now().toIso8601String(),
+        }),
+      );
 
-      _showToast('Appointment cancelled successfully', isError: false);
-      return true;
+      if (response.statusCode == 200) {
+        _showToast('Appointment cancelled successfully', isError: false);
+        return true;
+      } else {
+        throw Exception('Failed to cancel appointment: ${response.body}');
+      }
     } catch (e) {
       debugPrint('Error cancelling appointment: $e');
       _showToast('Failed to cancel appointment', isError: true);
@@ -152,15 +167,16 @@ class AppointmentService {
     String newStatus,
   ) async {
     try {
-      await _supabase
-          .from(_tableName)
-          .update({
-            'status': newStatus,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', appointmentId);
+      final response = await http.put(
+        Uri.parse('$_baseUrl/appointments/$appointmentId'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'status': newStatus,
+          'updatedAt': DateTime.now().toIso8601String(),
+        }),
+      );
 
-      return true;
+      return response.statusCode == 200;
     } catch (e) {
       debugPrint('Error updating appointment status: $e');
       return false;
@@ -191,44 +207,50 @@ class AppointmentService {
       ];
 
       // Get existing appointments for this doctor on this date
-      final existingAppointments = await _supabase
-          .from(_tableName)
-          .select('appointment_time')
-          .eq('doctor_id', doctorId)
-          .eq('appointment_date', date.toIso8601String().split('T')[0])
-          .neq('status', 'cancelled');
+      final response = await http.get(
+        Uri.parse(
+          '$_baseUrl/appointments?doctorId=$doctorId&date=${date.toIso8601String().split('T')[0]}&exclude=cancelled',
+        ),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      // Convert booked times to TimeOfDay objects
-      final bookedTimes = existingAppointments.map((apt) {
-        final timeString = apt['appointment_time'] as String;
-        final timeParts = timeString.split(':');
-        return TimeOfDay(
-          hour: int.parse(timeParts[0]),
-          minute: int.parse(timeParts[1]),
-        );
-      }).toList();
+      if (response.statusCode == 200) {
+        final List<dynamic> existingAppointments = jsonDecode(response.body);
 
-      // Filter out booked slots
-      final availableSlots = allSlots.where((slot) {
-        return !bookedTimes.any(
-          (booked) => booked.hour == slot.hour && booked.minute == slot.minute,
-        );
-      }).toList();
-
-      // If it's today, filter out past times
-      if (date.year == DateTime.now().year &&
-          date.month == DateTime.now().month &&
-          date.day == DateTime.now().day) {
-        final now = TimeOfDay.now();
-        return availableSlots.where((slot) {
-          final slotMinutes = slot.hour * 60 + slot.minute;
-          final currentMinutes =
-              now.hour * 60 + now.minute + 30; // 30 min buffer
-          return slotMinutes > currentMinutes;
+        // Convert booked times to TimeOfDay objects
+        final bookedTimes = existingAppointments.map((apt) {
+          final timeString = apt['appointmentTime'] as String;
+          final timeParts = timeString.split(':');
+          return TimeOfDay(
+            hour: int.parse(timeParts[0]),
+            minute: int.parse(timeParts[1]),
+          );
         }).toList();
-      }
 
-      return availableSlots;
+        // Filter out booked slots
+        final availableSlots = allSlots.where((slot) {
+          return !bookedTimes.any(
+            (booked) =>
+                booked.hour == slot.hour && booked.minute == slot.minute,
+          );
+        }).toList();
+
+        // If it's today, filter out past times
+        if (date.year == DateTime.now().year &&
+            date.month == DateTime.now().month &&
+            date.day == DateTime.now().day) {
+          final now = TimeOfDay.now();
+          return availableSlots.where((slot) {
+            final slotMinutes = slot.hour * 60 + slot.minute;
+            final currentMinutes =
+                now.hour * 60 + now.minute + 30; // 30 min buffer
+            return slotMinutes > currentMinutes;
+          }).toList();
+        }
+
+        return availableSlots;
+      }
+      return allSlots; // Return all slots if request failed
     } catch (e) {
       debugPrint('Error fetching available time slots: $e');
       return [];
@@ -245,16 +267,18 @@ class AppointmentService {
       final timeString =
           '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 
-      final existingAppointment = await _supabase
-          .from(_tableName)
-          .select('id')
-          .eq('doctor_id', doctorId)
-          .eq('appointment_date', date.toIso8601String().split('T')[0])
-          .eq('appointment_time', timeString)
-          .neq('status', 'cancelled')
-          .maybeSingle();
+      final response = await http.get(
+        Uri.parse(
+          '$_baseUrl/appointments?doctorId=$doctorId&date=${date.toIso8601String().split('T')[0]}&time=$timeString&exclude=cancelled',
+        ),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      return existingAppointment == null;
+      if (response.statusCode == 200) {
+        final List<dynamic> existingAppointments = jsonDecode(response.body);
+        return existingAppointments.isEmpty;
+      }
+      return false;
     } catch (e) {
       debugPrint('Error checking time slot availability: $e');
       return false;
@@ -264,7 +288,7 @@ class AppointmentService {
   /// Get appointment statistics for user
   static Future<Map<String, int>> getAppointmentStats() async {
     try {
-      final currentUser = AuthService.currentUser;
+      final currentUser = await _authService.getCurrentUser();
       if (currentUser == null) {
         return {'total': 0, 'completed': 0, 'upcoming': 0, 'cancelled': 0};
       }

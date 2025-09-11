@@ -31,7 +31,7 @@ class _VideoConsultationWidgetState extends State<VideoConsultationWidget> {
   Future<void> _initializeConnection() async {
     try {
       await _socketService.initialize(
-        serverUrl: 'http://localhost:4000',
+        serverUrl: 'http://localhost:5001',
         userId: widget.patientId,
         userRole: 'patient',
         userName: widget.patientName,

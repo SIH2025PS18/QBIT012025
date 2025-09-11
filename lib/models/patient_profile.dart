@@ -37,51 +37,67 @@ class PatientProfile {
     required this.updatedAt,
   });
 
-  // Convert to Map for Firestore
+  // Convert to Map for MongoDB backend
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'full_name': fullName,
+      'fullName': fullName,
       'email': email,
-      'phone_number': phoneNumber,
-      'date_of_birth': dateOfBirth.toIso8601String(),
+      'phoneNumber': phoneNumber,
+      'dateOfBirth': dateOfBirth.toIso8601String(),
       'gender': gender,
-      'blood_group': bloodGroup,
+      'bloodGroup': bloodGroup,
       'address': address,
-      'emergency_contact': emergencyContact,
-      'emergency_contact_phone': emergencyContactPhone,
-      'profile_photo_url': profilePhotoUrl,
+      'emergencyContact': emergencyContact,
+      'emergencyContactPhone': emergencyContactPhone,
+      'profilePhotoUrl': profilePhotoUrl,
       'allergies': allergies,
       'medications': medications,
-      'medical_history': medicalHistory,
-      'last_visit': lastVisit?.toIso8601String(),
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'medicalHistory': medicalHistory,
+      'lastVisit': lastVisit?.toIso8601String(),
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
     };
   }
 
-  // Create from Map (Supabase data)
+  // Create from Map (MongoDB backend data)
   factory PatientProfile.fromMap(Map<String, dynamic> map) {
     return PatientProfile(
       id: map['id'] ?? '',
-      fullName: map['full_name'] ?? '',
+      fullName: map['fullName'] ?? map['full_name'] ?? '',
       email: map['email'] ?? '',
-      phoneNumber: map['phone_number'] ?? '',
-      dateOfBirth: DateTime.parse(map['date_of_birth']),
+      phoneNumber: map['phoneNumber'] ?? map['phone_number'] ?? '',
+      dateOfBirth: DateTime.parse(
+        map['dateOfBirth'] ??
+            map['date_of_birth'] ??
+            DateTime.now().toIso8601String(),
+      ),
       gender: map['gender'] ?? '',
-      bloodGroup: map['blood_group'] ?? '',
+      bloodGroup: map['bloodGroup'] ?? map['blood_group'] ?? '',
       address: map['address'] ?? '',
-      emergencyContact: map['emergency_contact'] ?? '',
-      emergencyContactPhone: map['emergency_contact_phone'] ?? '',
-      profilePhotoUrl: map['profile_photo_url'] ?? '',
+      emergencyContact:
+          map['emergencyContact'] ?? map['emergency_contact'] ?? '',
+      emergencyContactPhone:
+          map['emergencyContactPhone'] ?? map['emergency_contact_phone'] ?? '',
+      profilePhotoUrl: map['profilePhotoUrl'] ?? map['profile_photo_url'] ?? '',
       allergies: List<String>.from(map['allergies'] ?? []),
       medications: List<String>.from(map['medications'] ?? []),
-      medicalHistory: Map<String, dynamic>.from(map['medical_history'] ?? {}),
-      lastVisit: map['last_visit'] != null
-          ? DateTime.parse(map['last_visit'])
+      medicalHistory: Map<String, dynamic>.from(
+        map['medicalHistory'] ?? map['medical_history'] ?? {},
+      ),
+      lastVisit: map['lastVisit'] != null || map['last_visit'] != null
+          ? DateTime.parse(map['lastVisit'] ?? map['last_visit'])
           : null,
-      createdAt: DateTime.parse(map['created_at']),
-      updatedAt: DateTime.parse(map['updated_at']),
+      createdAt: DateTime.parse(
+        map['createdAt'] ??
+            map['created_at'] ??
+            DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        map['updatedAt'] ??
+            map['updated_at'] ??
+            DateTime.now().toIso8601String(),
+      ),
     );
   }
 
@@ -94,6 +110,15 @@ class PatientProfile {
       age--;
     }
     return age;
+  }
+
+  // JSON serialization methods
+  Map<String, dynamic> toJson() {
+    return toMap();
+  }
+
+  factory PatientProfile.fromJson(Map<String, dynamic> json) {
+    return PatientProfile.fromMap(json);
   }
 
   // Copy with method for updates

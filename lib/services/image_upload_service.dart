@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:crypto/crypto.dart';
 
 class ImageUploadService {
-  static final SupabaseClient _supabase = Supabase.instance.client;
-  static const String _bucketName = 'profile-photos';
+  static const String _baseUrl = 'http://localhost:5001/api';
+  static const String _uploadEndpoint = '/upload/profile-photo';
 
   /// Pick image from gallery or camera
   static Future<XFile?> pickImage({
@@ -27,7 +30,7 @@ class ImageUploadService {
     }
   }
 
-  /// Upload profile photo to Supabase Storage
+  /// Upload profile photo to MongoDB backend
   static Future<String?> uploadProfilePhoto({
     required String userId,
     required XFile imageFile,
@@ -38,7 +41,6 @@ class ImageUploadService {
       // Create unique filename
       final String fileName =
           'profile_${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final String filePath = 'profiles/$fileName';
 
       // Read file bytes
       Uint8List fileBytes;
@@ -49,47 +51,66 @@ class ImageUploadService {
         fileBytes = await file.readAsBytes();
       }
 
-      // Upload to Supabase Storage
-      await _supabase.storage
-          .from(_bucketName)
-          .uploadBinary(
-            filePath,
-            fileBytes,
-            fileOptions: const FileOptions(
-              contentType: 'image/jpeg',
-              upsert: true, // Replace if exists
-            ),
-          );
+      // Save locally first (for offline support)
+      final String? localPath = await _saveImageLocally(fileName, fileBytes);
 
-      // Get public URL
-      final String publicUrl = _supabase.storage
-          .from(_bucketName)
-          .getPublicUrl(filePath);
+      // Try to upload to backend
+      try {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('$_baseUrl$_uploadEndpoint'),
+        );
+        request.fields['userId'] = userId;
+        request.files.add(
+          http.MultipartFile.fromBytes('image', fileBytes, filename: fileName),
+        );
 
-      debugPrint('✅ Profile photo uploaded successfully: $publicUrl');
-      return publicUrl;
+        final response = await request.send();
+        if (response.statusCode == 200) {
+          final responseData = await response.stream.bytesToString();
+          final data = jsonDecode(responseData);
+          final String photoUrl = data['photoUrl'];
+          debugPrint('✅ Profile photo uploaded successfully: $photoUrl');
+          return photoUrl;
+        }
+      } catch (e) {
+        debugPrint('⚠️ Backend upload failed, using local path: $e');
+      }
+
+      // Fallback to local path
+      return localPath;
     } catch (e) {
       debugPrint('❌ Error uploading profile photo: $e');
       return null;
     }
   }
 
-  /// Delete profile photo from storage
-  static Future<bool> deleteProfilePhoto(String photoUrl) async {
+  /// Save image locally for offline support
+  static Future<String?> _saveImageLocally(
+    String fileName,
+    Uint8List fileBytes,
+  ) async {
     try {
-      // Extract file path from URL
-      final Uri uri = Uri.parse(photoUrl);
-      final String filePath = uri.pathSegments
-          .skip(2)
-          .join('/'); // Skip bucket and storage path
+      if (kIsWeb) {
+        // For web, return a data URL
+        final String base64String = base64Encode(fileBytes);
+        return 'data:image/jpeg;base64,$base64String';
+      } else {
+        // For mobile, save to app documents directory
+        final Directory appDir = await getApplicationDocumentsDirectory();
+        final String filePath = '${appDir.path}/images/$fileName';
+        final File file = File(filePath);
 
-      await _supabase.storage.from(_bucketName).remove([filePath]);
+        // Create directory if it doesn't exist
+        await file.parent.create(recursive: true);
 
-      debugPrint('✅ Profile photo deleted successfully');
-      return true;
+        // Write file
+        await file.writeAsBytes(fileBytes);
+        return file.path;
+      }
     } catch (e) {
-      debugPrint('❌ Error deleting profile photo: $e');
-      return false;
+      debugPrint('❌ Error saving image locally: $e');
+      return null;
     }
   }
 

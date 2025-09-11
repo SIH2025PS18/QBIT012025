@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../database/offline_database.dart';
-import '../services/supabase_auth_service.dart'; // Add this import
-import '../core/service_locator.dart'; // Add this import
+import '../services/auth_service.dart';
+import '../services/phone_auth_service.dart';
+import '../core/service_locator.dart';
 
 class OfflineSymptomCheckerService {
   static final OfflineSymptomCheckerService _instance =
@@ -745,8 +746,22 @@ class OfflineSymptomCheckerService {
   // Get offline symptom check statistics
   Future<Map<String, dynamic>> getOfflineStats() async {
     // Get actual patient ID instead of using empty string
-    final userData = await AuthService.getUserData();
-    final patientId = userData?['id'] ?? '';
+    String patientId = '';
+    try {
+      // Try to get user data from PhoneAuthService first
+      final userData = await PhoneAuthService.getStoredUserData();
+      if (userData != null) {
+        patientId = userData['id'] ?? '';
+      } else {
+        // Fallback to AuthService instance method
+        final authService = AuthService();
+        final currentUser = await authService.getCurrentUser();
+        patientId = currentUser?.id ?? '';
+      }
+    } catch (e) {
+      print('Error getting user data: $e');
+      patientId = '';
+    }
 
     final allChecks = patientId.isNotEmpty
         ? await _db.getPatientSymptomHistory(patientId)

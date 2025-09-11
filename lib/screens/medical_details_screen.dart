@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/patient_profile.dart';
-import '../services/supabase_patient_profile_service.dart';
+import '../providers/patient_profile_provider.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
+import 'package:provider/provider.dart';
 
 class MedicalDetailsScreen extends StatefulWidget {
   final PatientProfile profile;
@@ -66,11 +67,12 @@ class _MedicalDetailsScreenState extends State<MedicalDetailsScreen> {
         medicalHistory: updatedMedicalHistory,
       );
 
-      final success = await PatientProfileService.savePatientProfile(
-        updatedProfile,
-      );
+      await Provider.of<PatientProfileProvider>(
+        context,
+        listen: false,
+      ).updateProfile(updatedProfile);
 
-      if (success && mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Medical details saved successfully!'),
@@ -78,6 +80,15 @@ class _MedicalDetailsScreenState extends State<MedicalDetailsScreen> {
           ),
         );
         Navigator.of(context).pop(updatedProfile);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save medical details: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } finally {
       setState(() => _isLoading = false);

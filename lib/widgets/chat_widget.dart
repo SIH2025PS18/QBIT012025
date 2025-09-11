@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+
+import '../services/socket_service.dart' as socket_service;
 
 // Enum for message types
-enum ChatMessageType { text, prescription }
+enum ChatMessageType { text, prescription, system }
 
 class ChatWidget extends StatefulWidget {
   final String consultationId;
@@ -23,56 +26,103 @@ class _ChatWidgetState extends State<ChatWidget> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
+  late socket_service.SocketService _socketService;
+  StreamSubscription<socket_service.ChatMessage>? _chatSubscription;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    _socketService = socket_service.SocketService();
+    _setupChatListener();
     _loadChatHistory();
   }
 
+  void _setupChatListener() {
+    _chatSubscription = _socketService.chatMessages.listen(
+      (socketMessage) {
+        if (socketMessage.consultationId == widget.consultationId) {
+          setState(() {
+            _messages.add(
+              ChatMessage(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                senderId: socketMessage.senderId,
+                senderName: socketMessage.senderName,
+                message: socketMessage.message,
+                timestamp: DateTime.fromMillisecondsSinceEpoch(
+                  socketMessage.timestamp,
+                ),
+                isFromCurrentUser:
+                    socketMessage.senderId == widget.currentUserId,
+                type: ChatMessageType.text,
+              ),
+            );
+          });
+          _scrollToBottom();
+        }
+      },
+      onError: (error) {
+        debugPrint('Chat subscription error: $error');
+        _showErrorSnackBar('Failed to receive messages');
+      },
+    );
+  }
+
   void _loadChatHistory() {
+    setState(() {
+      _isLoading = true;
+    });
+
     // Load chat history from your backend/database
     // For demo purposes, adding some sample messages
-    setState(() {
-      _messages.addAll([
-        ChatMessage(
-          id: '1',
-          senderId: widget.isDoctor ? 'patient-1' : 'doctor-1',
-          senderName: widget.isDoctor ? 'Patient' : 'Doctor',
-          message: 'Hello, how are you feeling today?',
-          timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
-          isFromCurrentUser: false,
-          type: ChatMessageType.text,
-        ),
-        ChatMessage(
-          id: '2',
-          senderId: widget.currentUserId,
-          senderName: 'You',
-          message: 'I\'m feeling much better, thank you for asking.',
-          timestamp: DateTime.now().subtract(const Duration(minutes: 3)),
-          isFromCurrentUser: true,
-          type: ChatMessageType.text,
-        ),
-        // Sample prescription message
-        ChatMessage(
-          id: '3',
-          senderId: 'doctor-1',
-          senderName: 'Dr. Singh',
-          message: '',
-          timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
-          isFromCurrentUser: false,
-          type: ChatMessageType.prescription,
-          prescription: PrescriptionData(
-            doctorId: 'doctor-1',
-            patientId: widget.currentUserId,
-            medications: [
-              'Paracetamol 500mg - 1 tablet 3 times a day for 5 days',
-              'Amoxicillin 250mg - 1 capsule twice a day for 7 days',
-            ],
-            notes: 'Take with food. Complete the full course of antibiotics.',
-          ),
-        ),
-      ]);
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() {
+          _messages.addAll([
+            ChatMessage(
+              id: '1',
+              senderId: widget.isDoctor ? 'patient-1' : 'doctor-1',
+              senderName: widget.isDoctor ? 'Patient' : 'Doctor',
+              message: 'Hello, how are you feeling today?',
+              timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
+              isFromCurrentUser: false,
+              type: ChatMessageType.text,
+            ),
+            ChatMessage(
+              id: '2',
+              senderId: widget.currentUserId,
+              senderName: 'You',
+              message: 'I\'m feeling much better, thank you for asking.',
+              timestamp: DateTime.now().subtract(const Duration(minutes: 3)),
+              isFromCurrentUser: true,
+              type: ChatMessageType.text,
+            ),
+            // Sample prescription message
+            if (widget.isDoctor)
+              ChatMessage(
+                id: '3',
+                senderId: 'doctor-1',
+                senderName: 'Dr. Singh',
+                message: '',
+                timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
+                isFromCurrentUser: false,
+                type: ChatMessageType.prescription,
+                prescription: PrescriptionData(
+                  doctorId: 'doctor-1',
+                  patientId: widget.currentUserId,
+                  medications: [
+                    'Paracetamol 500mg - 1 tablet 3 times a day for 5 days',
+                    'Amoxicillin 250mg - 1 capsule twice a day for 7 days',
+                  ],
+                  notes:
+                      'Take with food. Complete the full course of antibiotics.',
+                ),
+              ),
+          ]);
+          _isLoading = false;
+        });
+        _scrollToBottom();
+      }
     });
   }
 
@@ -129,19 +179,54 @@ class _ChatWidgetState extends State<ChatWidget> {
 
           // Messages list
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(12),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                if (message.type == ChatMessageType.prescription) {
-                  return _buildPrescriptionMessage(message);
-                } else {
-                  return _buildTextMessageBubble(message);
-                }
-              },
-            ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _messages.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.chat_bubble_outline,
+                          size: 48,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No messages yet',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Start the conversation!',
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(12),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[index];
+                      switch (message.type) {
+                        case ChatMessageType.prescription:
+                          return _buildPrescriptionMessage(message);
+                        case ChatMessageType.system:
+                          return _buildSystemMessage(message);
+                        case ChatMessageType.text:
+                        default:
+                          return _buildTextMessageBubble(message);
+                      }
+                    },
+                  ),
           ),
 
           // Message input
@@ -460,6 +545,30 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 
+  Widget _buildSystemMessage(ChatMessage message) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            message.message,
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey[600],
+              fontStyle: FontStyle.italic,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _sendMessage() {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
@@ -479,7 +588,13 @@ class _ChatWidgetState extends State<ChatWidget> {
       _messageController.clear();
     });
 
-    // Scroll to bottom
+    _scrollToBottom();
+
+    // Send message to backend/other participants
+    _sendMessageToBackend(message);
+  }
+
+  void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -489,19 +604,34 @@ class _ChatWidgetState extends State<ChatWidget> {
         );
       }
     });
-
-    // Send message to backend/other participants
-    _sendMessageToBackend(message);
   }
 
   Future<void> _sendMessageToBackend(ChatMessage message) async {
-    // Implement your chat message sending logic here
-    // This could be through WebSocket, HTTP API, or your chosen chat service
     try {
-      // Example: await chatService.sendMessage(message);
+      _socketService.sendChatMessage(
+        consultationId: widget.consultationId,
+        senderId: message.senderId,
+        senderName: message.senderName,
+        message: message.message,
+      );
     } catch (e) {
       debugPrint('Error sending message: $e');
-      // Show error to user or retry logic
+      _showErrorSnackBar('Failed to send message');
+
+      // Mark message as failed (you could add a status field to ChatMessage)
+      // For now, we'll just show an error
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
     }
   }
 
@@ -522,6 +652,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   void dispose() {
+    _chatSubscription?.cancel();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();

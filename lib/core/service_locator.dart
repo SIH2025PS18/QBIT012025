@@ -11,12 +11,9 @@ import '../repositories/offline_patient_profile_repository.dart';
 import '../repositories/offline_appointment_repository.dart';
 import '../repositories/offline_health_record_repository.dart';
 import '../services/phone_auth_service.dart';
-import '../services/supabase_storage_service.dart';
-import '../services/supabase_functions_service.dart';
 import '../services/connectivity_service.dart';
 import '../services/sync_service.dart';
 import '../services/image_upload_service.dart';
-import '../services/supabase_patient_profile_service.dart'; // Updated import
 import '../services/todo_service.dart'; // Add this import
 import '../utils/network_utils.dart';
 import '../providers/auth_provider.dart';
@@ -113,17 +110,6 @@ Future<void> initializeServiceLocator() async {
   // Authentication Services
   serviceLocator.registerLazySingleton<PhoneAuthService>(
     () => PhoneAuthService(),
-  );
-
-  // Supabase Services
-  serviceLocator.registerLazySingleton<SupabaseStorageService>(
-    () => SupabaseStorageService(),
-  );
-  serviceLocator.registerLazySingleton<SupabaseFunctionsService>(
-    () => SupabaseFunctionsService(),
-  );
-  serviceLocator.registerLazySingleton<PatientProfileService>(
-    () => PatientProfileService(), // Updated to use Supabase version
   );
 
   // Repositories (Offline-first implementations)

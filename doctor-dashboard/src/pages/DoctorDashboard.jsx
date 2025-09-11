@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Queue from "../components/Queue";
 import PatientCard from "../components/PatientCard";
 import PrescriptionForm from "../components/PrescriptionForm";
 import VideoCall from "../components/VideoCall";
-import { Row, Col, Card, Statistic, Tag, Divider } from "antd";
-import { useHospital } from "../context/HospitalContext.jsx";
+import { Row, Col, Card, Statistic, Tag, Spin, message } from "antd";
 import { useAuth } from "../context/AuthContext.jsx";
+import apiService from "../lib/apiService.js";
 import {
   UserOutlined,
   TeamOutlined,
@@ -18,20 +18,58 @@ import {
 import './DoctorDashboard.css';
 
 export default function DoctorDashboard() {
-  const { patients, staff } = useHospital();
   const { user } = useAuth(); // current doctor
   const [patientDetails, setPatientDetails] = useState(null);
+  const [consultations, setConsultations] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Only patients assigned to this doctor
-  const myPatients = patients.filter((p) => p.assignedTo === user?.id);
-  
-  // Count patients by status
-  const waitingCount = myPatients.filter(p => p.status === 'waiting').length;
-  const inConsultationCount = myPatients.filter(p => p.status === 'in consultation').length;
-  const dischargedCount = myPatients.filter(p => p.status === 'discharged').length;
+  // Fetch today's schedule and stats
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const [scheduleResponse, statsResponse] = await Promise.all([
+          apiService.getTodaySchedule(),
+          apiService.getDoctorStats()
+        ]);
 
-  function onSelectPatient(p) {
-    setPatientDetails(p);
+        if (scheduleResponse.success) {
+          setConsultations(scheduleResponse.data.consultations.all || []);
+        }
+        
+        if (statsResponse.success) {
+          setStats(statsResponse.data);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        message.error('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
+
+  // Filter consultations by status
+  const waitingConsultations = consultations.filter(c => c.status === 'waiting');
+  const inProgressConsultations = consultations.filter(c => c.status === 'in_progress');
+  const completedConsultations = consultations.filter(c => c.status === 'completed');
+
+  function onSelectPatient(consultation) {
+    setPatientDetails(consultation);
+  }
+
+  if (loading) {
+    return (
+      <div className="doctor-dashboard" style={{ textAlign: 'center', padding: '50px' }}>
+        <Spin size="large" />
+        <p>Loading dashboard...</p>
+      </div>
+    );
   }
 
   return (
@@ -44,20 +82,20 @@ export default function DoctorDashboard() {
               Doctor Portal
             </h1>
             <p>Welcome back, <span className="doctor-name">Dr. {user?.name}</span></p>
-            <Tag color="blue" className="speciality-tag">{user?.speciality}</Tag>
+            <Tag color="blue" className="speciality-tag">{user?.specialization}</Tag>
           </div>
           <div className="stats-overview">
             <div className="stat-card">
               <TeamOutlined />
               <div className="stat-details">
-                <span className="stat-number">{myPatients.length}</span>
-                <span className="stat-label">Total Patients</span>
+                <span className="stat-number">{consultations.length}</span>
+                <span className="stat-label">Total Today</span>
               </div>
             </div>
             <div className="stat-card">
               <ClockCircleOutlined />
               <div className="stat-details">
-                <span className="stat-number">{waitingCount}</span>
+                <span className="stat-number">{waitingConsultations.length}</span>
                 <span className="stat-label">Waiting</span>
               </div>
             </div>
@@ -73,11 +111,11 @@ export default function DoctorDashboard() {
               <div className="card-title">
                 <TeamOutlined />
                 <span>Patient Queue</span>
-                <Tag className="queue-count">{myPatients.length}</Tag>
+                <Tag className="queue-count">{waitingConsultations.length}</Tag>
               </div>
             }
           >
-            <Queue onSelectPatient={onSelectPatient} patients={myPatients} />
+            <Queue onSelectPatient={onSelectPatient} patients={waitingConsultations} />
           </Card>
           
           <Card 
@@ -94,23 +132,23 @@ export default function DoctorDashboard() {
               <Col xs={8}>
                 <Statistic
                   title="Waiting"
-                  value={waitingCount}
+                  value={waitingConsultations.length}
                   valueStyle={{ color: '#fa8c16' }}
                   prefix={<ClockCircleOutlined />}
                 />
               </Col>
               <Col xs={8}>
                 <Statistic
-                  title="In Consultation"
-                  value={inConsultationCount}
+                  title="In Progress"
+                  value={inProgressConsultations.length}
                   valueStyle={{ color: '#1890ff' }}
                   prefix={<UserOutlined />}
                 />
               </Col>
               <Col xs={8}>
                 <Statistic
-                  title="Discharged"
-                  value={dischargedCount}
+                  title="Completed"
+                  value={completedConsultations.length}
                   valueStyle={{ color: '#52c41a' }}
                   prefix={<MedicineBoxOutlined />}
                 />
@@ -130,7 +168,7 @@ export default function DoctorDashboard() {
                     <span>Patient Details</span>
                     <Tag color={
                       patientDetails.status === 'waiting' ? 'orange' : 
-                      patientDetails.status === 'in consultation' ? 'blue' : 'green'
+                      patientDetails.status === 'in_progress' ? 'blue' : 'green'
                     }>
                       {patientDetails.status.toUpperCase()}
                     </Tag>

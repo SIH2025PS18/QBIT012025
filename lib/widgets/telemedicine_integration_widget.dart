@@ -43,7 +43,7 @@ class _TeleMedicineIntegrationWidgetState
     // Initialize socket connection
     try {
       await _socketService.initialize(
-        serverUrl: 'http://localhost:4000', // Change for production
+        serverUrl: 'http://localhost:5001', // Unified backend
         userId: widget.patientId,
         userRole: 'patient',
         userName: widget.patientName,

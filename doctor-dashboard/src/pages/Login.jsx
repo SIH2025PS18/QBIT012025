@@ -22,18 +22,28 @@ export default function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  function onFinish(values) {
+  async function onFinish(values) {
     setLoading(true);
-    const success = login(values);
-    setLoading(false);
-
-    if (success) {
-      message.success("Login successful");
-      if (values.role === "admin") navigate("/admin");
-      else if (values.role === "doctor") navigate("/doctor");
-      else if (values.role === "patient") navigate("/patient");
-    } else {
-      message.error("Invalid credentials");
+    try {
+      const success = await login({
+        role: values.role,
+        email: values.id, // Using id as email for now
+        password: values.password
+      });
+      
+      if (success) {
+        message.success("Login successful");
+        if (values.role === "admin") navigate("/admin");
+        else if (values.role === "doctor") navigate("/doctor");
+        else if (values.role === "patient") navigate("/patient");
+      } else {
+        message.error("Invalid credentials");
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      message.error("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -122,7 +132,7 @@ export default function Login() {
                   >
                     <Input 
                       prefix={<UserOutlined className="input-icon" />} 
-                      placeholder="admin / d1 / d2 / p1 / p2" 
+                      placeholder="Try: admin, d1, d2, p1, p2" 
                       className="login-input"
                     />
                   </Form.Item>
@@ -134,7 +144,7 @@ export default function Login() {
                   >
                     <Input.Password 
                       prefix={<LockOutlined className="input-icon" />} 
-                      placeholder="Enter your password" 
+                      placeholder="Default password: password" 
                       className="login-input"
                     />
                   </Form.Item>
@@ -152,7 +162,11 @@ export default function Login() {
                 </Form>
 
                 <div className="login-help">
-                  <p>Need help? Contact hospital administration at extension 1000</p>
+                  <p><strong>Demo Credentials:</strong></p>
+                  <p>Admin: admin / password</p>
+                  <p>Doctor: d1 or d2 / password</p>
+                  <p>Patient: p1 or p2 / password</p>
+                  <p style={{ marginTop: 15, fontSize: 12, opacity: 0.7 }}>Need help? Contact hospital administration at extension 1000</p>
                 </div>
               </Card>
             </div>

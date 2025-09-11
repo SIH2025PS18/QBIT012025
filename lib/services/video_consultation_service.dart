@@ -1,18 +1,28 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import '../models/video_consultation.dart';
 import '../services/connectivity_service.dart';
+import '../config/api_config.dart';
 
 /// Service for managing video consultations, queue, and waiting room
 class VideoConsultationService extends ChangeNotifier {
-  final SupabaseClient _supabase = Supabase.instance.client;
+  // Using unified MongoDB backend instead of Supabase
   final ConnectivityService _connectivityService;
   final Uuid _uuid = const Uuid();
+
+  // Backend API configuration
+  static const String _baseUrl = 'http://localhost:5001/api';
+
+  Map<String, String> get _headers => {
+    'Content-Type': 'application/json',
+    // Add auth token if available
+  };
 
   // Current state
   VideoConsultation? _currentConsultation;
@@ -92,11 +102,17 @@ class VideoConsultationService extends ChangeNotifier {
         priority: priority,
       );
 
-      // Save to Supabase
+      // Save to MongoDB backend
       if (_connectivityService.isConnected) {
-        await _supabase
-            .from('video_consultations')
-            .insert(consultation.toJson());
+        final response = await http.post(
+          Uri.parse('$_baseUrl/consultations'),
+          headers: _headers,
+          body: jsonEncode(consultation.toJson()),
+        );
+
+        if (response.statusCode != 200 && response.statusCode != 201) {
+          throw Exception('Failed to create consultation: ${response.body}');
+        }
       }
 
       return consultation;
@@ -148,12 +164,17 @@ class VideoConsultationService extends ChangeNotifier {
         _queuePositionStreamController.add(_currentQueuePosition);
       }
 
-      // Save to Supabase
+      // Save to MongoDB backend
       if (_connectivityService.isConnected) {
-        await _supabase
-            .from('video_consultations')
-            .update(updatedConsultation.toJson())
-            .eq('id', consultationId);
+        final response = await http.put(
+          Uri.parse('$_baseUrl/consultations/$consultationId'),
+          headers: _headers,
+          body: jsonEncode(updatedConsultation.toJson()),
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception('Failed to update consultation: ${response.body}');
+        }
       }
 
       _queueStreamController.add(_consultationQueue);
@@ -181,12 +202,17 @@ class VideoConsultationService extends ChangeNotifier {
       _currentConsultation = updatedConsultation;
       _isInWaitingRoom = true;
 
-      // Save to Supabase
+      // Save to MongoDB backend
       if (_connectivityService.isConnected) {
-        await _supabase
-            .from('video_consultations')
-            .update(updatedConsultation.toJson())
-            .eq('id', consultationId);
+        final response = await http.put(
+          Uri.parse('$_baseUrl/consultations/$consultationId'),
+          headers: _headers,
+          body: jsonEncode(updatedConsultation.toJson()),
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception('Failed to update consultation: ${response.body}');
+        }
       }
 
       _consultationStreamController.add(_currentConsultation);
@@ -227,12 +253,17 @@ class VideoConsultationService extends ChangeNotifier {
       _isInWaitingRoom = false;
       _currentQueuePosition = null;
 
-      // Save to Supabase
+      // Save to MongoDB backend
       if (_connectivityService.isConnected) {
-        await _supabase
-            .from('video_consultations')
-            .update(updatedConsultation.toJson())
-            .eq('id', consultationId);
+        final response = await http.put(
+          Uri.parse('$_baseUrl/consultations/$consultationId'),
+          headers: _headers,
+          body: jsonEncode(updatedConsultation.toJson()),
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception('Failed to update consultation: ${response.body}');
+        }
       }
 
       _consultationStreamController.add(_currentConsultation);
@@ -284,12 +315,17 @@ class VideoConsultationService extends ChangeNotifier {
         _currentQueuePosition = null;
       }
 
-      // Save to Supabase
+      // Save to MongoDB backend
       if (_connectivityService.isConnected) {
-        await _supabase
-            .from('video_consultations')
-            .update(updatedConsultation.toJson())
-            .eq('id', consultationId);
+        final response = await http.put(
+          Uri.parse('$_baseUrl/consultations/$consultationId'),
+          headers: _headers,
+          body: jsonEncode(updatedConsultation.toJson()),
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception('Failed to update consultation: ${response.body}');
+        }
       }
 
       _consultationStreamController.add(_currentConsultation);
@@ -326,12 +362,17 @@ class VideoConsultationService extends ChangeNotifier {
         _currentQueuePosition = null;
       }
 
-      // Save to Supabase
+      // Save to MongoDB backend
       if (_connectivityService.isConnected) {
-        await _supabase
-            .from('video_consultations')
-            .update(updatedConsultation.toJson())
-            .eq('id', consultationId);
+        final response = await http.put(
+          Uri.parse('$_baseUrl/consultations/$consultationId'),
+          headers: _headers,
+          body: jsonEncode(updatedConsultation.toJson()),
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception('Failed to update consultation: ${response.body}');
+        }
       }
 
       _consultationStreamController.add(_currentConsultation);
@@ -368,16 +409,16 @@ class VideoConsultationService extends ChangeNotifier {
         return activeConsultation;
       }
 
-      // Fetch from Supabase
+      // Fetch from MongoDB backend
       if (_connectivityService.isConnected) {
-        final response = await _supabase
-            .from('video_consultations')
-            .select()
-            .eq('id', consultationId)
-            .maybeSingle();
+        final response = await http.get(
+          Uri.parse('$_baseUrl/consultations/$consultationId'),
+          headers: _headers,
+        );
 
-        if (response != null) {
-          return VideoConsultation.fromJson(response);
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          return VideoConsultation.fromJson(data);
         }
       }
 
@@ -403,15 +444,19 @@ class VideoConsultationService extends ChangeNotifier {
         ];
       }
 
-      final response = await _supabase
-          .from('video_consultations')
-          .select()
-          .or('patient_id.eq.$userId,doctor_id.eq.$userId')
-          .order('scheduled_at', ascending: false);
+      final response = await http.get(
+        Uri.parse('$_baseUrl/consultations?userId=$userId'),
+        headers: _headers,
+      );
 
-      return response
-          .map<VideoConsultation>((json) => VideoConsultation.fromJson(json))
-          .toList();
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return (data['consultations'] as List)
+            .map<VideoConsultation>((json) => VideoConsultation.fromJson(json))
+            .toList();
+      }
+
+      return [];
     } catch (e) {
       debugPrint('Error getting user consultations: $e');
       return [];
@@ -544,12 +589,17 @@ class VideoConsultationService extends ChangeNotifier {
       // Update local state
       _updateConsultationInLists(updatedConsultation);
 
-      // Save to Supabase
+      // Save to MongoDB backend
       if (_connectivityService.isConnected) {
-        await _supabase
-            .from('video_consultations')
-            .update(updatedConsultation.toJson())
-            .eq('id', consultationId);
+        final response = await http.put(
+          Uri.parse('$_baseUrl/consultations/$consultationId'),
+          headers: _headers,
+          body: jsonEncode(updatedConsultation.toJson()),
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception('Failed to update consultation: ${response.body}');
+        }
       }
 
       _consultationStreamController.add(_currentConsultation);
@@ -593,12 +643,17 @@ class VideoConsultationService extends ChangeNotifier {
       // Update local state
       _updateConsultationInLists(updatedConsultation);
 
-      // Save to Supabase
+      // Save to MongoDB backend
       if (_connectivityService.isConnected) {
-        await _supabase
-            .from('video_consultations')
-            .update(updatedConsultation.toJson())
-            .eq('id', consultationId);
+        final response = await http.put(
+          Uri.parse('$_baseUrl/consultations/$consultationId'),
+          headers: _headers,
+          body: jsonEncode(updatedConsultation.toJson()),
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception('Failed to update consultation: ${response.body}');
+        }
       }
 
       _consultationStreamController.add(_currentConsultation);
@@ -640,19 +695,19 @@ class VideoConsultationService extends ChangeNotifier {
         return _consultationQueue.where((c) => c.doctorId == doctorId).toList();
       }
 
-      final response = await _supabase
-          .from('video_consultations')
-          .select()
-          .eq('doctor_id', doctorId)
-          .inFilter('status', [
-            ConsultationStatus.inQueue.name,
-            ConsultationStatus.waitingRoom.name,
-          ])
-          .order('created_at', ascending: true);
+      final response = await http.get(
+        Uri.parse('$_baseUrl/consultations/doctor/$doctorId/queue'),
+        headers: _headers,
+      );
 
-      return response
-          .map<VideoConsultation>((json) => VideoConsultation.fromJson(json))
-          .toList();
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return (data['consultations'] as List)
+            .map<VideoConsultation>((json) => VideoConsultation.fromJson(json))
+            .toList();
+      }
+
+      return [];
     } catch (e) {
       debugPrint('Error getting doctor queue: $e');
       return [];

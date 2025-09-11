@@ -1,0 +1,27 @@
+[33mcommit 0f5deab3237d8483c47f3ad80236801d0e5fbdb4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Shaurya <iiitianshauryashakya8055@gmail.com>
+Date:   Wed Sep 10 11:18:56 2025 +0530
+
+    Add complete Flutter telemedicine project
+    
+    - Flutter mobile app with offline capabilities
+    - Node.js backend services (webrtc-signal, doctor-dashboard, medstore)
+    - Comprehensive authentication system with Supabase integration
+    - Video consultation features with Agora integration
+    - Multilingual support (English, Hindi, Punjabi)
+    - Offline-first architecture with local database
+    - Medical features: symptom checker, health records, appointments
+    - Admin dashboards for doctors and hospitals
+    - Complete project documentation
+    
+    Note: node_modules directories properly excluded via .gitignore
+
+[33mcommit 921f041b727dd7866b4b05cbeb3728bc7586bcb9[m
+Author: Shaurya <iiitianshauryashakya8055@gmail.com>
+Date:   Wed Sep 10 11:17:27 2025 +0530
+
+    Update .gitignore and add .gitattributes for proper line ending handling
+    
+    - Added comprehensive node_modules exclusions
+    - Added .gitattributes for automatic line ending management
+    - Configured Git to handle CRLF/LF conversion properly

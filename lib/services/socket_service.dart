@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 /// Service for real-time communication with doctor dashboard
@@ -40,7 +41,7 @@ class SocketService extends ChangeNotifier {
 
   /// Initialize socket connection
   Future<void> initialize({
-    String serverUrl = 'http://localhost:4000',
+    String? serverUrl,
     required String userId,
     required String userRole,
     String? userName,
@@ -50,14 +51,21 @@ class SocketService extends ChangeNotifier {
       _userRole = userRole;
       _userName = userName ?? userId;
 
-      // Create socket connection
-      _socket = IO.io(serverUrl, <String, dynamic>{
+      // Use unified backend URL
+      final url = serverUrl ?? 'http://localhost:5001';
+
+      // Create socket connection with auth token
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      _socket = IO.io(url, <String, dynamic>{
         'transports': ['websocket', 'polling'],
         'autoConnect': false,
         'reconnection': true,
         'reconnectionDelay': 1000,
         'reconnectionAttempts': 5,
         'timeout': 20000,
+        'auth': {'token': token},
       });
 
       // Set up event listeners
@@ -66,7 +74,9 @@ class SocketService extends ChangeNotifier {
       // Connect to server
       _socket!.connect();
 
-      debugPrint('Socket service initialized for $userRole: $userId');
+      debugPrint(
+        'Socket service initialized for $userRole: $userId (URL: $url)',
+      );
     } catch (e) {
       debugPrint('Error initializing socket service: $e');
       rethrow;

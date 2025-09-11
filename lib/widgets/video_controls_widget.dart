@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 
+/// Widget for video call controls (mute, video, speaker, etc.)
 class VideoControlsWidget extends StatelessWidget {
   final bool isMuted;
   final bool isVideoEnabled;
   final bool isSpeakerOn;
   final bool showChat;
   final bool isRecording;
-  final bool canRecord;
-  final String? recordingDuration;
+  final String recordingDuration;
   final VoidCallback onMuteToggle;
   final VoidCallback onVideoToggle;
   final VoidCallback onSpeakerToggle;
-  final VoidCallback onChatToggle;
-  final VoidCallback onEndCall;
   final VoidCallback onSwitchCamera;
-  final VoidCallback? onRecordingToggle;
+  final VoidCallback onChatToggle;
+  final VoidCallback onRecordingToggle;
+  final VoidCallback onEndCall;
+  final bool isDoctor;
+  final bool showChatButton;
+  final bool showRecordingButton;
 
   const VideoControlsWidget({
     Key? key,
@@ -22,52 +25,54 @@ class VideoControlsWidget extends StatelessWidget {
     required this.isVideoEnabled,
     required this.isSpeakerOn,
     required this.showChat,
-    this.isRecording = false,
-    this.canRecord = false,
-    this.recordingDuration,
+    required this.isRecording,
+    required this.recordingDuration,
     required this.onMuteToggle,
     required this.onVideoToggle,
     required this.onSpeakerToggle,
-    required this.onChatToggle,
-    required this.onEndCall,
     required this.onSwitchCamera,
-    this.onRecordingToggle,
+    required this.onChatToggle,
+    required this.onRecordingToggle,
+    required this.onEndCall,
+    required this.isDoctor,
+    this.showChatButton = true,
+    this.showRecordingButton = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+        ),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Recording status indicator
-          if (isRecording && recordingDuration != null)
+          // Recording indicator
+          if (isRecording)
             Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: Colors.red,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
+                  const Icon(Icons.circle, color: Colors.white, size: 8),
                   const SizedBox(width: 8),
                   Text(
                     'REC $recordingDuration',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -81,61 +86,82 @@ class VideoControlsWidget extends StatelessWidget {
               // Mute/Unmute
               _buildControlButton(
                 icon: isMuted ? Icons.mic_off : Icons.mic,
-                isActive: !isMuted,
-                backgroundColor: isMuted ? Colors.red : Colors.grey[800]!,
-                onTap: onMuteToggle,
+                label: isMuted ? 'Unmute' : 'Mute',
+                onPressed: onMuteToggle,
+                backgroundColor: isMuted
+                    ? Colors.red
+                    : Colors.white.withOpacity(0.2),
+                iconColor: isMuted ? Colors.white : Colors.white,
               ),
 
-              // Video On/Off
+              // Video on/off
               _buildControlButton(
                 icon: isVideoEnabled ? Icons.videocam : Icons.videocam_off,
-                isActive: isVideoEnabled,
+                label: isVideoEnabled ? 'Stop Video' : 'Start Video',
+                onPressed: onVideoToggle,
                 backgroundColor: !isVideoEnabled
                     ? Colors.red
-                    : Colors.grey[800]!,
-                onTap: onVideoToggle,
+                    : Colors.white.withOpacity(0.2),
+                iconColor: Colors.white,
               ),
 
-              // Switch Camera
-              _buildControlButton(
-                icon: Icons.switch_camera,
-                isActive: true,
-                backgroundColor: Colors.grey[800]!,
-                onTap: onSwitchCamera,
-              ),
-
-              // Recording toggle (only if doctor can record)
-              if (canRecord && onRecordingToggle != null)
-                _buildControlButton(
-                  icon: isRecording ? Icons.stop : Icons.fiber_manual_record,
-                  isActive: isRecording,
-                  backgroundColor: isRecording ? Colors.red : Colors.grey[800]!,
-                  onTap: onRecordingToggle!,
-                ),
-
-              // Speaker On/Off
+              // Speaker on/off
               _buildControlButton(
                 icon: isSpeakerOn ? Icons.volume_up : Icons.volume_down,
-                isActive: isSpeakerOn,
-                backgroundColor: Colors.grey[800]!,
-                onTap: onSpeakerToggle,
+                label: isSpeakerOn ? 'Speaker' : 'Earpiece',
+                onPressed: onSpeakerToggle,
+                backgroundColor: Colors.white.withOpacity(0.2),
+                iconColor: Colors.white,
               ),
 
-              // Chat Toggle
+              // Switch camera
               _buildControlButton(
-                icon: Icons.chat,
-                isActive: showChat,
-                backgroundColor: showChat ? Colors.blue : Colors.grey[800]!,
-                onTap: onChatToggle,
+                icon: Icons.switch_camera,
+                label: 'Switch',
+                onPressed: onSwitchCamera,
+                backgroundColor: Colors.white.withOpacity(0.2),
+                iconColor: Colors.white,
               ),
 
-              // End Call
+              // Chat (if enabled)
+              if (showChatButton)
+                _buildControlButton(
+                  icon: Icons.chat,
+                  label: 'Chat',
+                  onPressed: onChatToggle,
+                  backgroundColor: showChat
+                      ? Colors.blue
+                      : Colors.white.withOpacity(0.2),
+                  iconColor: Colors.white,
+                ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Secondary controls
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Recording button (only for doctors)
+              if (showRecordingButton && isDoctor)
+                _buildControlButton(
+                  icon: isRecording ? Icons.stop : Icons.fiber_manual_record,
+                  label: isRecording ? 'Stop Recording' : 'Start Recording',
+                  onPressed: onRecordingToggle,
+                  backgroundColor: isRecording ? Colors.red : Colors.green,
+                  iconColor: Colors.white,
+                  isLarge: true,
+                ),
+
+              // End call button
               _buildControlButton(
                 icon: Icons.call_end,
-                isActive: false,
+                label: 'End Call',
+                onPressed: onEndCall,
                 backgroundColor: Colors.red,
-                onTap: onEndCall,
-                isEndCall: true,
+                iconColor: Colors.white,
+                isLarge: true,
               ),
             ],
           ),
@@ -146,29 +172,48 @@ class VideoControlsWidget extends StatelessWidget {
 
   Widget _buildControlButton({
     required IconData icon,
-    required bool isActive,
+    required String label,
+    required VoidCallback onPressed,
     required Color backgroundColor,
-    required VoidCallback onTap,
-    bool isEndCall = false,
+    required Color iconColor,
+    bool isLarge = false,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: isEndCall ? 70 : 56,
-        height: isEndCall ? 36 : 56,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(isEndCall ? 18 : 28),
-          boxShadow: [
-            BoxShadow(
-              color: backgroundColor.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+    final size = isLarge ? 60.0 : 50.0;
+    final iconSize = isLarge ? 28.0 : 24.0;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: onPressed,
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          ],
+            child: Icon(icon, color: iconColor, size: iconSize),
+          ),
         ),
-        child: Icon(icon, color: Colors.white, size: isEndCall ? 20 : 24),
-      ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }

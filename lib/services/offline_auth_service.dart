@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:telemed/database/offline_database.dart';
-import 'package:telemed/core/service_locator.dart'; // Add this import
+import 'package:telemed/core/service_locator.dart';
+import '../services/sync_service.dart';
 
 class OfflineAuthService {
   static const String _userDataKey = 'offline_user_data';
@@ -194,11 +196,35 @@ class OfflineAuthService {
       // to sync any offline changes with the online database
       print('🔄 Syncing offline data with online...');
 
-      // TODO: Implement sync logic when online
-      // 1. Get offline changes from local database
-      // 2. Upload to Supabase
-      // 3. Download latest data from Supabase
-      // 4. Update local storage
+      // Get the sync service to handle the heavy lifting
+      late final SyncService syncService;
+      try {
+        syncService = await serviceLocator.getAsync<SyncService>();
+      } catch (e) {
+        // Fallback to direct instantiation if service locator fails
+        syncService = SyncService();
+      }
+
+      // 1. Get current user credentials
+      final credentials = await getStoredCredentials();
+      final userProfile = await getStoredUserProfile();
+
+      if (credentials == null || userProfile == null) {
+        print('⚠️ No offline data to sync');
+        return;
+      }
+
+      // 2. Trigger full sync through the sync service
+      await syncService.syncNow();
+
+      // 3. Update last sync time
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+        'last_offline_sync',
+        DateTime.now().toIso8601String(),
+      );
+
+      print('✅ Offline data synced with MongoDB backend successfully');
     } catch (e) {
       print('❌ Error syncing with online: $e');
     }

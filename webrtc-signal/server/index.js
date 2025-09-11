@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
+const axios = require("axios");
 
 const app = express();
 app.use(cors());
@@ -9,30 +10,125 @@ app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET","POST"], credentials: true }
+  cors: { origin: "*", methods: ["GET", "POST"], credentials: true },
 });
 
-// Store connected users
+// Store connected users with enhanced data
 const users = new Map();
+const doctorSessions = new Map(); // Track doctor online sessions
+const patientSessions = new Map(); // Track patient sessions
+const consultationRooms = new Map(); // Track active consultation rooms
+
+// Backend API configuration
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
+
+// Helper function to update doctor status in backend
+const updateDoctorStatus = async (doctorId, status) => {
+  try {
+    await axios.patch(`${BACKEND_URL}/api/doctors/${doctorId}/status`, {
+      status: status,
+    });
+    console.log(`Updated doctor ${doctorId} status to ${status}`);
+  } catch (error) {
+    console.error(`Failed to update doctor status:`, error.message);
+  }
+};
+
+// Helper function to broadcast doctor status to patients
+const broadcastDoctorStatus = (doctorId, status, isAvailable) => {
+  io.emit("doctor_status_changed", {
+    doctorId,
+    status,
+    isAvailable,
+    timestamp: Date.now(),
+  });
+  console.log(
+    `Broadcasting doctor ${doctorId} status: ${status} (available: ${isAvailable})`
+  );
+};
+
+// Helper function to broadcast queue updates
+const broadcastQueueUpdate = (doctorId) => {
+  io.emit("queue_updated", {
+    doctorId,
+    timestamp: Date.now(),
+  });
+};
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  // Register user with their ID and role
-  socket.on("register", (data) => {
+  // Enhanced user registration with role-based handling
+  socket.on("register", async (data) => {
     try {
-      const { userId, role, name } = data;
+      const { userId, role, name, doctorId, speciality } = data;
       if (!userId || !role) {
         console.error("Invalid registration data:", data);
         socket.emit("error", { message: "Invalid registration data" });
         return;
       }
-      
-      users.set(socket.id, { userId, role, name, socketId: socket.id });
-      console.log(`User registered: ${userId} as ${role}`);
-      
-      // Notify others about new user
-      socket.broadcast.emit("user_registered", { userId, role, name });
+
+      const userInfo = {
+        userId,
+        role,
+        name,
+        socketId: socket.id,
+        connectedAt: Date.now(),
+      };
+
+      // Add role-specific data
+      if (role === "doctor") {
+        userInfo.doctorId = doctorId || userId;
+        userInfo.speciality = speciality;
+
+        // Track doctor session
+        doctorSessions.set(userId, {
+          ...userInfo,
+          patients: [],
+          isInConsultation: false,
+        });
+
+        // Update doctor status to online in backend
+        await updateDoctorStatus(userInfo.doctorId, "online");
+
+        // Broadcast doctor coming online to all patients
+        broadcastDoctorStatus(userInfo.doctorId, "online", true);
+
+        // Join doctors room
+        socket.join("doctors");
+
+        console.log(
+          `Doctor registered: ${name} (${userInfo.doctorId}) - ${speciality}`
+        );
+      } else if (role === "patient") {
+        patientSessions.set(userId, userInfo);
+        socket.join("patients");
+        console.log(`Patient registered: ${name} (${userId})`);
+      } else if (role === "admin") {
+        socket.join("admins");
+        console.log(`Admin registered: ${name} (${userId})`);
+      }
+
+      users.set(socket.id, userInfo);
+
+      // Notify others about new user (excluding sensitive info)
+      const publicUserInfo = { userId, role, name };
+      socket.broadcast.emit("user_registered", publicUserInfo);
+
+      // Send current online doctors to newly connected patient
+      if (role === "patient") {
+        const onlineDoctors = Array.from(doctorSessions.values()).map(
+          (doc) => ({
+            doctorId: doc.doctorId,
+            name: doc.name,
+            speciality: doc.speciality,
+            status: "online",
+            isAvailable: !doc.isInConsultation,
+          })
+        );
+
+        socket.emit("online_doctors", onlineDoctors);
+      }
     } catch (error) {
       console.error("Error registering user:", error);
       socket.emit("error", { message: "Failed to register user" });
@@ -48,10 +144,10 @@ io.on("connection", (socket) => {
         socket.emit("error", { message: "Invalid consultation data" });
         return;
       }
-      
+
       socket.join(consultationId);
       console.log(`User ${userId} joined consultation ${consultationId}`);
-      
+
       // Notify others in the room
       socket.to(consultationId).emit("user_joined", { userId, role });
     } catch (error) {
@@ -64,15 +160,17 @@ io.on("connection", (socket) => {
   socket.on("initiate_call", (data) => {
     try {
       console.log("Call initiation request:", data);
-      
+
       if (!data.to || !data.from) {
         console.error("Invalid call initiation data:", data);
         socket.emit("error", { message: "Invalid call initiation data" });
         return;
       }
-      
+
       // Find target user and notify them
-      const targetUser = Array.from(users.values()).find(user => user.userId === data.to);
+      const targetUser = Array.from(users.values()).find(
+        (user) => user.userId === data.to
+      );
       if (targetUser) {
         io.to(targetUser.socketId).emit("incoming_call", data);
       } else {
@@ -89,21 +187,25 @@ io.on("connection", (socket) => {
   socket.on("accept_call", (data) => {
     try {
       console.log("Call accepted:", data);
-      
+
       if (!data.from || !data.to) {
         console.error("Invalid call acceptance data:", data);
         socket.emit("error", { message: "Invalid call acceptance data" });
         return;
       }
-      
+
       // Notify both parties
-      const caller = Array.from(users.values()).find(user => user.userId === data.from);
-      const callee = Array.from(users.values()).find(user => user.userId === data.to);
-      
+      const caller = Array.from(users.values()).find(
+        (user) => user.userId === data.from
+      );
+      const callee = Array.from(users.values()).find(
+        (user) => user.userId === data.to
+      );
+
       if (caller) {
         io.to(caller.socketId).emit("call_accepted", data);
       }
-      
+
       if (callee) {
         io.to(callee.socketId).emit("call_accepted", data);
       }
@@ -117,14 +219,16 @@ io.on("connection", (socket) => {
   socket.on("reject_call", (data) => {
     try {
       console.log("Call rejected:", data);
-      
+
       if (!data.from || !data.to) {
         console.error("Invalid call rejection data:", data);
         socket.emit("error", { message: "Invalid call rejection data" });
         return;
       }
-      
-      const caller = Array.from(users.values()).find(user => user.userId === data.from);
+
+      const caller = Array.from(users.values()).find(
+        (user) => user.userId === data.from
+      );
       if (caller) {
         io.to(caller.socketId).emit("call_rejected", data);
       }
@@ -138,21 +242,25 @@ io.on("connection", (socket) => {
   socket.on("webrtc-signal", (payload) => {
     try {
       console.log("WebRTC signal received:", payload);
-      
+
       if (!payload.to || !payload.from || !payload.signal) {
         console.error("Invalid WebRTC signal payload:", payload);
         socket.emit("error", { message: "Invalid WebRTC signal payload" });
         return;
       }
-      
+
       // Find target user and send signal directly
-      const targetUser = Array.from(users.values()).find(user => user.userId === payload.to);
+      const targetUser = Array.from(users.values()).find(
+        (user) => user.userId === payload.to
+      );
       if (targetUser) {
         io.to(targetUser.socketId).emit("webrtc-signal", payload);
       } else {
         // Fallback: broadcast to all (less efficient)
         socket.broadcast.emit("webrtc-signal", payload);
-        console.warn(`Target user ${payload.to} not found, broadcasting signal`);
+        console.warn(
+          `Target user ${payload.to} not found, broadcasting signal`
+        );
       }
     } catch (error) {
       console.error("Error handling WebRTC signal:", error);
@@ -164,20 +272,24 @@ io.on("connection", (socket) => {
   socket.on("webrtc-end", (payload) => {
     try {
       console.log("WebRTC call ended:", payload);
-      
+
       if (!payload.to || !payload.from) {
         console.error("Invalid call end payload:", payload);
         socket.emit("error", { message: "Invalid call end payload" });
         return;
       }
-      
+
       // Find target user and send end signal
-      const targetUser = Array.from(users.values()).find(user => user.userId === payload.to);
+      const targetUser = Array.from(users.values()).find(
+        (user) => user.userId === payload.to
+      );
       if (targetUser) {
         io.to(targetUser.socketId).emit("webrtc-end", payload);
       } else {
         socket.broadcast.emit("webrtc-end", payload);
-        console.warn(`Target user ${payload.to} not found, broadcasting end signal`);
+        console.warn(
+          `Target user ${payload.to} not found, broadcasting end signal`
+        );
       }
     } catch (error) {
       console.error("Error ending call:", error);
@@ -189,19 +301,23 @@ io.on("connection", (socket) => {
   socket.on("prescription_submitted", (payload) => {
     try {
       console.log("Prescription submitted:", payload);
-      
+
       if (!payload.patientId) {
         console.error("Invalid prescription data:", payload);
         socket.emit("error", { message: "Invalid prescription data" });
         return;
       }
-      
+
       // Find target user (patient) and send prescription
-      const targetUser = Array.from(users.values()).find(user => user.userId === payload.patientId);
+      const targetUser = Array.from(users.values()).find(
+        (user) => user.userId === payload.patientId
+      );
       if (targetUser) {
         io.to(targetUser.socketId).emit("prescription_submitted", payload);
       } else {
-        console.warn(`Target patient ${payload.patientId} not found for prescription`);
+        console.warn(
+          `Target patient ${payload.patientId} not found for prescription`
+        );
         socket.emit("error", { message: "Target patient not found" });
       }
     } catch (error) {
@@ -214,13 +330,13 @@ io.on("connection", (socket) => {
   socket.on("chat_message", (payload) => {
     try {
       console.log("Chat message:", payload);
-      
+
       if (!payload.consultationId) {
         console.error("Invalid chat message data:", payload);
         socket.emit("error", { message: "Invalid chat message data" });
         return;
       }
-      
+
       // Send to all users in the consultation room except sender
       socket.to(payload.consultationId).emit("chat_message", payload);
     } catch (error) {
@@ -233,13 +349,13 @@ io.on("connection", (socket) => {
   socket.on("recording_started", (payload) => {
     try {
       console.log("Recording started:", payload);
-      
+
       if (!payload.consultationId) {
         console.error("Invalid recording start data:", payload);
         socket.emit("error", { message: "Invalid recording data" });
         return;
       }
-      
+
       socket.to(payload.consultationId).emit("recording_started", payload);
     } catch (error) {
       console.error("Error handling recording start:", error);
@@ -250,13 +366,13 @@ io.on("connection", (socket) => {
   socket.on("recording_stopped", (payload) => {
     try {
       console.log("Recording stopped:", payload);
-      
+
       if (!payload.consultationId) {
         console.error("Invalid recording stop data:", payload);
         socket.emit("error", { message: "Invalid recording data" });
         return;
       }
-      
+
       socket.to(payload.consultationId).emit("recording_stopped", payload);
     } catch (error) {
       console.error("Error handling recording stop:", error);
@@ -268,7 +384,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     try {
       console.log("User disconnected:", socket.id);
-      
+
       const user = users.get(socket.id);
       if (user) {
         // Notify others about disconnection

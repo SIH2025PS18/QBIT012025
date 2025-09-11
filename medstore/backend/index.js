@@ -1,8 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
-const connectDB = require('./config/database');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const path = require("path");
+const connectDB = require("./config/database");
 
 // Load environment variables
 dotenv.config();
@@ -11,50 +11,74 @@ dotenv.config();
 connectDB();
 
 // Import routes
-const authRoutes = require('./routes/auth');
-const medicineRoutes = require('./routes/medicines');
-const orderRoutes = require('./routes/orders');
-const pharmacyRoutes = require('./routes/pharmacies');
+const authRoutes = require("./routes/auth");
+const medicineRoutes = require("./routes/medicines");
+const orderRoutes = require("./routes/orders");
+const pharmacyRoutes = require("./routes/pharmacies");
 
 const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/medicines', medicineRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/pharmacies', pharmacyRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/medicines", medicineRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/pharmacies", pharmacyRoutes);
+
+// API info endpoint
+app.get("/api", (req, res) => {
+  res.json({
+    success: true,
+    message: "Telemed Medstore API",
+    version: "1.0.0",
+    endpoints: {
+      auth: "/api/auth",
+      medicines: "/api/medicines",
+      orders: "/api/orders",
+      pharmacies: "/api/pharmacies",
+      health: "/api/health",
+    },
+    documentation: "Available endpoints listed above",
+  });
+});
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ message: 'Server is running successfully!' });
+app.get("/api/health", (req, res) => {
+  res.json({
+    success: true,
+    message: "Server is running successfully!",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  
-  if (err.name === 'MulterError') {
-    if (err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({ message: 'File too large. Maximum size is 5MB.' });
+
+  if (err.name === "MulterError") {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res
+        .status(400)
+        .json({ message: "File too large. Maximum size is 5MB." });
     }
   }
-  
-  if (err.message === 'Only image files are allowed!') {
+
+  if (err.message === "Only image files are allowed!") {
     return res.status(400).json({ message: err.message });
   }
-  
-  res.status(500).json({ message: 'Something went wrong!' });
+
+  res.status(500).json({ message: "Something went wrong!" });
 });
 
 // Handle 404 errors - Fixed version
 app.use((req, res) => {
-  res.status(404).json({ message: 'API endpoint not found' });
+  res.status(404).json({ message: "API endpoint not found" });
 });
 
 const PORT = process.env.PORT || 5000;

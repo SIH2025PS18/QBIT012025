@@ -5,7 +5,7 @@ import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../nabha_home_screen.dart';
-import 'phone_register_screen.dart';
+import 'register_screen.dart';
 import 'phone_forgot_password_screen.dart';
 
 class PhoneLoginWithPasswordScreen extends StatefulWidget {
@@ -271,7 +271,7 @@ class _PhoneLoginWithPasswordScreenState
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const PhoneRegisterScreen(),
+                            builder: (context) => const RegisterScreen(),
                           ),
                         );
                       },

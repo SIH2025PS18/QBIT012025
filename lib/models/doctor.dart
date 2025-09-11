@@ -37,47 +37,57 @@ class Doctor {
     required this.updatedAt,
   });
 
-  // Convert to Map for Database
+  // Convert to Map for MongoDB Backend
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'full_name': fullName,
+      'fullName': fullName,
       'email': email,
-      'phone_number': phoneNumber,
+      'phoneNumber': phoneNumber,
       'specialization': specialization,
       'qualification': qualification,
-      'experience_years': experienceYears,
-      'consultation_fee': consultationFee,
+      'experienceYears': experienceYears,
+      'consultationFee': consultationFee,
       'languages': languages,
       'availability': availability,
       'rating': rating,
-      'total_consultations': totalConsultations,
-      'is_available': isAvailable,
-      'is_online': isOnline,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'totalConsultations': totalConsultations,
+      'isAvailable': isAvailable,
+      'isOnline': isOnline,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
     };
   }
 
-  // Create from Map (Database data)
+  // Create from Map (MongoDB backend data)
   factory Doctor.fromMap(Map<String, dynamic> map) {
     return Doctor(
       id: map['id'] ?? '',
-      fullName: map['full_name'] ?? '',
+      fullName: map['fullName'] ?? map['full_name'] ?? '',
       email: map['email'] ?? '',
-      phoneNumber: map['phone_number'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? map['phone_number'] ?? '',
       specialization: map['specialization'] ?? '',
       qualification: map['qualification'] ?? '',
-      experienceYears: map['experience_years'] ?? 0,
-      consultationFee: (map['consultation_fee'] ?? 0.0).toDouble(),
+      experienceYears: map['experienceYears'] ?? map['experience_years'] ?? 0,
+      consultationFee:
+          (map['consultationFee'] ?? map['consultation_fee'] ?? 0.0).toDouble(),
       languages: List<String>.from(map['languages'] ?? ['Hindi', 'English']),
       availability: Map<String, dynamic>.from(map['availability'] ?? {}),
       rating: (map['rating'] ?? 0.0).toDouble(),
-      totalConsultations: map['total_consultations'] ?? 0,
-      isAvailable: map['is_available'] ?? true,
-      isOnline: map['is_online'] ?? false,
-      createdAt: DateTime.parse(map['created_at']),
-      updatedAt: DateTime.parse(map['updated_at']),
+      totalConsultations:
+          map['totalConsultations'] ?? map['total_consultations'] ?? 0,
+      isAvailable: map['isAvailable'] ?? map['is_available'] ?? true,
+      isOnline: map['isOnline'] ?? map['is_online'] ?? false,
+      createdAt: DateTime.parse(
+        map['createdAt'] ??
+            map['created_at'] ??
+            DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        map['updatedAt'] ??
+            map['updated_at'] ??
+            DateTime.now().toIso8601String(),
+      ),
     );
   }
 

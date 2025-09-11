@@ -5,7 +5,7 @@ import '../database/local_database.dart';
 import '../models/health_record.dart';
 import '../services/connectivity_service.dart';
 import '../services/sync_service.dart';
-import '../services/supabase_auth_service.dart';
+import '../services/auth_service.dart';
 
 /// Repository interface for health records
 abstract class HealthRecordRepository {
@@ -264,20 +264,20 @@ class OfflineHealthRecordRepository implements HealthRecordRepository {
     );
   }
 
-  /// Map local health record to Supabase data format
+  /// Map local health record to MongoDB backend data format
   Map<String, dynamic> _mapLocalToSupabaseData(LocalHealthRecord local) {
     return {
       'id': local.id,
-      'patient_id': local.patientId,
-      'appointment_id': local.appointmentId,
-      'record_type': local.recordType,
+      'patientId': local.patientId,
+      'appointmentId': local.appointmentId,
+      'recordType': local.recordType,
       'title': local.title,
       'description': local.description,
-      'attachment_url': local.attachmentUrl,
+      'attachmentUrl': local.attachmentUrl,
       'metadata': jsonDecode(local.metadata ?? '{}'),
-      'record_date': local.recordDate.toIso8601String(),
-      'created_at': local.createdAt.toIso8601String(),
-      'updated_at': local.updatedAt.toIso8601String(),
+      'recordDate': local.recordDate.toIso8601String(),
+      'createdAt': local.createdAt.toIso8601String(),
+      'updatedAt': local.updatedAt.toIso8601String(),
     };
   }
 
@@ -293,7 +293,7 @@ class OfflineHealthRecordRepository implements HealthRecordRepository {
 
   /// Force sync health records
   Future<void> forceSyncHealthRecords() async {
-    final user = AuthService.currentUser;
+    final user = await AuthService().getCurrentUser();
     if (user == null) return;
 
     final unsyncedRecords = await _localDb.getUnsyncedHealthRecords();

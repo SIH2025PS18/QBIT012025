@@ -1,349 +1,228 @@
 import 'package:flutter/material.dart';
-import '../models/video_consultation.dart';
-import '../services/agora_service.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart' hide VideoLayout;
 
-class ParticipantGridWidget extends StatelessWidget {
-  final VideoConsultation consultation;
-  final bool isVideoEnabled;
-  final String currentUserId;
-  final AgoraService? agoraService;
-  final Function(ConsultationParticipant)? onParticipantTap;
+import '../services/agora_service.dart';
+import '../models/video_consultation.dart';
+
+/// Widget that displays video participants in a grid layout
+class ParticipantGridWidget extends StatefulWidget {
+  final AgoraService agoraService;
+  final List<int> remoteUsers;
+  final bool showLocalVideo;
+  final String? currentUserId;
+  final VideoConsultation? consultation;
 
   const ParticipantGridWidget({
     Key? key,
-    required this.consultation,
-    required this.isVideoEnabled,
-    required this.currentUserId,
-    this.agoraService,
-    this.onParticipantTap,
+    required this.agoraService,
+    required this.remoteUsers,
+    this.showLocalVideo = true,
+    this.currentUserId,
+    this.consultation,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final participants = consultation.participants;
+  State<ParticipantGridWidget> createState() => _ParticipantGridWidgetState();
+}
 
-    // If no participants, show placeholder
-    if (participants.isEmpty) {
-      return _buildPlaceholderGrid();
-    }
+class _ParticipantGridWidgetState extends State<ParticipantGridWidget> {
+  VideoLayout _currentLayout = VideoLayout.grid;
+  Map<int, VideoStreamType> _userStreamTypes = {};
 
-    // Single participant - full screen
-    if (participants.length == 1) {
-      return _buildSingleParticipant(participants.first);
-    }
-
-    // Multiple participants - smart grid layout
-    return _buildSmartGrid(participants);
+  @override
+  void initState() {
+    super.initState();
+    // Optimize for multi-participant calls
+    widget.agoraService.optimizeForMultiParticipant();
   }
 
-  Widget _buildSmartGrid(List<ConsultationParticipant> participants) {
+  @override
+  Widget build(BuildContext context) {
+    final allParticipants = <Widget>[];
+
+    // Add local video if enabled
+    if (widget.showLocalVideo) {
+      allParticipants.add(_buildLocalVideoView());
+    }
+
+    // Add remote videos
+    for (final uid in widget.remoteUsers) {
+      allParticipants.add(_buildRemoteVideoView(uid));
+    }
+
+    if (allParticipants.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    return Column(
+      children: [
+        // Layout toggle buttons
+        _buildLayoutControls(),
+
+        // Video grid
+        Expanded(child: _buildVideoLayout(allParticipants)),
+      ],
+    );
+  }
+
+  Widget _buildLayoutControls() {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildLayoutButton(
+            icon: Icons.grid_view,
+            label: 'Grid',
+            isSelected: _currentLayout == VideoLayout.grid,
+            onPressed: () => _setLayout(VideoLayout.grid),
+          ),
+          const SizedBox(width: 8),
+          _buildLayoutButton(
+            icon: Icons.person,
+            label: 'Speaker',
+            isSelected: _currentLayout == VideoLayout.speaker,
+            onPressed: () => _setLayout(VideoLayout.speaker),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLayoutButton({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onPressed,
+  }) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.grey.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? Colors.white : Colors.black54,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: isSelected ? Colors.white : Colors.black54,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoLayout(List<Widget> participants) {
+    switch (_currentLayout) {
+      case VideoLayout.grid:
+        return _buildGridLayout(participants);
+      case VideoLayout.speaker:
+        return _buildSpeakerLayout(participants);
+      default:
+        return _buildGridLayout(participants);
+    }
+  }
+
+  Widget _buildGridLayout(List<Widget> participants) {
     final participantCount = participants.length;
 
-    // 2 participants - side by side
-    if (participantCount == 2) {
-      return Row(
-        children: participants
-            .map((p) => Expanded(child: _buildParticipantTile(p, true)))
-            .toList(),
+    if (participantCount == 1) {
+      return participants[0];
+    } else if (participantCount == 2) {
+      return Column(
+        children: [
+          Expanded(child: participants[0]),
+          Expanded(child: participants[1]),
+        ],
       );
+    } else if (participantCount <= 4) {
+      return GridView.count(crossAxisCount: 2, children: participants);
+    } else {
+      return GridView.count(crossAxisCount: 3, children: participants);
     }
-
-    // 3-4 participants - 2x2 grid
-    if (participantCount <= 4) {
-      return _build2x2Grid(participants);
-    }
-
-    // 5-6 participants - 2x3 grid
-    if (participantCount <= 6) {
-      return _build2x3Grid(participants);
-    }
-
-    // 7-9 participants - 3x3 grid
-    if (participantCount <= 9) {
-      return _build3x3Grid(participants);
-    }
-
-    // More than 9 - scrollable grid with speaker view
-    return _buildScrollableGrid(participants);
   }
 
-  Widget _build2x2Grid(List<ConsultationParticipant> participants) {
-    return Column(
-      children: [
-        Expanded(
-          child: Row(
-            children: [
-              if (participants.isNotEmpty)
-                Expanded(child: _buildParticipantTile(participants[0], true)),
-              if (participants.length > 1)
-                Expanded(child: _buildParticipantTile(participants[1], true)),
-            ],
-          ),
-        ),
-        if (participants.length > 2)
-          Expanded(
-            child: Row(
-              children: [
-                if (participants.length > 2)
-                  Expanded(child: _buildParticipantTile(participants[2], true)),
-                if (participants.length > 3)
-                  Expanded(child: _buildParticipantTile(participants[3], true)),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _build2x3Grid(List<ConsultationParticipant> participants) {
-    return Column(
-      children: [
-        Expanded(
-          child: Row(
-            children: participants
-                .take(3)
-                .map((p) => Expanded(child: _buildParticipantTile(p, false)))
-                .toList(),
-          ),
-        ),
-        Expanded(
-          child: Row(
-            children: participants
-                .skip(3)
-                .take(3)
-                .map((p) => Expanded(child: _buildParticipantTile(p, false)))
-                .toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _build3x3Grid(List<ConsultationParticipant> participants) {
-    return Column(
-      children: List.generate(3, (row) {
-        final startIndex = row * 3;
-        final rowParticipants = participants.skip(startIndex).take(3).toList();
-
-        return Expanded(
-          child: Row(
-            children: rowParticipants
-                .map((p) => Expanded(child: _buildParticipantTile(p, false)))
-                .toList(),
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget _buildScrollableGrid(List<ConsultationParticipant> participants) {
-    // Show main speaker and scrollable thumbnails
-    final mainParticipant = participants.first;
-    final otherParticipants = participants.skip(1).toList();
+  Widget _buildSpeakerLayout(List<Widget> participants) {
+    if (participants.length <= 1) {
+      return participants.isNotEmpty ? participants[0] : _buildEmptyState();
+    }
 
     return Column(
       children: [
-        // Main speaker view (75% of height)
-        Expanded(flex: 3, child: _buildParticipantTile(mainParticipant, true)),
+        // Main speaker view (first participant)
+        Expanded(flex: 3, child: participants[0]),
 
-        // Scrollable thumbnail strip (25% of height)
-        Expanded(
-          flex: 1,
-          child: Container(
-            color: Colors.black54,
+        // Thumbnail views for other participants
+        if (participants.length > 1)
+          Container(
+            height: 120,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: otherParticipants.length,
+              itemCount: participants.length - 1,
               itemBuilder: (context, index) {
-                return SizedBox(
-                  width: 120,
-                  child: _buildParticipantTile(otherParticipants[index], false),
+                return Container(
+                  width: 90,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  child: participants[index + 1],
                 );
               },
             ),
           ),
-        ),
       ],
     );
   }
 
-  Widget _buildParticipantTile(
-    ConsultationParticipant participant,
-    bool isLarge,
-  ) {
-    return GestureDetector(
-      onTap: () => onParticipantTap?.call(participant),
-      child: Container(
-        margin: const EdgeInsets.all(1),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: participant.isConnected ? Colors.green : Colors.red,
-            width: 2,
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Video or avatar
-            Center(
-              child: participant.isVideoEnabled && participant.isConnected
-                  ? _buildVideoView(participant)
-                  : _buildAvatarView(participant),
-            ),
-
-            // Connection status indicator
-            if (!participant.isConnected)
-              Container(
-                color: Colors.black54,
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.wifi_off, color: Colors.white, size: 32),
-                      SizedBox(height: 8),
-                      Text(
-                        'Reconnecting...',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-            // Participant info overlay
-            Positioned(
-              bottom: 8,
-              left: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!participant.isMuted)
-                      Icon(
-                        Icons.mic,
-                        size: isLarge ? 16 : 12,
-                        color: Colors.white,
-                      )
-                    else
-                      Icon(
-                        Icons.mic_off,
-                        size: isLarge ? 16 : 12,
-                        color: Colors.red,
-                      ),
-                    const SizedBox(width: 4),
-                    Text(
-                      participant.name,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: isLarge ? 12 : 10,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Role indicator
-            if (participant.role == ParticipantRole.doctor)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'Dr.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: isLarge ? 10 : 8,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholderGrid() {
+  Widget _buildLocalVideoView() {
     return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.black,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.grey[800],
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.person, size: 60, color: Colors.white54),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Waiting for participants...',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-          ],
-        ),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blue, width: 2),
+        borderRadius: BorderRadius.circular(8),
       ),
-    );
-  }
-
-  Widget _buildSingleParticipant(ConsultationParticipant participant) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.black,
       child: Stack(
         children: [
-          // Video or avatar
-          Center(
-            child: participant.isVideoEnabled
-                ? _buildVideoView(participant)
-                : _buildAvatarView(participant),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: widget.agoraService.createLocalVideoView(),
           ),
-
-          // Participant info overlay
           Positioned(
-            bottom: 16,
-            left: 16,
+            bottom: 8,
+            left: 8,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (!participant.isMuted)
-                    const Icon(Icons.mic, size: 16, color: Colors.green)
-                  else
-                    const Icon(Icons.mic_off, size: 16, color: Colors.red),
-                  const SizedBox(width: 8),
-                  Text(
-                    participant.name,
-                    style: const TextStyle(
+                  Icon(
+                    widget.agoraService.isMuted ? Icons.mic_off : Icons.mic,
+                    color: widget.agoraService.isMuted
+                        ? Colors.red
+                        : Colors.white,
+                    size: 12,
+                  ),
+                  const SizedBox(width: 4),
+                  const Text(
+                    'You',
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -356,71 +235,176 @@ class ParticipantGridWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildVideoView(ConsultationParticipant participant) {
-    if (agoraService != null) {
-      // Get the participant's UID for Agora video view
-      // This would need to be mapped from participant ID to Agora UID
-      final uid = int.tryParse(participant.userId) ?? 0;
-
-      if (uid == 0) {
-        // Local user video
-        return agoraService!.createLocalVideoView();
-      } else {
-        // Remote user video
-        return agoraService!.createRemoteVideoView(uid);
-      }
-    }
-
-    // Fallback placeholder
+  Widget _buildRemoteVideoView(int uid) {
     return Container(
-      width: double.infinity,
-      height: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.withOpacity(0.3),
-            Colors.purple.withOpacity(0.3),
-          ],
-        ),
+        border: Border.all(color: Colors.grey.shade300, width: 1),
+        borderRadius: BorderRadius.circular(8),
       ),
-      child: const Center(
-        child: Icon(Icons.videocam, size: 40, color: Colors.white70),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(7),
+            child: widget.agoraService.createRemoteVideoView(uid),
+          ),
+          Positioned(
+            bottom: 8,
+            left: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.person, color: Colors.white, size: 12),
+                  const SizedBox(width: 4),
+                  Text(
+                    'User $uid',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Video quality indicator
+          Positioned(top: 8, right: 8, child: _buildQualityIndicator(uid)),
+
+          // Connection status indicator
+          Positioned(top: 8, left: 8, child: _buildConnectionIndicator(uid)),
+        ],
       ),
     );
   }
 
-  Widget _buildAvatarView(ConsultationParticipant participant) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.grey[800],
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundImage: participant.avatarUrl != null
-                ? NetworkImage(participant.avatarUrl!)
-                : null,
-            backgroundColor: Colors.grey[600],
-            child: participant.avatarUrl == null
-                ? const Icon(Icons.person, size: 40, color: Colors.white)
-                : null,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            participant.name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+  Widget _buildQualityIndicator(int uid) {
+    final streamType = _userStreamTypes[uid] ?? VideoStreamType.videoStreamHigh;
+    final isHighQuality = streamType == VideoStreamType.videoStreamHigh;
+
+    return GestureDetector(
+      onTap: () => _toggleVideoQuality(uid),
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.black54,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isHighQuality ? Icons.hd : Icons.sd,
+              color: isHighQuality ? Colors.green : Colors.orange,
+              size: 12,
             ),
-            textAlign: TextAlign.center,
+            const SizedBox(width: 2),
+            Text(
+              isHighQuality ? 'HD' : 'SD',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 8,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConnectionIndicator(int uid) {
+    // In a real implementation, you'd track connection quality
+    // For now, we'll show a static good connection
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: Colors.black54,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: const BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 2),
+          Container(
+            width: 6,
+            height: 6,
+            decoration: const BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 2),
+          Container(
+            width: 6,
+            height: 6,
+            decoration: const BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.videocam_off, size: 64, color: Colors.grey.shade400),
+          const SizedBox(height: 16),
+          Text(
+            'No participants',
+            style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Waiting for others to join...',
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _setLayout(VideoLayout layout) {
+    setState(() {
+      _currentLayout = layout;
+    });
+
+    // Apply layout optimization to Agora service
+    widget.agoraService.setVideoLayout(layout);
+  }
+
+  void _toggleVideoQuality(int uid) {
+    // Toggle between high and low quality for bandwidth optimization
+    final currentStreamType =
+        _userStreamTypes[uid] ?? VideoStreamType.videoStreamHigh;
+    final newStreamType = currentStreamType == VideoStreamType.videoStreamHigh
+        ? VideoStreamType.videoStreamLow
+        : VideoStreamType.videoStreamHigh;
+
+    setState(() {
+      _userStreamTypes[uid] = newStreamType;
+    });
+
+    widget.agoraService.setRemoteVideoStreamType(uid, newStreamType);
   }
 }

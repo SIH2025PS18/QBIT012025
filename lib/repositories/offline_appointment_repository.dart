@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../database/local_database.dart';
 import '../services/connectivity_service.dart';
 import '../services/sync_service.dart';
-import '../services/supabase_auth_service.dart';
+import '../services/auth_service.dart';
 
 /// Model for appointment data
 class Appointment {
@@ -210,7 +210,7 @@ class OfflineAppointmentRepository implements AppointmentRepository {
   @override
   Future<Appointment> createAppointment(Appointment appointment) async {
     try {
-      final user = AuthService.currentUser;
+      final user = await AuthService().getCurrentUser();
       if (user == null) {
         throw Exception('No authenticated user');
       }
@@ -254,7 +254,7 @@ class OfflineAppointmentRepository implements AppointmentRepository {
       return appointmentWithId;
     } catch (e) {
       // Even if online sync fails, appointment is still available offline
-      final user = AuthService.currentUser;
+      final user = await AuthService().getCurrentUser();
       if (user == null) {
         throw Exception('No authenticated user');
       }
@@ -426,22 +426,22 @@ class OfflineAppointmentRepository implements AppointmentRepository {
     );
   }
 
-  /// Map local appointment to Supabase data format
+  /// Map local appointment to MongoDB backend data format
   Map<String, dynamic> _mapLocalToSupabaseData(LocalAppointment local) {
     return {
       'id': local.id,
-      'patient_id': local.patientId,
-      'doctor_id': local.doctorId,
-      'doctor_name': local.doctorName,
-      'doctor_specialization': local.doctorSpecialization,
-      'appointment_date': local.appointmentDate.toIso8601String(),
-      'appointment_time': local.appointmentTime.toIso8601String(),
+      'patientId': local.patientId,
+      'doctorId': local.doctorId,
+      'doctorName': local.doctorName,
+      'doctorSpecialization': local.doctorSpecialization,
+      'appointmentDate': local.appointmentDate.toIso8601String(),
+      'appointmentTime': local.appointmentTime.toIso8601String(),
       'status': local.status,
       'notes': local.notes,
-      'patient_symptoms': local.patientSymptoms,
-      'consultation_fee': local.consultationFee,
-      'created_at': local.createdAt.toIso8601String(),
-      'updated_at': local.updatedAt.toIso8601String(),
+      'patientSymptoms': local.patientSymptoms,
+      'consultationFee': local.consultationFee,
+      'createdAt': local.createdAt.toIso8601String(),
+      'updatedAt': local.updatedAt.toIso8601String(),
     };
   }
 
@@ -457,7 +457,7 @@ class OfflineAppointmentRepository implements AppointmentRepository {
 
   /// Force sync appointments
   Future<void> forceSyncAppointments() async {
-    final user = AuthService.currentUser;
+    final user = await AuthService().getCurrentUser();
     if (user == null) return;
 
     final unsyncedAppointments = await _localDb.getUnsyncedAppointments();

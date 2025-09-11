@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:async';
 
 import '../config/agora_config.dart';
 
@@ -8,6 +9,48 @@ import '../config/agora_config.dart';
 enum VideoLayout {
   grid, // Grid layout for multiple participants
   speaker, // Speaker view with thumbnails
+}
+
+/// User connection state
+enum UserConnectionState {
+  connecting,
+  connected,
+  reconnecting,
+  disconnected,
+  failed,
+}
+
+/// Network quality information
+class NetworkQuality {
+  final int uid;
+  final QualityType txQuality;
+  final QualityType rxQuality;
+
+  NetworkQuality({
+    required this.uid,
+    required this.txQuality,
+    required this.rxQuality,
+  });
+
+  bool get isGood =>
+      (txQuality == QualityType.qualityExcellent ||
+          txQuality == QualityType.qualityGood) &&
+      (rxQuality == QualityType.qualityExcellent ||
+          rxQuality == QualityType.qualityGood);
+
+  String get description {
+    if (txQuality == QualityType.qualityExcellent &&
+        rxQuality == QualityType.qualityExcellent) {
+      return 'Excellent';
+    } else if (isGood) {
+      return 'Good';
+    } else if (txQuality == QualityType.qualityPoor ||
+        rxQuality == QualityType.qualityPoor) {
+      return 'Poor';
+    } else {
+      return 'Fair';
+    }
+  }
 }
 
 /// Service for managing Agora video calls
@@ -20,13 +63,19 @@ class AgoraService extends ChangeNotifier {
   bool _isSpeakerOn = false;
   String? _currentChannelId;
   int? _currentUid;
+  int _reconnectAttempts = 0;
+  static const int _maxReconnectAttempts = 3;
+  Timer? _reconnectTimer;
+  bool _isReconnecting = false;
 
   // Recording state
   bool _isRecording = false;
   String? _recordingId;
 
-  // Remote users
+  // Remote users with enhanced state tracking
   List<int> _remoteUsers = [];
+  Map<int, UserConnectionState> _userStates = {};
+  Map<int, NetworkQuality> _networkQualities = {};
 
   // Getters
   bool get isInitialized => _isInitialized;
@@ -35,8 +84,11 @@ class AgoraService extends ChangeNotifier {
   bool get isVideoEnabled => _isVideoEnabled;
   bool get isSpeakerOn => _isSpeakerOn;
   bool get isRecording => _isRecording;
+  bool get isReconnecting => _isReconnecting;
   String? get recordingId => _recordingId;
   List<int> get remoteUsers => List.unmodifiable(_remoteUsers);
+  Map<int, NetworkQuality> get networkQualities =>
+      Map.unmodifiable(_networkQualities);
   RtcEngine? get engine => _engine;
 
   /// Initialize Agora RTC Engine
@@ -88,13 +140,16 @@ class AgoraService extends ChangeNotifier {
         onUserJoined: (connection, uid, elapsed) {
           debugPrint('User joined: $uid');
           _remoteUsers.add(uid);
+          _userStates[uid] = UserConnectionState.connected;
           notifyListeners();
         },
 
         // User left channel
         onUserOffline: (connection, uid, reason) {
-          debugPrint('User left: $uid');
+          debugPrint('User left: $uid, reason: $reason');
           _remoteUsers.remove(uid);
+          _userStates.remove(uid);
+          _networkQualities.remove(uid);
           notifyListeners();
         },
 
@@ -104,6 +159,9 @@ class AgoraService extends ChangeNotifier {
           _isJoined = true;
           _currentChannelId = connection.channelId;
           _currentUid = connection.localUid;
+          _reconnectAttempts = 0;
+          _isReconnecting = false;
+          _reconnectTimer?.cancel();
           notifyListeners();
         },
 
@@ -114,29 +172,75 @@ class AgoraService extends ChangeNotifier {
           _currentChannelId = null;
           _currentUid = null;
           _remoteUsers.clear();
+          _userStates.clear();
+          _networkQualities.clear();
           notifyListeners();
         },
 
         // Remote video state changed
         onRemoteVideoStateChanged: (connection, uid, state, reason, elapsed) {
-          debugPrint('Remote video state changed: $uid, state: $state');
+          debugPrint(
+            'Remote video state changed: $uid, state: $state, reason: $reason',
+          );
+          _handleRemoteVideoStateChange(uid, state, reason);
           notifyListeners();
         },
 
         // Remote audio state changed
         onRemoteAudioStateChanged: (connection, uid, state, reason, elapsed) {
-          debugPrint('Remote audio state changed: $uid, state: $state');
+          debugPrint(
+            'Remote audio state changed: $uid, state: $state, reason: $reason',
+          );
+          _handleRemoteAudioStateChange(uid, state, reason);
           notifyListeners();
         },
 
         // Connection state changed
         onConnectionStateChanged: (connection, state, reason) {
           debugPrint('Connection state changed: $state, reason: $reason');
+          _handleConnectionStateChange(state, reason);
         },
+
+        // Network quality indicators
+        onNetworkQuality: (connection, uid, txQuality, rxQuality) {
+          _networkQualities[uid] = NetworkQuality(
+            uid: uid,
+            txQuality: txQuality,
+            rxQuality: rxQuality,
+          );
+          notifyListeners();
+        },
+
+        // Audio volume indication
+        onAudioVolumeIndication:
+            (connection, speakers, speakerNumber, totalVolume) {
+              // Handle audio volume levels for UI feedback
+            },
 
         // Error occurred
         onError: (err, msg) {
           debugPrint('Agora Error: $err, message: $msg');
+          _handleError(err, msg);
+        },
+
+        // Connection interrupted
+        onConnectionInterrupted: (connection) {
+          debugPrint('Connection interrupted');
+          _handleConnectionInterrupted();
+        },
+
+        // Connection lost
+        onConnectionLost: (connection) {
+          debugPrint('Connection lost');
+          _handleConnectionLost();
+        },
+
+        // Rejoin channel success
+        onRejoinChannelSuccess: (connection, elapsed) {
+          debugPrint('Rejoined channel successfully');
+          _isReconnecting = false;
+          _reconnectAttempts = 0;
+          notifyListeners();
         },
       ),
     );
@@ -163,29 +267,42 @@ class AgoraService extends ChangeNotifier {
     );
   }
 
-  /// Join a video channel
+  /// Join a video channel with retry logic
   Future<void> joinChannel({
     required String channelId,
     required String token,
     int uid = AgoraConfig.defaultUid,
+    int maxRetries = 3,
   }) async {
     if (!_isInitialized) {
       throw Exception('Agora engine not initialized');
     }
 
-    try {
-      await _engine!.joinChannel(
-        token: token,
-        channelId: channelId,
-        uid: uid,
-        options: const ChannelMediaOptions(
-          clientRoleType: ClientRoleType.clientRoleBroadcaster,
-          channelProfile: AgoraConfig.channelProfile,
-        ),
-      );
-    } catch (e) {
-      debugPrint('Error joining channel: $e');
-      rethrow;
+    int attempts = 0;
+    while (attempts < maxRetries) {
+      try {
+        await _engine!.joinChannel(
+          token: token,
+          channelId: channelId,
+          uid: uid,
+          options: const ChannelMediaOptions(
+            clientRoleType: ClientRoleType.clientRoleBroadcaster,
+            channelProfile: AgoraConfig.channelProfile,
+          ),
+        );
+        return; // Success, exit retry loop
+      } catch (e) {
+        attempts++;
+        debugPrint('Join channel attempt $attempts failed: $e');
+
+        if (attempts >= maxRetries) {
+          debugPrint('Max join attempts reached, throwing error');
+          rethrow;
+        }
+
+        // Wait before retry
+        await Future.delayed(Duration(seconds: attempts * 2));
+      }
     }
   }
 
@@ -473,17 +590,185 @@ class AgoraService extends ChangeNotifier {
 
   /// Clean up Agora resources
   Future<void> _cleanup() async {
+    _reconnectTimer?.cancel();
+
     if (_engine != null) {
       if (_isJoined) {
         await _engine!.leaveChannel();
       }
-      // Note: unregisterEventHandler might need specific event handler as parameter
-      // Check Agora documentation for current API
       await _engine!.release();
       _engine = null;
       _isInitialized = false;
       _isJoined = false;
       _remoteUsers.clear();
+      _userStates.clear();
+      _networkQualities.clear();
     }
+  }
+
+  // Error handling and reconnection methods
+  void _handleError(ErrorCodeType error, String message) {
+    switch (error) {
+      case ErrorCodeType.errTokenExpired:
+      case ErrorCodeType.errInvalidToken:
+        _handleTokenError();
+        break;
+      default:
+        debugPrint('Agora error: $error - $message');
+        _handleNetworkError();
+    }
+  }
+
+  void _handleConnectionStateChange(
+    ConnectionStateType state,
+    ConnectionChangedReasonType reason,
+  ) {
+    switch (state) {
+      case ConnectionStateType.connectionStateDisconnected:
+        if (reason ==
+            ConnectionChangedReasonType.connectionChangedInterrupted) {
+          _handleConnectionLost();
+        }
+        break;
+      case ConnectionStateType.connectionStateReconnecting:
+        _isReconnecting = true;
+        notifyListeners();
+        break;
+      case ConnectionStateType.connectionStateConnected:
+        _isReconnecting = false;
+        _reconnectAttempts = 0;
+        notifyListeners();
+        break;
+      case ConnectionStateType.connectionStateFailed:
+        _handleConnectionFailed();
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _handleRemoteVideoStateChange(
+    int uid,
+    RemoteVideoState state,
+    RemoteVideoStateReason reason,
+  ) {
+    switch (state) {
+      case RemoteVideoState.remoteVideoStateStopped:
+        debugPrint('Remote video stopped for user $uid: $reason');
+        break;
+      case RemoteVideoState.remoteVideoStateStarting:
+        debugPrint('Remote video starting for user $uid');
+        break;
+      case RemoteVideoState.remoteVideoStateDecoding:
+        debugPrint('Remote video decoding for user $uid');
+        break;
+      case RemoteVideoState.remoteVideoStateFrozen:
+        debugPrint('Remote video frozen for user $uid: $reason');
+        break;
+      case RemoteVideoState.remoteVideoStateFailed:
+        debugPrint('Remote video failed for user $uid: $reason');
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _handleRemoteAudioStateChange(
+    int uid,
+    RemoteAudioState state,
+    RemoteAudioStateReason reason,
+  ) {
+    switch (state) {
+      case RemoteAudioState.remoteAudioStateStopped:
+        debugPrint('Remote audio stopped for user $uid: $reason');
+        break;
+      case RemoteAudioState.remoteAudioStateStarting:
+        debugPrint('Remote audio starting for user $uid');
+        break;
+      case RemoteAudioState.remoteAudioStateDecoding:
+        debugPrint('Remote audio decoding for user $uid');
+        break;
+      case RemoteAudioState.remoteAudioStateFrozen:
+        debugPrint('Remote audio frozen for user $uid: $reason');
+        break;
+      case RemoteAudioState.remoteAudioStateFailed:
+        debugPrint('Remote audio failed for user $uid: $reason');
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _handleNetworkError() {
+    debugPrint('Network error detected, attempting to reconnect...');
+    _attemptReconnection();
+  }
+
+  void _handleTokenError() {
+    debugPrint('Token error detected, need to refresh token');
+    // In a real app, you would request a new token from your server
+  }
+
+  void _handleConnectionInterrupted() {
+    debugPrint('Connection interrupted, will attempt to reconnect');
+    _isReconnecting = true;
+    notifyListeners();
+  }
+
+  void _handleConnectionLost() {
+    debugPrint('Connection lost, attempting to reconnect...');
+    _attemptReconnection();
+  }
+
+  void _handleConnectionFailed() {
+    debugPrint('Connection failed completely');
+    _isReconnecting = false;
+    notifyListeners();
+  }
+
+  void _attemptReconnection() {
+    if (_reconnectAttempts >= _maxReconnectAttempts) {
+      debugPrint('Max reconnection attempts reached');
+      _isReconnecting = false;
+      notifyListeners();
+      return;
+    }
+
+    _reconnectAttempts++;
+    _isReconnecting = true;
+    notifyListeners();
+
+    final delay = Duration(seconds: _reconnectAttempts * 2);
+    _reconnectTimer = Timer(delay, () async {
+      if (_currentChannelId != null) {
+        try {
+          debugPrint('Reconnection attempt $_reconnectAttempts');
+          await leaveChannel();
+          await Future.delayed(const Duration(seconds: 1));
+          await joinChannel(
+            channelId: _currentChannelId!,
+            token: '', // You would get a fresh token here
+          );
+        } catch (e) {
+          debugPrint('Reconnection attempt $_reconnectAttempts failed: $e');
+          if (_reconnectAttempts < _maxReconnectAttempts) {
+            _attemptReconnection();
+          } else {
+            _isReconnecting = false;
+            notifyListeners();
+          }
+        }
+      }
+    });
+  }
+
+  /// Get connection quality for a user
+  NetworkQuality? getNetworkQuality(int uid) {
+    return _networkQualities[uid];
+  }
+
+  /// Get connection state for a user
+  UserConnectionState? getUserConnectionState(int uid) {
+    return _userStates[uid];
   }
 }

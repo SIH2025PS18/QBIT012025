@@ -1,24 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../models/patient_profile.dart';
-import '../services/supabase_patient_profile_service.dart';
-import '../services/supabase_auth_service.dart';
-import '../widgets/custom_button.dart';
+import '../constants/villages.dart';
 import '../widgets/custom_text_field.dart';
+import '../widgets/custom_button.dart';
 import 'nabha_home_screen.dart';
 
+// Model for family member
+class FamilyMember {
+  final String id;
+  final String name;
+  final int age;
+  final String gender;
+  final String relationship;
+
+  FamilyMember({
+    required this.id,
+    required this.name,
+    required this.age,
+    required this.gender,
+    required this.relationship,
+  });
+}
+
 class HealthProfileSetupScreen extends StatefulWidget {
-  final String userId;
-  final String fullName;
-  final String email;
-  final String phoneNumber;
+  final String? userId;
+  final String? fullName;
+  final String? email;
+  final String? phoneNumber;
 
   const HealthProfileSetupScreen({
     super.key,
-    required this.userId,
-    required this.fullName,
-    required this.email,
-    required this.phoneNumber,
+    this.userId,
+    this.fullName,
+    this.email,
+    this.phoneNumber,
   });
 
   @override
@@ -26,213 +41,233 @@ class HealthProfileSetupScreen extends StatefulWidget {
       _HealthProfileSetupScreenState();
 }
 
-class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen>
-    with TickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
+class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen> {
+  final PageController _pageController = PageController();
+  int _currentStep = 0;
+  final int _totalSteps = 4;
 
-  // Controllers
-  final _dateOfBirthController = TextEditingController();
-  final _addressController = TextEditingController();
+  // Form controllers
+  final _formKey = GlobalKey<FormState>();
+  final _fullNameController = TextEditingController();
+  final _ageController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _emergencyContactController = TextEditingController();
   final _emergencyPhoneController = TextEditingController();
-  final _allergyController = TextEditingController();
-  final _medicationController = TextEditingController();
 
-  // State variables
-  String _selectedGender = '';
-  String _selectedBloodGroup = '';
-  DateTime? _selectedDateOfBirth;
-  List<String> _allergies = [];
-  List<String> _medications = [];
+  // Family member controllers
+  final _familyNameController = TextEditingController();
+  final _familyAgeController = TextEditingController();
+  final _familyRelationshipController = TextEditingController();
 
+  // Form data
+  String? _gender;
+  String? _selectedVillage;
+  String? _familyGender;
   bool _isLoading = false;
-
-  // Animation controllers
-  late AnimationController _headerController;
-  late Animation<double> _headerAnimation;
+  List<FamilyMember> _familyMembers = [];
 
   // Options
-  final List<String> _genderOptions = [
-    'Male',
-    'Female',
+  final List<String> _genderOptions = ['Male', 'Female', 'Other'];
+  final List<String> _familyGenderOptions = ['Male', 'Female', 'Other'];
+  final List<String> _relationshipOptions = [
+    'Child',
+    'Parent',
+    'Spouse',
+    'Sibling',
+    'Grandparent',
     'Other',
-    'Prefer not to say',
   ];
-  final List<String> _bloodGroups = [
-    'A+',
-    'A-',
-    'B+',
-    'B-',
-    'AB+',
-    'AB-',
-    'O+',
-    'O-',
-  ];
+  final List<String> _villages = Villages.nabhaVillages;
 
   @override
   void initState() {
     super.initState();
-    _headerController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _headerAnimation = CurvedAnimation(
-      parent: _headerController,
-      curve: Curves.easeOutBack,
-    );
-    _headerController.forward();
+    // Pre-fill with passed data if available
+    if (widget.fullName != null) {
+      _fullNameController.text = widget.fullName!;
+    }
+    if (widget.phoneNumber != null) {
+      _phoneController.text = widget.phoneNumber!;
+    }
   }
 
   @override
   void dispose() {
-    _dateOfBirthController.dispose();
-    _addressController.dispose();
+    _pageController.dispose();
+    _fullNameController.dispose();
+    _ageController.dispose();
+    _phoneController.dispose();
     _emergencyContactController.dispose();
     _emergencyPhoneController.dispose();
-    _allergyController.dispose();
-    _medicationController.dispose();
-    _headerController.dispose();
+    _familyNameController.dispose();
+    _familyAgeController.dispose();
+    _familyRelationshipController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectDateOfBirth() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().subtract(const Duration(days: 365 * 25)),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-      helpText: 'Select Date of Birth',
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).primaryColor,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).primaryColor,
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
+  void _nextStep() {
+    // Validate current step before proceeding
+    if (!_validateCurrentStep()) return;
 
-    if (picked != null && picked != _selectedDateOfBirth) {
+    if (_currentStep < _totalSteps - 1) {
       setState(() {
-        _selectedDateOfBirth = picked;
-        _dateOfBirthController.text =
-            '${picked.day}/${picked.month}/${picked.year}';
+        _currentStep++;
       });
-    }
-  }
-
-  void _addAllergy() {
-    final allergy = _allergyController.text.trim();
-    if (allergy.isNotEmpty && !_allergies.contains(allergy)) {
-      setState(() {
-        _allergies.add(allergy);
-        _allergyController.clear();
-      });
-      // Show a brief confirmation
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Added allergy: $allergy'),
-          duration: const Duration(seconds: 1),
-          backgroundColor: Colors.green.withOpacity(0.8),
-        ),
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
       );
+    } else {
+      _completeSetup();
     }
   }
 
-  void _removeAllergy(String allergy) {
-    setState(() {
-      _allergies.remove(allergy);
-    });
+  bool _validateCurrentStep() {
+    switch (_currentStep) {
+      case 0: // Personal info step
+        if (_fullNameController.text.trim().isEmpty) {
+          _showValidationError('Please enter your full name');
+          return false;
+        }
+        if (_ageController.text.trim().isEmpty) {
+          _showValidationError('Please enter your age');
+          return false;
+        }
+        if (int.tryParse(_ageController.text.trim()) == null) {
+          _showValidationError('Please enter a valid age');
+          return false;
+        }
+        if (_gender == null || _gender!.isEmpty) {
+          _showValidationError('Please select your gender');
+          return false;
+        }
+        return true;
+      case 1: // Village selection step
+        if (_selectedVillage == null || _selectedVillage!.isEmpty) {
+          _showValidationError('Please select your village');
+          return false;
+        }
+        return true;
+      case 2: // Phone and emergency contact step
+        if (_phoneController.text.trim().isEmpty) {
+          _showValidationError('Please enter your phone number');
+          return false;
+        }
+        if (_phoneController.text.trim().length < 10) {
+          _showValidationError('Please enter a valid phone number');
+          return false;
+        }
+        if (_emergencyContactController.text.trim().isEmpty) {
+          _showValidationError('Please enter emergency contact name');
+          return false;
+        }
+        if (_emergencyPhoneController.text.trim().isEmpty) {
+          _showValidationError('Please enter emergency contact phone');
+          return false;
+        }
+        if (_emergencyPhoneController.text.trim().length < 10) {
+          _showValidationError('Please enter a valid emergency phone number');
+          return false;
+        }
+        return true;
+      case 3: // Family members step
+        return true;
+      default:
+        return true;
+    }
+  }
+
+  void _showValidationError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Removed allergy: $allergy'),
-        duration: const Duration(seconds: 1),
-        backgroundColor: Colors.orange.withOpacity(0.8),
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
       ),
     );
   }
 
-  void _addMedication() {
-    final medication = _medicationController.text.trim();
-    if (medication.isNotEmpty && !_medications.contains(medication)) {
+  void _previousStep() {
+    if (_currentStep > 0) {
       setState(() {
-        _medications.add(medication);
-        _medicationController.clear();
+        _currentStep--;
       });
-      // Show a brief confirmation
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Added medication: $medication'),
-          duration: const Duration(seconds: 1),
-          backgroundColor: Colors.green.withOpacity(0.8),
-        ),
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
       );
     }
   }
 
-  void _removeMedication(String medication) {
+  void _addFamilyMember() {
+    if (_familyNameController.text.trim().isEmpty) {
+      _showValidationError('Please enter family member name');
+      return;
+    }
+
+    if (_familyAgeController.text.trim().isEmpty) {
+      _showValidationError('Please enter family member age');
+      return;
+    }
+
+    if (int.tryParse(_familyAgeController.text.trim()) == null) {
+      _showValidationError('Please enter a valid age');
+      return;
+    }
+
+    if (_familyGender == null || _familyGender!.isEmpty) {
+      _showValidationError('Please select family member gender');
+      return;
+    }
+
+    if (_familyRelationshipController.text.trim().isEmpty) {
+      _showValidationError('Please enter relationship');
+      return;
+    }
+
+    final newMember = FamilyMember(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: _familyNameController.text.trim(),
+      age: int.parse(_familyAgeController.text.trim()),
+      gender: _familyGender!,
+      relationship: _familyRelationshipController.text.trim(),
+    );
+
     setState(() {
-      _medications.remove(medication);
+      _familyMembers.add(newMember);
+      // Clear form
+      _familyNameController.clear();
+      _familyAgeController.clear();
+      _familyGender = null;
+      _familyRelationshipController.clear();
     });
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Removed medication: $medication'),
-        duration: const Duration(seconds: 1),
-        backgroundColor: Colors.orange.withOpacity(0.8),
-      ),
+      const SnackBar(content: Text('Family member added successfully')),
     );
   }
 
-  Future<void> _saveProfile() async {
-    if (!_formKey.currentState!.validate()) return;
+  void _removeFamilyMember(String id) {
+    setState(() {
+      _familyMembers.removeWhere((member) => member.id == id);
+    });
+  }
 
-    setState(() => _isLoading = true);
+  Future<void> _completeSetup() async {
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
-      // Create a new patient profile with all the information
-      final profile = PatientProfile(
-        id: widget.userId,
-        fullName: widget.fullName,
-        email: widget.email,
-        phoneNumber: widget.phoneNumber,
-        dateOfBirth: _selectedDateOfBirth ?? DateTime.now(),
-        gender: _selectedGender,
-        bloodGroup: _selectedBloodGroup,
-        address: _addressController.text.trim(),
-        emergencyContact: _emergencyContactController.text.trim(),
-        emergencyContactPhone: _emergencyPhoneController.text.trim(),
-        allergies: _allergies,
-        medications: _medications,
-        medicalHistory: {
-          'notes': '',
-          'lastUpdated': DateTime.now().toIso8601String(),
-        },
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
+      // Simulate profile creation
+      await Future.delayed(const Duration(seconds: 2));
 
-      final success = await PatientProfileService.savePatientProfile(profile);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
 
-      if (success && mounted) {
-        // Show success message and navigate to home
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile setup completed successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // Navigate to home screen
+        // Navigate to nabha home screen
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const NabhaHomeScreen()),
           (route) => false,
@@ -240,16 +275,12 @@ class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save profile: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to complete setup: $e')));
       }
     }
   }
@@ -257,18 +288,18 @@ class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9FF),
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: const Text(
-          'Health Profile Setup',
+          'Profile Setup',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black54),
@@ -284,428 +315,20 @@ class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen>
         child: Column(
           children: [
             // Progress indicator
-            Container(
-              height: 4,
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(2),
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    width: constraints.maxWidth * 0.9,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                'Step 3 of 3',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
+            _buildProgressIndicator(),
+            const SizedBox(height: 20),
+
+            // Page content
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header with animation
-                      ScaleTransition(
-                        scale: _headerAnimation,
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).primaryColor.withOpacity(0.1),
-                                Theme.of(
-                                  context,
-                                ).primaryColor.withOpacity(0.05),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(
-                                  context,
-                                ).primaryColor.withOpacity(0.1),
-                                blurRadius: 12,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.health_and_safety,
-                                  size: 40,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              const Text(
-                                'Complete Your Health Profile',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'This information helps doctors provide better care during consultations',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Personal Information Section
-                      _buildSectionCard(
-                        title: 'Personal Information',
-                        icon: Icons.person,
-                        children: [
-                          // Full Name (read-only)
-                          _buildReadOnlyField(
-                            label: 'Full Name',
-                            value: widget.fullName,
-                            icon: Icons.person_outline,
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Phone Number (read-only)
-                          _buildReadOnlyField(
-                            label: 'Phone Number',
-                            value: widget.phoneNumber,
-                            icon: Icons.phone,
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Date of Birth
-                          GestureDetector(
-                            onTap: _selectDateOfBirth,
-                            child: AbsorbPointer(
-                              child: CustomTextField(
-                                controller: _dateOfBirthController,
-                                labelText: 'Date of Birth',
-                                hintText: 'Select your date of birth',
-                                prefixIcon: Icons.calendar_today,
-                                validator: (value) {
-                                  if (_selectedDateOfBirth == null) {
-                                    return 'Please select your date of birth';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Gender
-                          _buildDropdownField(
-                            'Gender',
-                            _selectedGender,
-                            _genderOptions,
-                            Icons.person_outline,
-                            (value) =>
-                                setState(() => _selectedGender = value ?? ''),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please select your gender';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Blood Group
-                          _buildDropdownField(
-                            'Blood Group',
-                            _selectedBloodGroup,
-                            _bloodGroups,
-                            Icons.bloodtype,
-                            (value) => setState(
-                              () => _selectedBloodGroup = value ?? '',
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Address
-                          CustomTextField(
-                            controller: _addressController,
-                            labelText: 'Address',
-                            hintText: 'Enter your full address',
-                            prefixIcon: Icons.location_on,
-                            maxLines: 3,
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Emergency Contact Section
-                      _buildSectionCard(
-                        title: 'Emergency Contact',
-                        icon: Icons.emergency,
-                        children: [
-                          CustomTextField(
-                            controller: _emergencyContactController,
-                            labelText: 'Emergency Contact Name',
-                            hintText: 'Full name of emergency contact',
-                            prefixIcon: Icons.person,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Emergency contact name is required';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-
-                          CustomTextField(
-                            controller: _emergencyPhoneController,
-                            labelText: 'Emergency Contact Phone',
-                            hintText: 'Phone number of emergency contact',
-                            prefixIcon: Icons.phone,
-                            keyboardType: TextInputType.phone,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Emergency contact phone is required';
-                              }
-                              if (value.length < 10) {
-                                return 'Please enter a valid phone number';
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Medical Information Section
-                      _buildSectionCard(
-                        title: 'Medical Information',
-                        icon: Icons.local_hospital,
-                        children: [
-                          // Allergies
-                          const Text(
-                            'Allergies',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'List any food, drug, or environmental allergies',
-                            style: TextStyle(fontSize: 13, color: Colors.grey),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  controller: _allergyController,
-                                  labelText: 'Add Allergy',
-                                  hintText: 'Add an allergy (e.g., Peanuts)',
-                                  prefixIcon: Icons.add,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              ElevatedButton(
-                                onPressed: _addAllergy,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 16,
-                                  ),
-                                ),
-                                child: const Text('Add'),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          if (_allergies.isNotEmpty)
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.red[50],
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.red[100]!),
-                              ),
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: _allergies.map((allergy) {
-                                  return Chip(
-                                    label: Text(
-                                      allergy,
-                                      style: const TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    deleteIcon: const Icon(
-                                      Icons.close,
-                                      size: 18,
-                                      color: Colors.red,
-                                    ),
-                                    onDeleted: () => _removeAllergy(allergy),
-                                    backgroundColor: Colors.red[100],
-                                    deleteIconColor: Colors.red[700],
-                                    elevation: 1,
-                                    shadowColor: Colors.red.withOpacity(0.2),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-
-                          const SizedBox(height: 24),
-
-                          // Current Medications
-                          const Text(
-                            'Current Medications',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'List all medicines you are currently taking',
-                            style: TextStyle(fontSize: 13, color: Colors.grey),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  controller: _medicationController,
-                                  labelText: 'Add Medication',
-                                  hintText:
-                                      'Add a medication (e.g., Metformin)',
-                                  prefixIcon: Icons.add,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              ElevatedButton(
-                                onPressed: _addMedication,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 16,
-                                  ),
-                                ),
-                                child: const Text('Add'),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          if (_medications.isNotEmpty)
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.blue[50],
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.blue[100]!),
-                              ),
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: _medications.map((medication) {
-                                  return Chip(
-                                    label: Text(
-                                      medication,
-                                      style: const TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    deleteIcon: const Icon(
-                                      Icons.close,
-                                      size: 18,
-                                      color: Colors.blue,
-                                    ),
-                                    onDeleted: () =>
-                                        _removeMedication(medication),
-                                    backgroundColor: Colors.blue[100],
-                                    deleteIconColor: Colors.blue[700],
-                                    elevation: 1,
-                                    shadowColor: Colors.blue.withOpacity(0.2),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // Save Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: CustomButton(
-                          text: 'Complete Profile Setup',
-                          onPressed: _saveProfile,
-                          isLoading: _isLoading,
-                          icon: Icons.check_circle,
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _buildPersonalInfoPage(),
+                  _buildVillageSelectionPage(),
+                  _buildContactInfoPage(),
+                  _buildFamilyMembersPage(),
+                ],
               ),
             ),
           ],
@@ -714,162 +337,575 @@ class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen>
     );
   }
 
-  Widget _buildSectionCard({
-    required String title,
-    required IconData icon,
-    required List<Widget> children,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
+  Widget _buildProgressIndicator() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        children: List.generate(_totalSteps, (index) {
+          return Expanded(
+            child: Container(
+              height: 6,
+              margin: const EdgeInsets.symmetric(horizontal: 2),
+              decoration: BoxDecoration(
+                color: index <= _currentStep
+                    ? Theme.of(context).primaryColor
+                    : Colors.grey[300],
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+          );
+        }),
       ),
+    );
+  }
+
+  Widget _buildPersonalInfoPage() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Personal Information',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Please provide your basic information',
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 32),
+
+            // Full name field
+            CustomTextField(
+              controller: _fullNameController,
+              labelText: 'Full Name',
+              hintText: 'Enter your full name',
+              prefixIcon: Icons.person_outline,
+              textCapitalization: TextCapitalization.words,
+            ),
+
+            const SizedBox(height: 20),
+
+            // Age field
+            CustomTextField(
+              controller: _ageController,
+              labelText: 'Age',
+              hintText: 'Enter your age',
+              prefixIcon: Icons.calendar_today_outlined,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+
+            const SizedBox(height: 20),
+
+            // Gender selection
+            _buildGenderSelection(),
+
+            const SizedBox(height: 32),
+
+            // Navigation buttons
+            _buildNavigationButtons(showPrevious: false),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVillageSelectionPage() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  color: Theme.of(context).primaryColor,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
+          const Text(
+            'Select Your Village',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            'This determines your priority in the healthcare system',
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 32),
+
+          // Village search field
+          CustomTextField(
+            controller: TextEditingController(),
+            labelText: 'Search Village',
+            hintText: 'Search for your village',
+            prefixIcon: Icons.search,
+            onChanged: (value) {
+              // In a real implementation, this would filter the village list
+            },
+          ),
+
           const SizedBox(height: 20),
-          ...children,
+
+          // Village list
+          Container(
+            height: 300,
+            child: ListView.builder(
+              itemCount: _villages.length,
+              itemBuilder: (context, index) {
+                final village = _villages[index];
+                return ListTile(
+                  title: Text(village),
+                  selected: _selectedVillage == village,
+                  selectedTileColor: Theme.of(
+                    context,
+                  ).primaryColor.withOpacity(0.1),
+                  onTap: () {
+                    setState(() {
+                      _selectedVillage = village;
+                    });
+                  },
+                  trailing: _selectedVillage == village
+                      ? Icon(Icons.check, color: Theme.of(context).primaryColor)
+                      : null,
+                );
+              },
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          // Navigation buttons
+          _buildNavigationButtons(),
         ],
       ),
     );
   }
 
-  Widget _buildReadOnlyField({
-    required String label,
-    required String value,
-    required IconData icon,
-  }) {
+  Widget _buildContactInfoPage() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Contact Information',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'We need this for appointment reminders and emergencies',
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 32),
+
+            // Phone number field
+            CustomTextField(
+              controller: _phoneController,
+              labelText: 'Phone Number',
+              hintText: 'Enter your phone number',
+              prefixIcon: Icons.phone,
+              keyboardType: TextInputType.phone,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+
+            const SizedBox(height: 20),
+
+            // Emergency contact name
+            CustomTextField(
+              controller: _emergencyContactController,
+              labelText: 'Emergency Contact Name',
+              hintText: 'Name of family member or friend',
+              prefixIcon: Icons.contact_emergency_outlined,
+              textCapitalization: TextCapitalization.words,
+            ),
+
+            const SizedBox(height: 20),
+
+            // Emergency contact phone
+            CustomTextField(
+              controller: _emergencyPhoneController,
+              labelText: 'Emergency Contact Phone',
+              hintText: 'Phone number of emergency contact',
+              prefixIcon: Icons.phone_android,
+              keyboardType: TextInputType.phone,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+
+            const SizedBox(height: 32),
+
+            // Navigation buttons
+            _buildNavigationButtons(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFamilyMembersPage() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Family Members',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Add family members under your account',
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 32),
+
+          // Information text
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.blue[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.blue[100]!),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.blue[700]),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'You can add family members (children, elderly parents) under your phone number. '
+                    'They will have access to the same healthcare services.',
+                    style: TextStyle(color: Colors.blue[800], fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          // Add family member form
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[300]!),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Add New Family Member',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Family member name
+                CustomTextField(
+                  controller: _familyNameController,
+                  labelText: 'Full Name',
+                  hintText: 'Enter family member name',
+                  prefixIcon: Icons.person_outline,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Family member age
+                CustomTextField(
+                  controller: _familyAgeController,
+                  labelText: 'Age',
+                  hintText: 'Enter age',
+                  prefixIcon: Icons.calendar_today_outlined,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Family member gender
+                _buildFamilyGenderSelection(),
+
+                const SizedBox(height: 16),
+
+                // Relationship
+                CustomTextField(
+                  controller: _familyRelationshipController,
+                  labelText: 'Relationship',
+                  hintText: 'e.g., Child, Parent, Spouse',
+                  prefixIcon: Icons.family_restroom,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Add button
+                CustomButton(
+                  text: 'Add Family Member',
+                  onPressed: _addFamilyMember,
+                  icon: Icons.add,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Family members list
+          if (_familyMembers.isNotEmpty) ...[
+            const Text(
+              'Added Family Members',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _familyMembers.length,
+              itemBuilder: (context, index) {
+                final member = _familyMembers[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Theme.of(
+                        context,
+                      ).primaryColor.withOpacity(0.1),
+                      child: Icon(
+                        member.gender == 'Male'
+                            ? Icons.male
+                            : member.gender == 'Female'
+                            ? Icons.female
+                            : Icons.person,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    title: Text(member.name),
+                    subtitle: Text(
+                      '${member.age} years old • ${member.relationship}',
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _removeFamilyMember(member.id),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ] else ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.family_restroom,
+                    size: 48,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'No family members added yet',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          const SizedBox(height: 32),
+
+          // Navigation buttons
+          _buildNavigationButtons(showNext: false, showComplete: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGenderSelection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
+          'Gender',
+          style: TextStyle(
+            fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.grey,
+            color: Colors.grey[700],
           ),
         ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          child: Row(
-            children: [
-              Icon(icon, size: 20, color: Colors.grey),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  value,
-                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+        const SizedBox(height: 12),
+        Row(
+          children: _genderOptions.map((option) {
+            return Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _gender = option;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: _gender == option
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: _gender == option
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey[300]!,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      option,
+                      style: TextStyle(
+                        color: _gender == option
+                            ? Colors.white
+                            : Colors.grey[700],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              const Icon(Icons.lock, size: 16, color: Colors.grey),
-            ],
-          ),
+            );
+          }).toList(),
         ),
       ],
     );
   }
 
-  Widget _buildDropdownField(
-    String label,
-    String value,
-    List<String> options,
-    IconData icon,
-    ValueChanged<String?> onChanged, {
-    String? Function(String?)? validator,
-  }) {
+  Widget _buildFamilyGenderSelection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
+          'Gender',
+          style: TextStyle(
+            fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.grey,
+            color: Colors.grey[700],
           ),
         ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          value: value.isEmpty ? null : value,
-          onChanged: onChanged,
-          validator: validator,
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: Colors.grey[600]),
-            filled: true,
-            fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 16,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Theme.of(context).primaryColor,
-                width: 2,
-              ),
-            ),
-            hintStyle: const TextStyle(color: Colors.grey),
-          ),
-          items: options.map((String option) {
-            return DropdownMenuItem<String>(
-              value: option,
-              child: Text(
-                option,
-                style: const TextStyle(fontSize: 16, color: Colors.black87),
+        const SizedBox(height: 12),
+        Row(
+          children: _familyGenderOptions.map((option) {
+            return Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _familyGender = option;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: _familyGender == option
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: _familyGender == option
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey[300]!,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      option,
+                      style: TextStyle(
+                        color: _familyGender == option
+                            ? Colors.white
+                            : Colors.grey[700],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             );
           }).toList(),
-          hint: Text('Select $label'),
         ),
+      ],
+    );
+  }
+
+  Widget _buildNavigationButtons({
+    bool showPrevious = true,
+    bool showNext = true,
+    bool showComplete = false,
+  }) {
+    return Row(
+      children: [
+        if (showPrevious)
+          Expanded(
+            child: OutlinedButton(
+              onPressed: _previousStep,
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: BorderSide(color: Colors.grey[300]!),
+              ),
+              child: Text(
+                'Previous',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ),
+          ),
+        if (showPrevious && (showNext || showComplete))
+          const SizedBox(width: 12),
+        if (showNext)
+          Expanded(
+            flex: 2,
+            child: CustomButton(
+              text: 'Next',
+              onPressed: _nextStep,
+              isLoading: _isLoading,
+            ),
+          ),
+        if (showComplete)
+          Expanded(
+            flex: 2,
+            child: CustomButton(
+              text: 'Complete Setup',
+              onPressed: _completeSetup,
+              isLoading: _isLoading,
+              icon: Icons.check,
+            ),
+          ),
       ],
     );
   }

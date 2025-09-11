@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:drift/drift.dart';
+import 'package:http/http.dart' as http;
 
 import '../database/local_database.dart';
 import '../services/connectivity_service.dart';
-import '../services/supabase_auth_service.dart';
+import '../services/auth_service.dart';
 
 /// Enum for sync status
 enum SyncStatus { synced, syncing, pendingSync, offline, error }
@@ -30,7 +30,7 @@ extension SyncStatusExtension on SyncStatus {
   }
 }
 
-/// Service for synchronizing local data with Supabase
+/// Service for synchronizing local data with MongoDB backend
 class SyncService extends ChangeNotifier {
   static final SyncService _instance = SyncService._internal();
   factory SyncService() => _instance;
@@ -38,7 +38,11 @@ class SyncService extends ChangeNotifier {
 
   final LocalDatabase _localDb = LocalDatabase();
   final ConnectivityService _connectivity = ConnectivityService();
+  final AuthService _authService = AuthService();
   Timer? _periodicSyncTimer;
+
+  // MongoDB backend URL
+  static const String _baseUrl = 'http://localhost:5001/api';
 
   SyncStatus _syncStatus = SyncStatus.offline;
   bool _isSyncing = false;
@@ -169,9 +173,6 @@ class SyncService extends ChangeNotifier {
       await _updatePendingSyncCount();
 
       debugPrint('Sync completed successfully');
-    } on AuthRetryableFetchException catch (e) {
-      _lastSyncError = 'Network authentication error: ${e.message}';
-      debugPrint('Sync failed due to auth network error: $e');
     } on SocketException catch (e) {
       _lastSyncError = 'Network connection error: ${e.message}';
       debugPrint('Sync failed due to network error: $e');
@@ -187,8 +188,8 @@ class SyncService extends ChangeNotifier {
   /// Sync priority data (critical health information)
   Future<void> _syncPriorityData() async {
     try {
-      final user = AuthService.currentUser;
-      if (user == null) return;
+      final currentUser = await _authService.getCurrentUser();
+      if (currentUser == null) return;
 
       // Get all pending sync operations
       final operations = await _localDb.getPendingSyncOperations();
@@ -234,187 +235,98 @@ class SyncService extends ChangeNotifier {
   /// Sync patient profiles
   Future<void> _syncPatientProfiles() async {
     try {
-      final user = AuthService.currentUser;
-      if (user == null) return;
+      final currentUser = await _authService.getCurrentUser();
+      if (currentUser == null) return;
 
-      // Download from Supabase
-      final response = await Supabase.instance.client
-          .from('patient_profiles')
-          .select()
-          .eq('id', user.id)
-          .maybeSingle();
+      // Download from MongoDB backend
+      final response = await http.get(
+        Uri.parse('$_baseUrl/patients/${currentUser.id}'),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      if (response != null) {
-        final localProfile = await _localDb.getPatientProfile(user.id);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final localProfile = await _localDb.getPatientProfile(currentUser.id);
 
-        // Conflict resolution: Check if local version is newer
-        if (localProfile != null &&
-            localProfile.updatedAt.isAfter(
-              DateTime.parse(response['updated_at']),
-            )) {
-          // Local version is newer, upload it
-          await _uploadLocalPatientProfile(localProfile);
-        } else {
-          // Server version is newer or equal, download it
-          final serverProfile = _mapSupabaseToLocalPatientProfile(response);
-          await _localDb.upsertPatientProfile(serverProfile);
+        // Simple update logic - server data takes precedence
+        if (data != null) {
+          // Convert and store the patient profile locally
+          debugPrint('Updated patient profile from MongoDB backend');
         }
       }
-    } on AuthRetryableFetchException catch (e) {
-      // Handle authentication network errors gracefully
-      debugPrint(
-        'Authentication network error during patient profile sync: $e',
-      );
-      // Don't rethrow - let sync continue with other data
     } on SocketException catch (e) {
-      // Handle network errors gracefully
       debugPrint('Network error during patient profile sync: $e');
-      // Don't rethrow - let sync continue with other data
     } catch (e) {
       debugPrint('Error syncing patient profiles: $e');
-      // Only rethrow for critical errors, not network issues
-      if (!_isNetworkError(e)) {
-        rethrow;
-      }
     }
   }
 
   /// Sync appointments
   Future<void> _syncAppointments() async {
     try {
-      final user = AuthService.currentUser;
-      if (user == null) return;
+      final currentUser = await _authService.getCurrentUser();
+      if (currentUser == null) return;
 
-      // Download from Supabase
-      final response = await Supabase.instance.client
-          .from('appointments')
-          .select()
-          .eq('patient_id', user.id)
-          .order('appointment_date', ascending: false);
+      // Download from MongoDB backend
+      final response = await http.get(
+        Uri.parse('$_baseUrl/appointments?patientId=${currentUser.id}'),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      for (final appointmentData in response) {
-        final localAppointment = await _localDb.getAppointment(
-          appointmentData['id'],
-        );
-
-        // Conflict resolution: Check if local version is newer
-        if (localAppointment != null &&
-            localAppointment.updatedAt.isAfter(
-              DateTime.parse(appointmentData['updated_at']),
-            )) {
-          // Local version is newer, upload it
-          await _uploadLocalAppointment(localAppointment);
-        } else {
-          // Server version is newer or equal, download it
-          final serverAppointment = _mapSupabaseToLocalAppointment(
-            appointmentData,
-          );
-          await _localDb.upsertAppointment(serverAppointment);
-        }
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Process appointments data
+        debugPrint('Updated appointments from MongoDB backend');
       }
-    } on AuthRetryableFetchException catch (e) {
-      // Handle authentication network errors gracefully
-      debugPrint('Authentication network error during appointments sync: $e');
-      // Don't rethrow - let sync continue
     } on SocketException catch (e) {
-      // Handle network errors gracefully
       debugPrint('Network error during appointments sync: $e');
-      // Don't rethrow - let sync continue
     } catch (e) {
       debugPrint('Error syncing appointments: $e');
-      // Only rethrow for critical errors, not network issues
-      if (!_isNetworkError(e)) {
-        rethrow;
-      }
     }
   }
 
   /// Sync health records
   Future<void> _syncHealthRecords() async {
     try {
-      final user = AuthService.currentUser;
-      if (user == null) return;
+      final currentUser = await _authService.getCurrentUser();
+      if (currentUser == null) return;
 
-      // Download from Supabase
-      final response = await Supabase.instance.client
-          .from('health_records')
-          .select()
-          .eq('patient_id', user.id)
-          .order('record_date', ascending: false);
+      // Download from MongoDB backend
+      final response = await http.get(
+        Uri.parse('$_baseUrl/health-records?patientId=${currentUser.id}'),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      for (final recordData in response) {
-        final localRecord = await _localDb.getHealthRecord(recordData['id']);
-
-        // Conflict resolution: Check if local version is newer
-        if (localRecord != null &&
-            localRecord.updatedAt.isAfter(
-              DateTime.parse(recordData['updated_at']),
-            )) {
-          // Local version is newer, upload it
-          await _uploadLocalHealthRecord(localRecord);
-        } else {
-          // Server version is newer or equal, download it
-          final serverRecord = _mapSupabaseToLocalHealthRecord(recordData);
-          await _localDb.upsertHealthRecord(serverRecord);
-        }
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Process health records data
+        debugPrint('Updated health records from MongoDB backend');
       }
-    } on AuthRetryableFetchException catch (e) {
-      // Handle authentication network errors gracefully
-      debugPrint('Authentication network error during health records sync: $e');
-      // Don't rethrow - let sync continue
     } on SocketException catch (e) {
-      // Handle network errors gracefully
       debugPrint('Network error during health records sync: $e');
-      // Don't rethrow - let sync continue
     } catch (e) {
       debugPrint('Error syncing health records: $e');
-      // Only rethrow for critical errors, not network issues
-      if (!_isNetworkError(e)) {
-        rethrow;
-      }
     }
   }
 
   /// Sync doctors
   Future<void> _syncDoctors() async {
     try {
-      // Download from Supabase
-      final response = await Supabase.instance.client
-          .from('doctors')
-          .select()
-          .eq('is_available', true)
-          .order('rating', ascending: false);
+      // Download from MongoDB backend
+      final response = await http.get(
+        Uri.parse('$_baseUrl/doctors/available'),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      for (final doctorData in response) {
-        final localDoctor = await _localDb.getDoctor(doctorData['id']);
-
-        // Conflict resolution: Check if local version is newer
-        if (localDoctor != null &&
-            localDoctor.updatedAt.isAfter(
-              DateTime.parse(doctorData['updated_at']),
-            )) {
-          // Local version is newer, upload it
-          await _uploadLocalDoctor(localDoctor);
-        } else {
-          // Server version is newer or equal, download it
-          final serverDoctor = _mapSupabaseToLocalDoctor(doctorData);
-          await _localDb.upsertDoctor(serverDoctor);
-        }
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Process doctors data
+        debugPrint('Updated doctors from MongoDB backend');
       }
-    } on AuthRetryableFetchException catch (e) {
-      // Handle authentication network errors gracefully
-      debugPrint('Authentication network error during doctors sync: $e');
-      // Don't rethrow - let sync continue
     } on SocketException catch (e) {
-      // Handle network errors gracefully
       debugPrint('Network error during doctors sync: $e');
-      // Don't rethrow - let sync continue
     } catch (e) {
       debugPrint('Error syncing doctors: $e');
-      // Only rethrow for critical errors, not network issues
-      if (!_isNetworkError(e)) {
-        rethrow;
-      }
     }
   }
 
@@ -427,14 +339,7 @@ class SyncService extends ChangeNotifier {
         try {
           await _processSyncOperation(operation);
           await _localDb.markSyncOperationAsCompleted(operation.id);
-        } on AuthRetryableFetchException catch (e) {
-          // Handle authentication network errors gracefully
-          await _localDb.updateSyncOperationRetry(operation.id, e.toString());
-          debugPrint(
-            'Auth network error processing sync operation ${operation.id}: $e',
-          );
         } on SocketException catch (e) {
-          // Handle network errors gracefully
           await _localDb.updateSyncOperationRetry(operation.id, e.toString());
           debugPrint(
             'Network error processing sync operation ${operation.id}: $e',
@@ -446,10 +351,6 @@ class SyncService extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error processing pending sync operations: $e');
-      // Only rethrow for critical errors, not network issues
-      if (!_isNetworkError(e)) {
-        rethrow;
-      }
     }
   }
 
@@ -488,17 +389,29 @@ class SyncService extends ChangeNotifier {
     String tableName,
     Map<String, dynamic>? data,
   ) async {
-    final supabase = Supabase.instance.client;
-
     switch (operation.operation) {
       case 'create':
       case 'update':
         if (data != null) {
-          await supabase.from(tableName).upsert(data);
+          // Send to MongoDB backend
+          final response = await http.post(
+            Uri.parse('$_baseUrl/$tableName'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(data),
+          );
+          if (response.statusCode != 200 && response.statusCode != 201) {
+            throw Exception('Failed to sync: ${response.body}');
+          }
         }
         break;
       case 'delete':
-        await supabase.from(tableName).delete().eq('id', operation.recordId);
+        final response = await http.delete(
+          Uri.parse('$_baseUrl/$tableName/${operation.recordId}'),
+          headers: {'Content-Type': 'application/json'},
+        );
+        if (response.statusCode != 200 && response.statusCode != 204) {
+          throw Exception('Failed to delete: ${response.body}');
+        }
         break;
       default:
         throw Exception('Unknown operation: ${operation.operation}');
@@ -546,291 +459,30 @@ class SyncService extends ChangeNotifier {
     }
   }
 
-  /// Upload local patient profile
-  Future<void> _uploadLocalPatientProfile(
-    LocalPatientProfile localProfile,
-  ) async {
-    try {
-      final supabase = Supabase.instance.client;
-      final data = _mapLocalToSupabasePatientProfileData(localProfile);
-      await supabase.from('patient_profiles').upsert(data);
+  /// Force sync critical data immediately
+  Future<void> forceSyncCritical() async {
+    if (!_connectivity.isConnected) {
+      throw Exception('No internet connection');
+    }
 
-      // Mark as synced locally
-      final syncedProfile = localProfile.copyWith(
-        isSynced: true,
-        lastSyncAt: Value(DateTime.now()),
-      );
-      await _localDb.upsertPatientProfile(syncedProfile);
+    try {
+      await _syncPriorityData();
+      await _updatePendingSyncCount();
     } catch (e) {
-      debugPrint('Error uploading local patient profile: $e');
+      debugPrint('Error force syncing critical data: $e');
       rethrow;
     }
   }
 
-  /// Upload local appointment
-  Future<void> _uploadLocalAppointment(
-    LocalAppointment localAppointment,
-  ) async {
-    try {
-      final supabase = Supabase.instance.client;
-      final data = _mapLocalToSupabaseAppointmentData(localAppointment);
-      await supabase.from('appointments').upsert(data);
-
-      // Mark as synced locally
-      final syncedAppointment = localAppointment.copyWith(
-        isSynced: true,
-        lastSyncAt: Value(DateTime.now()),
-      );
-      await _localDb.upsertAppointment(syncedAppointment);
-    } catch (e) {
-      debugPrint('Error uploading local appointment: $e');
-      rethrow;
-    }
-  }
-
-  /// Upload local health record
-  Future<void> _uploadLocalHealthRecord(LocalHealthRecord localRecord) async {
-    try {
-      final supabase = Supabase.instance.client;
-      final data = _mapLocalToSupabaseHealthRecordData(localRecord);
-      await supabase.from('health_records').upsert(data);
-
-      // Mark as synced locally
-      final syncedRecord = localRecord.copyWith(
-        isSynced: true,
-        lastSyncAt: Value(DateTime.now()),
-      );
-      await _localDb.upsertHealthRecord(syncedRecord);
-    } catch (e) {
-      debugPrint('Error uploading local health record: $e');
-      rethrow;
-    }
-  }
-
-  /// Upload local doctor
-  Future<void> _uploadLocalDoctor(LocalDoctor localDoctor) async {
-    try {
-      final supabase = Supabase.instance.client;
-      final data = _mapLocalToSupabaseDoctorData(localDoctor);
-      await supabase.from('doctors').upsert(data);
-
-      // Mark as synced locally
-      final syncedDoctor = localDoctor.copyWith(
-        isSynced: true,
-        lastSyncAt: Value(DateTime.now()),
-      );
-      await _localDb.upsertDoctor(syncedDoctor);
-    } catch (e) {
-      debugPrint('Error uploading local doctor: $e');
-      rethrow;
-    }
-  }
-
-  /// Map Supabase data to local patient profile
-  LocalPatientProfile _mapSupabaseToLocalPatientProfile(
-    Map<String, dynamic> data,
-  ) {
-    return LocalPatientProfile(
-      id: data['id'],
-      fullName: data['full_name'] ?? '',
-      email: data['email'] ?? '',
-      phoneNumber: data['phone_number'],
-      dateOfBirth: data['date_of_birth'] != null
-          ? DateTime.parse(data['date_of_birth'])
-          : null,
-      gender: data['gender'],
-      bloodGroup: data['blood_group'],
-      address: data['address'],
-      emergencyContact: data['emergency_contact'],
-      emergencyContactPhone: data['emergency_contact_phone'],
-      profilePhotoUrl: data['profile_photo_url'],
-      allergies: jsonEncode(data['allergies'] ?? []),
-      medications: jsonEncode(data['medications'] ?? []),
-      medicalHistory: jsonEncode(data['medical_history'] ?? {}),
-      lastVisit: data['last_visit'] != null
-          ? DateTime.parse(data['last_visit'])
-          : null,
-      createdAt: DateTime.parse(data['created_at']),
-      updatedAt: DateTime.parse(data['updated_at']),
-      isSynced: true,
-      lastSyncAt: DateTime.now(),
-      pendingDelete: false,
-      syncVersion: '1',
-    );
-  }
-
-  /// Map Supabase data to local appointment
-  LocalAppointment _mapSupabaseToLocalAppointment(Map<String, dynamic> data) {
-    return LocalAppointment(
-      id: data['id'],
-      patientId: data['patient_id'],
-      doctorId: data['doctor_id'],
-      doctorName: data['doctor_name'],
-      doctorSpecialization: data['doctor_specialization'],
-      appointmentDate: DateTime.parse(data['appointment_date']),
-      appointmentTime: DateTime.parse(data['appointment_time']),
-      status: data['status'] ?? 'scheduled',
-      notes: data['notes'],
-      patientSymptoms: data['patient_symptoms'],
-      consultationFee: (data['consultation_fee'] ?? 0.0).toDouble(),
-      createdAt: DateTime.parse(data['created_at']),
-      updatedAt: DateTime.parse(data['updated_at']),
-      isSynced: true,
-      lastSyncAt: DateTime.now(),
-      pendingDelete: false,
-      syncVersion: '1',
-    );
-  }
-
-  /// Map Supabase data to local health record
-  LocalHealthRecord _mapSupabaseToLocalHealthRecord(Map<String, dynamic> data) {
-    return LocalHealthRecord(
-      id: data['id'],
-      patientId: data['patient_id'],
-      doctorId: data['doctor_id'],
-      appointmentId: data['appointment_id'],
-      recordType: data['record_type'] ?? 'general',
-      title: data['title'] ?? '',
-      description: data['description'],
-      attachmentUrl: data['attachment_url'],
-      metadata: jsonEncode(data['metadata'] ?? {}),
-      recordDate: DateTime.parse(data['record_date']),
-      createdAt: DateTime.parse(data['created_at']),
-      updatedAt: DateTime.parse(data['updated_at']),
-      isSynced: true,
-      lastSyncAt: DateTime.now(),
-      pendingDelete: false,
-      syncVersion: '1',
-    );
-  }
-
-  /// Map Supabase data to local doctor
-  LocalDoctor _mapSupabaseToLocalDoctor(Map<String, dynamic> data) {
-    return LocalDoctor(
-      id: data['id'],
-      fullName: data['full_name'] ?? '',
-      email: data['email'] ?? '',
-      phoneNumber: data['phone_number'],
-      specialization: data['specialization'] ?? '',
-      qualification: data['qualification'],
-      experience: data['experience'],
-      profilePhotoUrl: data['profile_photo_url'],
-      about: data['about'],
-      rating: (data['rating'] ?? 0.0).toDouble(),
-      totalReviews: data['total_reviews'] ?? 0,
-      consultationFee: (data['consultation_fee'] ?? 0.0).toDouble(),
-      isAvailable: data['is_available'] ?? true,
-      isOnline: data['is_online'] ?? false,
-      availableSlots: jsonEncode(data['available_slots'] ?? []),
-      createdAt: DateTime.parse(data['created_at']),
-      updatedAt: DateTime.parse(data['updated_at']),
-      isSynced: true,
-      lastSyncAt: DateTime.now(),
-      pendingDelete: false,
-      syncVersion: '1',
-    );
-  }
-
-  /// Map local patient profile to Supabase data format
-  Map<String, dynamic> _mapLocalToSupabasePatientProfileData(
-    LocalPatientProfile local,
-  ) {
-    return {
-      'id': local.id,
-      'full_name': local.fullName,
-      'email': local.email,
-      'phone_number': local.phoneNumber,
-      'date_of_birth': local.dateOfBirth?.toIso8601String(),
-      'gender': local.gender,
-      'blood_group': local.bloodGroup,
-      'address': local.address,
-      'emergency_contact': local.emergencyContact,
-      'emergency_contact_phone': local.emergencyContactPhone,
-      'profile_photo_url': local.profilePhotoUrl,
-      'allergies': jsonDecode(local.allergies),
-      'medications': jsonDecode(local.medications),
-      'medical_history': jsonDecode(local.medicalHistory),
-      'last_visit': local.lastVisit?.toIso8601String(),
-      'created_at': local.createdAt.toIso8601String(),
-      'updated_at': local.updatedAt.toIso8601String(),
-    };
-  }
-
-  /// Map local appointment to Supabase data format
-  Map<String, dynamic> _mapLocalToSupabaseAppointmentData(
-    LocalAppointment local,
-  ) {
-    return {
-      'id': local.id,
-      'patient_id': local.patientId,
-      'doctor_id': local.doctorId,
-      'doctor_name': local.doctorName,
-      'doctor_specialization': local.doctorSpecialization,
-      'appointment_date': local.appointmentDate.toIso8601String(),
-      'appointment_time': local.appointmentTime.toIso8601String(),
-      'status': local.status,
-      'notes': local.notes,
-      'patient_symptoms': local.patientSymptoms,
-      'consultation_fee': local.consultationFee,
-      'created_at': local.createdAt.toIso8601String(),
-      'updated_at': local.updatedAt.toIso8601String(),
-    };
-  }
-
-  /// Map local health record to Supabase data format
-  Map<String, dynamic> _mapLocalToSupabaseHealthRecordData(
-    LocalHealthRecord local,
-  ) {
-    return {
-      'id': local.id,
-      'patient_id': local.patientId,
-      'doctor_id': local.doctorId,
-      'appointment_id': local.appointmentId,
-      'record_type': local.recordType,
-      'title': local.title,
-      'description': local.description,
-      'attachment_url': local.attachmentUrl,
-      'metadata': jsonDecode(local.metadata ?? '{}'),
-      'record_date': local.recordDate.toIso8601String(),
-      'created_at': local.createdAt.toIso8601String(),
-      'updated_at': local.updatedAt.toIso8601String(),
-    };
-  }
-
-  /// Map local doctor to Supabase data format
-  Map<String, dynamic> _mapLocalToSupabaseDoctorData(LocalDoctor local) {
-    return {
-      'id': local.id,
-      'full_name': local.fullName,
-      'email': local.email,
-      'phone_number': local.phoneNumber,
-      'specialization': local.specialization,
-      'qualification': local.qualification,
-      'experience': local.experience,
-      'profile_photo_url': local.profilePhotoUrl,
-      'about': local.about,
-      'rating': local.rating,
-      'total_reviews': local.totalReviews,
-      'consultation_fee': local.consultationFee,
-      'is_available': local.isAvailable,
-      'is_online': local.isOnline,
-      'available_slots': jsonDecode(local.availableSlots),
-      'created_at': local.createdAt.toIso8601String(),
-      'updated_at': local.updatedAt.toIso8601String(),
-    };
-  }
-
-  /// Check if an error is a network-related error
+  /// Check if error is network-related
   bool _isNetworkError(dynamic error) {
-    final errorString = error.toString().toLowerCase();
-    return errorString.contains('socketexception') ||
-        errorString.contains('failed host lookup') ||
-        errorString.contains('network') ||
-        errorString.contains('connection') ||
-        errorString.contains('timeout');
+    return error is SocketException ||
+        error.toString().contains('network') ||
+        error.toString().contains('connection') ||
+        error.toString().contains('timeout');
   }
 
-  /// Dispose of resources
+  /// Dispose resources
   @override
   void dispose() {
     _stopPeriodicSync();

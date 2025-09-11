@@ -1,268 +1,412 @@
-# Video Call Testing Guide
+# Video Call System Testing Guide
 
 ## Overview
 
-This guide provides step-by-step instructions for testing the fully functional video call system between the Flutter app (patients) and web dashboard (doctors).
+This guide provides comprehensive testing procedures for the video call system in the Telemed application.
 
 ## Prerequisites
 
-### Software Requirements
+1. **Environment Setup**
 
-1. Node.js v14+ installed
-2. Flutter SDK installed
-3. MongoDB running locally (for backend)
-4. Agora account with App ID and Certificate
+   - Flutter SDK installed
+   - Android/iOS device or emulator
+   - Backend server running on `localhost:5001`
+   - Agora App ID configured in `lib/config/agora_config.dart`
 
-### Environment Setup
+2. **Test Data**
+   - Test doctor account: `d1/password`
+   - Test patient account: `p1/password`
+   - Valid consultation data
 
-1. Ensure all environment variables are set in `.env` files
-2. Install all dependencies for each component
-3. Configure Agora credentials in backend
+## Test Scenarios
 
-## Testing Steps
+### 1. Video Call Initialization
 
-### 1. Start All Services
+**Test Case: VCS-001**
 
-#### Start WebRTC Signaling Server
+```dart
+// Test video call manager initialization
+await testVideoCallManagerInitialization();
 
-```bash
-cd webrtc-signal/server
-npm install
-npm start
+// Expected Results:
+- AgoraService initializes successfully
+- SocketService connects to backend
+- User authentication is verified
+- No initialization errors
 ```
 
-Expected output: "WebRTC Signaling Server listening on port 4000"
+### 2. Video Call Connection
 
-#### Start Telemedicine Backend
+**Test Case: VCS-002**
 
-```bash
-cd Telemedicine-Backend-main
-npm install
-npm run dev
+```dart
+// Test video call connection
+await testVideoCallConnection();
+
+// Expected Results:
+- Successfully joins Agora channel
+- Local video appears
+- Audio/video controls work
+- Connection status shows "Connected"
 ```
 
-Expected output: "Server running on port 5000"
+### 3. Audio/Video Controls
 
-#### Start Web Dashboard
+**Test Case: VCS-003**
 
-```bash
-cd doctor-dashboard
-npm install
-npm run dev
+```dart
+// Test audio/video controls
+await testAudioVideoControls();
+
+// Test Steps:
+1. Toggle mute button
+2. Toggle video on/off
+3. Switch camera
+4. Toggle speaker
+
+// Expected Results:
+- Mute state changes correctly
+- Video feed toggles on/off
+- Camera switches between front/back
+- Audio routes to speaker/earpiece
 ```
 
-Expected output: Dev server running on http://localhost:5173
+### 4. Recording Functionality
 
-#### Start Flutter App
+**Test Case: VCS-004**
 
-```bash
-flutter pub get
-flutter run
+```dart
+// Test recording functionality (Doctor only)
+await testRecordingFunctionality();
+
+// Test Steps:
+1. Doctor starts recording
+2. Patient consent dialog appears
+3. Recording indicator shows
+4. Stop recording
+5. Recording saved notification
+
+// Expected Results:
+- Only doctors can start recording
+- Consent dialog works properly
+- Recording duration tracks correctly
+- Recording stops and saves successfully
 ```
 
-### 2. User Authentication
+### 5. Chat Functionality
 
-#### Web Dashboard (Doctor)
+**Test Case: VCS-005**
 
-1. Open http://localhost:5173
-2. Login as doctor:
-   - Role: doctor
-   - ID: (any staff ID from HospitalContext)
-   - Password: doc123
+```dart
+// Test chat functionality
+await testChatFunctionality();
 
-#### Flutter App (Patient)
+// Test Steps:
+1. Toggle chat window
+2. Send text message
+3. Receive message from other participant
+4. Send prescription (doctor only)
 
-1. Open the app on emulator or device
-2. Register or login as patient
-3. Password for demo: pat123
+// Expected Results:
+- Chat window toggles correctly
+- Messages send and receive in real-time
+- Message history persists
+- Prescription messages display properly
+```
 
-### 3. Test Call Flow
+### 6. Network Resilience
 
-#### Scenario 1: Doctor Initiates Call
+**Test Case: VCS-006**
 
-1. In web dashboard, select a patient from the queue
-2. Click "Start Call" button
-3. Observe:
-   - Doctor's UI shows "Calling..." status
-   - Patient receives incoming call notification
-   - Patient automatically accepts call (demo behavior)
-   - Both sides show video streams
-   - Connection status shows "In call"
+```dart
+// Test network resilience
+await testNetworkResilience();
 
-#### Scenario 2: Call Controls
+// Test Steps:
+1. Start video call
+2. Simulate network interruption
+3. Network restored
+4. Check reconnection behavior
 
-1. During active call, test controls:
-   - Mute/Unmute button (should toggle audio)
-   - Switch Camera button (should show notification)
-   - End Call button (should terminate call on both sides)
+// Expected Results:
+- Reconnection attempts automatically
+- UI shows reconnecting status
+- Call resumes after network restoration
+- No data loss during reconnection
+```
 
-#### Scenario 3: Call Termination
+### 7. Multi-participant Support
 
-1. End call from doctor side:
+**Test Case: VCS-007**
 
-   - Click "End Call" button
-   - Verify call ends on both sides
-   - UI returns to ready state
+```dart
+// Test multi-participant support
+await testMultiParticipantSupport();
 
-2. End call from patient side:
-   - Click "End Call" button
-   - Verify call ends on both sides
-   - UI returns to ready state
+// Test Steps:
+1. Start video call with multiple participants
+2. Test grid layout
+3. Test speaker layout
+4. Test video quality optimization
 
-### 4. Error Handling Tests
+// Expected Results:
+- Multiple participants display correctly
+- Layout switching works smoothly
+- Video quality adapts to bandwidth
+- Audio mixing works properly
+```
 
-#### Network Disconnection
+### 8. Error Handling
 
-1. Start a call between doctor and patient
-2. Disconnect internet on one device
-3. Observe:
-   - Error message appears on disconnected device
-   - Call ends gracefully on both sides
-   - UI returns to ready state
+**Test Case: VCS-008**
 
-#### Invalid Patient Selection
+```dart
+// Test error handling
+await testErrorHandling();
 
-1. In web dashboard, try to start call without selecting patient
-2. Observe:
-   - Error message: "No patient selected"
-   - Start Call button remains disabled
+// Test Scenarios:
+1. Invalid Agora credentials
+2. Network failure during call
+3. Camera/microphone permissions denied
+4. Backend service unavailable
 
-#### Backend Unavailable
+// Expected Results:
+- Appropriate error messages displayed
+- Graceful degradation of features
+- User can retry operations
+- No app crashes
+```
 
-1. Stop the Telemedicine backend server
-2. Try to initiate a call
-3. Observe:
-   - Error message: "Failed to initiate call"
-   - UI returns to ready state
+## Automated Testing
 
-### 5. Media Tests
+### Unit Tests
 
-#### Audio Test
+```dart
+// File: test/video_call_test.dart
+void main() {
+  group('Video Call System Tests', () {
+    testWidgets('VideoControlsWidget functionality', (tester) async {
+      // Test video controls widget
+      await tester.pumpWidget(VideoControlsWidget(
+        isMuted: false,
+        isVideoEnabled: true,
+        // ... other required parameters
+      ));
 
-1. Start a call
-2. Speak from both sides
-3. Verify audio is transmitted clearly
-4. Test mute functionality
+      // Test mute button
+      await tester.tap(find.byIcon(Icons.mic));
+      await tester.pump();
 
-#### Video Test
+      // Verify mute state changed
+      expect(find.byIcon(Icons.mic_off), findsOneWidget);
+    });
 
-1. Start a call
-2. Verify video is displayed on both sides
-3. Test camera switching (if available)
+    testWidgets('ParticipantGridWidget layout', (tester) async {
+      // Test participant grid widget
+      await tester.pumpWidget(ParticipantGridWidget(
+        agoraService: mockAgoraService,
+        remoteUsers: [1, 2, 3],
+        showLocalVideo: true,
+      ));
 
-## Expected Results
+      // Verify grid layout
+      expect(find.byType(GridView), findsOneWidget);
+    });
 
-### Successful Call Flow
+    test('VideoCallManager state management', () async {
+      final manager = VideoCallManager();
 
-- Call initiation: < 2 seconds
-- Call connection: < 5 seconds
-- Video quality: Clear, minimal latency
-- Audio quality: Clear, no echo
-- Call termination: Immediate on both sides
+      // Test initialization
+      await manager.initialize(
+        userId: 'test_user',
+        isDoctor: false,
+        consultationService: mockConsultationService,
+      );
 
-### Error Handling
+      expect(manager.isInitialized, true);
+      expect(manager.state, VideoCallState.initialized);
+    });
+  });
+}
+```
 
-- Network errors: Graceful error messages
-- Invalid operations: Prevented with UI feedback
-- Resource cleanup: All media tracks stopped
-- Memory leaks: None detected
+### Integration Tests
 
-## Troubleshooting
+```dart
+// File: integration_test/video_call_integration_test.dart
+void main() {
+  group('Video Call Integration Tests', () {
+    testWidgets('Complete video call flow', (tester) async {
+      // Start with login
+      await tester.pumpAndSettle();
 
-### Common Issues
+      // Navigate to video call
+      await tester.tap(find.text('Start Video Consultation'));
+      await tester.pumpAndSettle();
 
-#### "Failed to get token" Error
+      // Verify video call screen loaded
+      expect(find.byType(UnifiedVideoCallScreen), findsOneWidget);
 
-1. Check backend .env file for Agora credentials
-2. Verify Agora App ID and Certificate are correct
-3. Ensure backend server is running
+      // Test video controls
+      await tester.tap(find.byIcon(Icons.mic));
+      await tester.pump();
 
-#### "Connection failed" Error
+      // Test chat
+      await tester.tap(find.byIcon(Icons.chat));
+      await tester.pump();
 
-1. Check if WebRTC signaling server is running
-2. Verify WebSocket connection URL
-3. Check firewall settings
+      // Verify chat window opened
+      expect(find.byType(ChatWidget), findsOneWidget);
 
-#### No Video Display
+      // End call
+      await tester.tap(find.byIcon(Icons.call_end));
+      await tester.pump();
 
-1. Check camera permissions for both apps
-2. Verify browser camera permissions (web dashboard)
-3. Test camera access in other applications
+      // Confirm end call
+      await tester.tap(find.text('End Call'));
+      await tester.pumpAndSettle();
 
-#### Audio Issues
+      // Verify navigation back
+      expect(find.byType(UnifiedVideoCallScreen), findsNothing);
+    });
+  });
+}
+```
 
-1. Check microphone permissions
-2. Verify audio settings in OS
-3. Test with headphones to avoid echo
+## Performance Testing
 
-### Logs and Debugging
+### Memory Usage
 
-#### Web Dashboard Logs
+```dart
+// Monitor memory usage during video calls
+void testMemoryUsage() {
+  // Start video call
+  // Monitor memory usage over time
+  // Check for memory leaks
+  // Verify cleanup after call ends
+}
+```
 
-- Open browser developer console (F12)
-- Check for WebSocket connection errors
-- Look for JavaScript errors
+### CPU Usage
 
-#### Flutter App Logs
+```dart
+// Monitor CPU usage during video calls
+void testCPUUsage() {
+  // Start video call with multiple participants
+  // Monitor CPU usage
+  // Test with different video qualities
+  // Verify performance optimizations
+}
+```
 
-- Use `flutter logs` command
-- Check for Agora SDK errors
-- Monitor network requests
+### Network Usage
 
-#### Backend Logs
+```dart
+// Monitor network usage during video calls
+void testNetworkUsage() {
+  // Start video call
+  // Monitor bandwidth usage
+  // Test with poor network conditions
+  // Verify quality adaptation
+}
+```
 
-- Check terminal output for error messages
-- Look for database connection issues
-- Monitor API request/response logs
+## Manual Testing Checklist
 
-#### WebRTC Signaling Server Logs
+### Pre-Test Setup
 
-- Check terminal output for connection events
-- Monitor user registration messages
-- Look for error messages
+- [ ] Backend server running
+- [ ] Test accounts available
+- [ ] Device permissions granted
+- [ ] Network connectivity verified
 
-## Performance Metrics
+### Basic Functionality
 
-### Latency
+- [ ] App launches successfully
+- [ ] User can log in
+- [ ] Video call can be initiated
+- [ ] Audio/video streams work
+- [ ] Controls respond correctly
 
-- Call setup time: < 5 seconds
-- Media stream latency: < 300ms
-- Signaling latency: < 100ms
+### Advanced Features
 
-### Resource Usage
+- [ ] Recording works (doctor only)
+- [ ] Chat messages send/receive
+- [ ] Multi-participant calls work
+- [ ] Layout switching functions
+- [ ] Quality adaptation works
 
-- CPU usage during call: < 30%
-- Memory usage: < 500MB
-- Network bandwidth: 500Kbps-2Mbps (depending on quality)
+### Error Scenarios
 
-### Scalability
+- [ ] Handle network disconnection
+- [ ] Recover from Agora errors
+- [ ] Handle permission denials
+- [ ] Graceful degradation
 
-- Concurrent calls: 10+ tested
-- User connections: 50+ tested
-- Message throughput: 100+/second tested
+### Platform-Specific
 
-## Test Completion Checklist
+- [ ] iOS functionality
+- [ ] Android functionality
+- [ ] Web compatibility (if applicable)
+- [ ] Different screen sizes
 
-- [ ] WebRTC signaling server running
-- [ ] Telemedicine backend running
-- [ ] Web dashboard accessible
-- [ ] Flutter app running
-- [ ] Doctor can initiate call
-- [ ] Patient receives call
-- [ ] Video streams work both ways
-- [ ] Audio works both ways
-- [ ] Call controls function
-- [ ] Call termination works
-- [ ] Error handling tested
-- [ ] Media quality verified
-- [ ] Resource cleanup confirmed
+## Test Data
 
-## Next Steps
+### Sample Consultation Data
 
-After successful testing:
+```json
+{
+  "consultation": {
+    "id": "test_consultation_001",
+    "appointmentId": "test_appointment_001",
+    "patientId": "test_patient_001",
+    "doctorId": "test_doctor_001",
+    "patientName": "Test Patient",
+    "doctorName": "Dr. Test",
+    "scheduledAt": "2024-01-15T10:00:00Z",
+    "priority": "normal",
+    "status": "scheduled"
+  }
+}
+```
 
-1. Document any issues found
-2. Report bugs to development team
-3. Suggest UI/UX improvements
-4. Plan for user acceptance testing
-5. Prepare for production deployment
+## Known Issues and Workarounds
+
+### Issue 1: Agora Token Expiration
+
+**Problem**: Token expires during long calls
+**Workaround**: Implement token refresh mechanism
+**Status**: Monitored
+
+### Issue 2: iOS Permission Handling
+
+**Problem**: Microphone permission sometimes not requested
+**Workaround**: Manually request permissions in app settings
+**Status**: Under investigation
+
+## Reporting Issues
+
+When reporting issues, include:
+
+1. Device information
+2. App version
+3. Steps to reproduce
+4. Expected vs actual behavior
+5. Screenshots/logs
+6. Network conditions
+
+## Continuous Testing
+
+### Automated CI/CD Tests
+
+- Unit tests run on every commit
+- Integration tests run on pull requests
+- Performance tests run nightly
+- Manual testing before releases
+
+### Monitoring
+
+- Real-time error tracking
+- Performance metrics collection
+- User feedback analysis
+- Network quality monitoring

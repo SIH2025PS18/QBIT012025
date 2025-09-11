@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:telemed/models/medical_record.dart';
 import '../models/symptom_analysis.dart';
 import '../constants/app_constants.dart';
@@ -11,7 +11,7 @@ class AISymptomService {
   factory AISymptomService() => _instance;
   AISymptomService._internal();
 
-  final SupabaseClient _supabase = Supabase.instance.client;
+  static const String _baseUrl = 'http://localhost:5001/api';
 
   /// Analyze symptoms using multilingual AI
   Future<SymptomAnalysis> analyzeSymptoms({
@@ -21,20 +21,21 @@ class AISymptomService {
     Map<String, dynamic>? patientContext,
   }) async {
     try {
-      // Call Supabase Edge Function for AI analysis
-      final response = await _supabase.functions.invoke(
-        'analyze-symptoms',
-        body: {
+      // Call MongoDB backend for AI analysis
+      final response = await http.post(
+        Uri.parse('$_baseUrl/symptoms/analyze'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
           'symptoms': symptomsText,
           'language': language,
           'patient_id': patientId,
           'patient_context': patientContext ?? {},
           'timestamp': DateTime.now().toIso8601String(),
-        },
+        }),
       );
 
-      if (response.data != null) {
-        final analysisData = response.data as Map<String, dynamic>;
+      if (response.statusCode == 200) {
+        final analysisData = jsonDecode(response.body) as Map<String, dynamic>;
 
         // Save analysis to database
         await _saveAnalysisToDatabase(
@@ -46,7 +47,7 @@ class AISymptomService {
 
         return SymptomAnalysis.fromJson(analysisData);
       } else {
-        throw Exception('No response from AI analysis service');
+        throw Exception('AI analysis service error: ${response.body}');
       }
     } catch (e) {
       print('❌ AI Analysis Error: $e');
@@ -344,19 +345,25 @@ class AISymptomService {
     required Map<String, dynamic> analysisResult,
   }) async {
     try {
-      await _supabase.from('symptom_analyses').insert({
-        'patient_id': patientId,
-        'symptoms_text': symptomsText,
-        'language': language,
-        'analysis_result': analysisResult,
-        'confidence_score': analysisResult['confidenceScore'] ?? 0.5,
-        'recommended_specialist':
-            analysisResult['recommendedSpecialist'] ?? 'General Medicine',
-        'urgency_level': analysisResult['urgencyLevel'] ?? 'low',
-        'created_at': DateTime.now().toIso8601String(),
-      });
+      final response = await http.post(
+        Uri.parse('$_baseUrl/symptoms/analyses'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'patient_id': patientId,
+          'symptoms_text': symptomsText,
+          'language': language,
+          'analysis_result': analysisResult,
+          'confidence_score': analysisResult['confidenceScore'] ?? 0.5,
+          'recommended_specialist':
+              analysisResult['recommendedSpecialist'] ?? 'General Medicine',
+          'urgency_level': analysisResult['urgencyLevel'] ?? 'low',
+          'created_at': DateTime.now().toIso8601String(),
+        }),
+      );
 
-      print('✅ Symptom analysis saved to database');
+      if (response.statusCode == 201) {
+        print('✅ Symptom analysis saved to database');
+      }
     } catch (e) {
       print('⚠️ Failed to save analysis to database: $e');
       // Non-critical error, continue with analysis
@@ -368,16 +375,18 @@ class AISymptomService {
     String patientId,
   ) async {
     try {
-      final response = await _supabase
-          .from('symptom_analyses')
-          .select()
-          .eq('patient_id', patientId)
-          .order('created_at', ascending: false)
-          .limit(10);
+      final response = await http.get(
+        Uri.parse('$_baseUrl/symptoms/analyses?patientId=$patientId&limit=10'),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      return response
-          .map<SymptomAnalysis>((data) => SymptomAnalysis.fromJson(data))
-          .toList();
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data
+            .map<SymptomAnalysis>((item) => SymptomAnalysis.fromJson(item))
+            .toList();
+      }
+      return [];
     } catch (e) {
       print('❌ Error fetching analysis history: $e');
       return [];
@@ -390,22 +399,24 @@ class AISymptomService {
     String? location,
   }) async {
     try {
-      final query = _supabase
-          .from('doctors')
-          .select('id, full_name, specialization, rating')
-          .eq('specialization', specialization)
-          .eq('is_available', true);
-
+      String url =
+          '$_baseUrl/doctors/available?specialization=$specialization&limit=5';
       if (location != null) {
-        // Add location-based filtering if needed
-        query.ilike('city', '%$location%');
+        url += '&location=$location';
       }
 
-      final response = await query.order('rating', ascending: false).limit(5);
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      return response
-          .map<String>((doctor) => doctor['full_name'] as String)
-          .toList();
+      if (response.statusCode == 200) {
+        final List<dynamic> doctors = jsonDecode(response.body);
+        return doctors
+            .map<String>((doctor) => doctor['name'] as String)
+            .toList();
+      }
+      return [];
     } catch (e) {
       print('❌ Error fetching recommended doctors: $e');
       return [];
@@ -415,12 +426,12 @@ class AISymptomService {
   /// Check if AI service is available
   Future<bool> checkAIServiceStatus() async {
     try {
-      final response = await _supabase.functions.invoke(
-        'check-ai-status',
-        body: {'timestamp': DateTime.now().toIso8601String()},
+      final response = await http.get(
+        Uri.parse('$_baseUrl/health'),
+        headers: {'Content-Type': 'application/json'},
       );
 
-      return response.data?['status'] == 'healthy';
+      return response.statusCode == 200;
     } catch (e) {
       print('⚠️ AI service check failed: $e');
       return false;

@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../models/patient_profile.dart';
-import '../repositories/patient_profile_repository.dart';
-import '../repositories/supabase_patient_profile_repository.dart';
+import '../services/auth_service.dart';
 
 /// Provider class for managing patient profile state
 class PatientProfileProvider extends ChangeNotifier {
-  final PatientProfileRepository _repository =
-      SupabasePatientProfileRepository();
+  static const String _baseUrl = 'http://localhost:5001/api';
+  final AuthService _authService = AuthService();
 
   PatientProfile? _profile;
   bool _isLoading = false;
@@ -25,7 +25,22 @@ class PatientProfileProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      _profile = await _repository.getCurrentProfile();
+      final currentUser = await _authService.getCurrentUser();
+      if (currentUser == null) {
+        throw Exception('No authenticated user');
+      }
+
+      final response = await http.get(
+        Uri.parse('$_baseUrl/patients/${currentUser.id}'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _profile = PatientProfile.fromJson(data);
+      } else {
+        throw Exception('Failed to load profile: ${response.body}');
+      }
       notifyListeners();
     } catch (e) {
       _setError('Failed to load profile: $e');
@@ -40,7 +55,18 @@ class PatientProfileProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      _profile = await _repository.createProfile(profile);
+      final response = await http.post(
+        Uri.parse('$_baseUrl/patients'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(profile.toJson()),
+      );
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        _profile = PatientProfile.fromJson(data);
+      } else {
+        throw Exception('Failed to create profile: ${response.body}');
+      }
       notifyListeners();
     } catch (e) {
       _setError('Failed to create profile: $e');
@@ -56,7 +82,18 @@ class PatientProfileProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      _profile = await _repository.updateProfile(profile);
+      final response = await http.put(
+        Uri.parse('$_baseUrl/patients/${profile.id}'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(profile.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _profile = PatientProfile.fromJson(data);
+      } else {
+        throw Exception('Failed to update profile: ${response.body}');
+      }
       notifyListeners();
     } catch (e) {
       _setError('Failed to update profile: $e');
@@ -72,9 +109,10 @@ class PatientProfileProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final photoUrl = await _repository.uploadProfilePhoto(filePath);
+      // For now, just store the local file path
+      // In a real implementation, you'd upload to the backend
       if (_profile != null) {
-        final updatedProfile = _profile!.copyWith(profilePhotoUrl: photoUrl);
+        final updatedProfile = _profile!.copyWith(profilePhotoUrl: filePath);
         await updateProfile(updatedProfile);
       }
     } catch (e) {
@@ -94,7 +132,7 @@ class PatientProfileProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      await _repository.deleteProfilePhoto(_profile!.profilePhotoUrl);
+      // Remove photo URL from profile
       final updatedProfile = _profile!.copyWith(profilePhotoUrl: '');
       await updateProfile(updatedProfile);
     } catch (e) {
@@ -108,7 +146,15 @@ class PatientProfileProvider extends ChangeNotifier {
   /// Check if profile exists
   Future<bool> checkProfileExists() async {
     try {
-      return await _repository.profileExists();
+      final currentUser = await _authService.getCurrentUser();
+      if (currentUser == null) return false;
+
+      final response = await http.get(
+        Uri.parse('$_baseUrl/patients/${currentUser.id}'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      return response.statusCode == 200;
     } catch (e) {
       _setError('Failed to check profile existence: $e');
       return false;

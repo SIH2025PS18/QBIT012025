@@ -6,7 +6,7 @@ import '../database/local_database.dart';
 import '../models/patient_profile.dart';
 import '../services/connectivity_service.dart';
 import '../services/sync_service.dart';
-import '../services/supabase_auth_service.dart';
+import '../services/auth_service.dart';
 import 'patient_profile_repository.dart';
 
 /// Offline-first repository for patient profiles
@@ -19,7 +19,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
   @override
   Future<PatientProfile?> getCurrentProfile() async {
     try {
-      final user = AuthService.currentUser;
+      final user = await AuthService().getCurrentUser();
       if (user == null) return null;
 
       // Try to get from local database first
@@ -44,7 +44,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
     } catch (e) {
       // Even in case of error, try to return any cached profile data
       try {
-        final user = AuthService.currentUser;
+        final user = await AuthService().getCurrentUser();
         if (user == null) return null;
         final localProfile = await _localDb.getPatientProfile(user.id);
         if (localProfile != null) {
@@ -61,7 +61,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
   @override
   Future<PatientProfile> createProfile(PatientProfile profile) async {
     try {
-      final user = AuthService.currentUser;
+      final user = await AuthService().getCurrentUser();
       if (user == null) {
         throw Exception('No authenticated user');
       }
@@ -101,7 +101,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
   @override
   Future<PatientProfile> updateProfile(PatientProfile profile) async {
     try {
-      final user = AuthService.currentUser;
+      final user = await AuthService().getCurrentUser();
       if (user == null) {
         throw Exception('No authenticated user');
       }
@@ -141,7 +141,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
   @override
   Future<void> deleteProfile() async {
     try {
-      final user = AuthService.currentUser;
+      final user = await AuthService().getCurrentUser();
       if (user == null) {
         throw Exception('No authenticated user');
       }
@@ -176,7 +176,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
   @override
   Future<bool> profileExists() async {
     try {
-      final user = AuthService.currentUser;
+      final user = await AuthService().getCurrentUser();
       if (user == null) return false;
 
       final profile = await _localDb.getPatientProfile(user.id);
@@ -298,33 +298,33 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
     );
   }
 
-  /// Map local profile to Supabase data format
+  /// Map local profile to MongoDB backend data format
   Map<String, dynamic> _mapLocalToSupabaseData(LocalPatientProfile local) {
     return {
       'id': local.id,
-      'full_name': local.fullName,
+      'fullName': local.fullName,
       'email': local.email,
-      'phone_number': local.phoneNumber,
-      'date_of_birth': local.dateOfBirth?.toIso8601String(),
+      'phoneNumber': local.phoneNumber,
+      'dateOfBirth': local.dateOfBirth?.toIso8601String(),
       'gender': local.gender,
-      'blood_group': local.bloodGroup,
+      'bloodGroup': local.bloodGroup,
       'address': local.address,
-      'emergency_contact': local.emergencyContact,
-      'emergency_contact_phone': local.emergencyContactPhone,
-      'profile_photo_url': local.profilePhotoUrl,
+      'emergencyContact': local.emergencyContact,
+      'emergencyContactPhone': local.emergencyContactPhone,
+      'profilePhotoUrl': local.profilePhotoUrl,
       'allergies': jsonDecode(local.allergies),
       'medications': jsonDecode(local.medications),
-      'medical_history': jsonDecode(local.medicalHistory),
-      'last_visit': local.lastVisit?.toIso8601String(),
-      'created_at': local.createdAt.toIso8601String(),
-      'updated_at': local.updatedAt.toIso8601String(),
+      'medicalHistory': jsonDecode(local.medicalHistory),
+      'lastVisit': local.lastVisit?.toIso8601String(),
+      'createdAt': local.createdAt.toIso8601String(),
+      'updatedAt': local.updatedAt.toIso8601String(),
     };
   }
 
   /// Get sync status for profile
   Future<bool> isProfileSynced() async {
     try {
-      final user = AuthService.currentUser;
+      final user = await AuthService().getCurrentUser();
       if (user == null) return true;
 
       final localProfile = await _localDb.getPatientProfile(user.id);
@@ -336,7 +336,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
 
   /// Force sync profile
   Future<void> forceSyncProfile() async {
-    final user = AuthService.currentUser;
+    final user = await AuthService().getCurrentUser();
     if (user == null) return;
 
     await _sync.forceSyncRecord('patient_profiles', user.id);

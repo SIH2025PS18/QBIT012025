@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../services/supabase_auth_service.dart';
+import '../../services/phone_auth_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../generated/l10n/app_localizations.dart';
@@ -48,8 +47,8 @@ class _PhoneForgotPasswordScreenState extends State<PhoneForgotPasswordScreen> {
     });
 
     try {
-      final success = await AuthService.requestPasswordResetOtp(
-        phoneNumber: _phoneController.text.trim(),
+      final success = await PhoneAuthService.sendOtpToPhone(
+        _phoneController.text.trim(),
       );
 
       if (success && mounted) {
@@ -95,8 +94,8 @@ class _PhoneForgotPasswordScreenState extends State<PhoneForgotPasswordScreen> {
     });
 
     try {
-      // Use the actual AuthService method to verify OTP
-      final success = await AuthService.resetPasswordWithOtp(
+      // Use the actual PhoneAuthService method to verify OTP
+      final success = await PhoneAuthService.resetPasswordWithOtp(
         phoneNumber: _phoneController.text.trim(),
         otp: _otpController.text.trim(),
         newPassword: _passwordController.text
@@ -120,30 +119,14 @@ class _PhoneForgotPasswordScreenState extends State<PhoneForgotPasswordScreen> {
           const SnackBar(content: Text('Invalid OTP. Please try again.')),
         );
       }
-    } on AuthApiException catch (e) {
+    } catch (e) {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        if (e.code == 'otp_expired') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('OTP has expired. Please request a new OTP.'),
-            ),
-          );
-        } else if (e.code == 'invalid_otp') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Invalid OTP. In test mode, use any 6-digit number.',
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to verify OTP: ${e.message}')),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid OTP. Please try again.')),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -177,7 +160,7 @@ class _PhoneForgotPasswordScreenState extends State<PhoneForgotPasswordScreen> {
     });
 
     try {
-      final success = await AuthService.resetPasswordWithOtp(
+      final success = await PhoneAuthService.resetPasswordWithOtp(
         phoneNumber: _phoneController.text.trim(),
         otp: _otpController.text.trim(),
         newPassword: _passwordController.text.trim(),
@@ -210,30 +193,16 @@ class _PhoneForgotPasswordScreenState extends State<PhoneForgotPasswordScreen> {
           ),
         );
       }
-    } on AuthApiException catch (e) {
+    } catch (e) {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        if (e.code == 'otp_expired') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('OTP has expired. Please request a new OTP.'),
-            ),
-          );
-        } else if (e.code == 'invalid_otp') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Invalid OTP. In test mode, use any 6-digit number.',
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to reset password: ${e.message}')),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to reset password. Please try again.'),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

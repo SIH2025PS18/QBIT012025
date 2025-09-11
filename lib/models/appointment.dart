@@ -29,46 +29,55 @@ class Appointment {
     required this.updatedAt,
   });
 
-  // Convert appointment to Map for database
+  // Convert appointment to Map for MongoDB backend
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'patient_id': patientId,
-      'doctor_id': doctorId,
-      'doctor_name': doctorName,
-      'doctor_specialization': doctorSpecialization,
-      'appointment_date': appointmentDate.toIso8601String().split('T')[0],
-      'appointment_time':
+      'patientId': patientId,
+      'doctorId': doctorId,
+      'doctorName': doctorName,
+      'doctorSpecialization': doctorSpecialization,
+      'appointmentDate': appointmentDate.toIso8601String().split('T')[0],
+      'appointmentTime':
           '${appointmentTime.hour.toString().padLeft(2, '0')}:${appointmentTime.minute.toString().padLeft(2, '0')}',
       'status': status,
       'notes': notes,
-      'consultation_fee': consultationFee,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'consultationFee': consultationFee,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
     };
   }
 
-  // Create appointment from Map
+  // Create appointment from Map (MongoDB backend data)
   factory Appointment.fromMap(Map<String, dynamic> map) {
     // Parse time string to TimeOfDay
-    final timeString = map['appointment_time'] as String;
+    final timeString =
+        map['appointmentTime'] ?? map['appointment_time'] as String;
     final timeParts = timeString.split(':');
     final hour = int.parse(timeParts[0]);
     final minute = int.parse(timeParts[1]);
 
     return Appointment(
       id: map['id'] as String,
-      patientId: map['patient_id'] as String,
-      doctorId: map['doctor_id'] as String,
-      doctorName: map['doctor_name'] as String,
-      doctorSpecialization: map['doctor_specialization'] as String,
-      appointmentDate: DateTime.parse(map['appointment_date'] as String),
+      patientId: map['patientId'] ?? map['patient_id'] as String,
+      doctorId: map['doctorId'] ?? map['doctor_id'] as String,
+      doctorName: map['doctorName'] ?? map['doctor_name'] as String,
+      doctorSpecialization:
+          map['doctorSpecialization'] ?? map['doctor_specialization'] as String,
+      appointmentDate: DateTime.parse(
+        map['appointmentDate'] ?? map['appointment_date'] as String,
+      ),
       appointmentTime: TimeOfDay(hour: hour, minute: minute),
       status: map['status'] as String,
       notes: map['notes'] as String?,
-      consultationFee: (map['consultation_fee'] as num).toDouble(),
-      createdAt: DateTime.parse(map['created_at'] as String),
-      updatedAt: DateTime.parse(map['updated_at'] as String),
+      consultationFee:
+          (map['consultationFee'] ?? map['consultation_fee'] as num).toDouble(),
+      createdAt: DateTime.parse(
+        map['createdAt'] ?? map['created_at'] as String,
+      ),
+      updatedAt: DateTime.parse(
+        map['updatedAt'] ?? map['updated_at'] as String,
+      ),
     );
   }
 
