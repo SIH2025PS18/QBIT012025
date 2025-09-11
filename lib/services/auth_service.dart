@@ -110,13 +110,15 @@ class AuthService extends ChangeNotifier {
         'gender': gender,
       };
 
-      print('📤 Sending POST request to: ${ApiConfig.baseUrl}/auth/patient/register-mobile');
+      print(
+        '📤 Sending POST request to: ${ApiConfig.baseUrl}/auth/patient/register-mobile',
+      );
       print('📦 Request Body: ${body.toString()}');
       print('🔑 Auth Token Present: ${_authToken != null}');
 
       final startTime = DateTime.now();
       print('🕒 Request started at: ${startTime.toIso8601String()}');
-      
+
       final response = await _apiService.post(
         '${ApiConfig.baseUrl}/auth/patient/register-mobile',
         body: body,
@@ -139,11 +141,17 @@ class AuthService extends ChangeNotifier {
         final token = data['token'] as String;
 
         print('👤 Parsed User ID: ${user.id}');
-        print('📧 Parsed User Email: ${user.email}');  // Changed from phone to email
+        print(
+          '📧 Parsed User Email: ${user.email}',
+        ); // Changed from phone to email
         print('🔑 Token Length: ${token.length} characters');
 
         await _saveAuthData(user, token);
         print('💾 Authentication data saved successfully');
+
+        // Auto-fetch profile details after successful registration
+        await _initializeProfileAfterSignup(user);
+
         return AuthResult.success(user);
       } else {
         print('❌ API call failed');
@@ -198,6 +206,10 @@ class AuthService extends ChangeNotifier {
         final token = data['token'] as String;
 
         await _saveAuthData(user, token);
+
+        // Auto-fetch profile details after successful registration
+        await _initializeProfileAfterSignup(user);
+
         return AuthResult.success(user);
       } else {
         return AuthResult.error(response.error ?? 'Registration failed');
@@ -302,10 +314,7 @@ class AuthService extends ChangeNotifier {
   /// Get current user profile
   Future<AuthResult> getUserProfile() async {
     try {
-      NetworkLogger.logRequest(
-        method: 'GET',
-        url: ApiConfig.authProfile,
-      );
+      NetworkLogger.logRequest(method: 'GET', url: ApiConfig.authProfile);
 
       final response = await _apiService.get(ApiConfig.authProfile);
 
@@ -330,11 +339,8 @@ class AuthService extends ChangeNotifier {
     try {
       // Call logout API if we have a token
       if (_authToken != null) {
-        NetworkLogger.logRequest(
-          method: 'POST',
-          url: ApiConfig.authLogout,
-        );
-        
+        NetworkLogger.logRequest(method: 'POST', url: ApiConfig.authLogout);
+
         await _apiService.post(ApiConfig.authLogout);
       }
     } catch (e) {
@@ -386,6 +392,55 @@ class AuthService extends ChangeNotifier {
       notifyListeners(); // Notify UI about logout
     } catch (e) {
       print('Error clearing auth data: $e');
+    }
+  }
+
+  /// Initialize profile after successful signup
+  Future<void> _initializeProfileAfterSignup(UserModel user) async {
+    try {
+      print('🔄 Initializing profile after signup for user: ${user.id}');
+
+      // Create basic profile from user data
+      final profileData = {
+        'fullName': user.name,
+        'email': user.email,
+        'phoneNumber': '', // Will be updated when user provides phone
+        'dateOfBirth': DateTime.now()
+            .subtract(const Duration(days: 365 * 25))
+            .toIso8601String(),
+        'gender': user.gender ?? 'Not specified',
+        'bloodGroup': user.bloodGroup ?? '',
+        'address': '',
+        'emergencyContact': '',
+        'emergencyContactPhone': '',
+        'profilePhotoUrl': '',
+        'allergies': [],
+        'medications': [],
+        'medicalHistory': {},
+        'familyMembers': [],
+      };
+
+      // Try to create profile in backend
+      try {
+        final response = await _apiService.post(
+          '${ApiConfig.baseUrl}/patients/profile',
+          body: profileData,
+        );
+
+        if (response.isSuccess) {
+          print('✅ Profile initialized successfully in backend');
+        } else {
+          print(
+            '⚠️ Failed to initialize profile in backend: ${response.error}',
+          );
+        }
+      } catch (e) {
+        print('⚠️ Error initializing profile in backend: $e');
+      }
+
+      print('✅ Profile initialization completed');
+    } catch (e) {
+      print('💥 Error in profile initialization: $e');
     }
   }
 }

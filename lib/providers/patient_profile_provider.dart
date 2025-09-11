@@ -6,7 +6,7 @@ import '../services/auth_service.dart';
 
 /// Provider class for managing patient profile state
 class PatientProfileProvider extends ChangeNotifier {
-  static const String _baseUrl = 'http://localhost:5001/api';
+  static const String _baseUrl = 'https://telemed18.onrender.com/api';
   final AuthService _authService = AuthService();
 
   PatientProfile? _profile;

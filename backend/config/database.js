@@ -148,25 +148,45 @@ const seedInitialData = async () => {
     if (adminCount === 0) {
       console.log("🌱 Seeding admin user...");
 
+      // First, ensure no existing admin with conflicting data
+      await Admin.deleteMany({});
+      console.log("🗑️ Cleared any existing admin users");
+
+      const bcrypt = require("bcryptjs");
+      const hashedPassword = await bcrypt.hash("password", 12);
+      console.log("🔐 Generated new password hash for admin");
+
       const adminData = {
         name: "System Admin",
         email: "admin@telemed.com",
-        password:
-          "$2a$12$LQv3c1yqBTVHaYbUU6JY1u5JnDJByfUhyjh9cVy/3KXHJ8X2fH4Te", // password
+        password: hashedPassword,
         phone: "+91-9876543000",
         role: "superadmin",
         permissions: ["all"],
       };
 
-      await Admin.findOneAndUpdate({ email: adminData.email }, adminData, {
-        upsert: true,
-        new: true,
-      });
-
-      console.log("✅ Admin user created successfully");
+      const newAdmin = await Admin.create(adminData);
+      console.log("✅ Admin user created successfully with ID:", newAdmin._id);
       console.log("📧 Admin credentials: admin@telemed.com / password");
     } else {
       console.log(`ℹ️  Found ${adminCount} existing admins, skipping seed`);
+      
+      // Check if the existing admin has the correct password hash
+      const existingAdmin = await Admin.findOne({ email: "admin@telemed.com" });
+      if (existingAdmin) {
+        console.log("🔍 Checking existing admin password...");
+        const bcrypt = require("bcryptjs");
+        const isValidPassword = await bcrypt.compare("password", existingAdmin.password);
+        
+        if (!isValidPassword) {
+          console.log("🔧 Fixing admin password hash...");
+          const hashedPassword = await bcrypt.hash("password", 12);
+          await Admin.findByIdAndUpdate(existingAdmin._id, { password: hashedPassword });
+          console.log("✅ Admin password updated successfully");
+        } else {
+          console.log("✅ Admin password is correct");
+        }
+      }
     }
   } catch (error) {
     console.error("❌ Error seeding initial data:", error);

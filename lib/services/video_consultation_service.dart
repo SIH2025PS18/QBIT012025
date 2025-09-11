@@ -17,7 +17,7 @@ class VideoConsultationService extends ChangeNotifier {
   final Uuid _uuid = const Uuid();
 
   // Backend API configuration
-  static const String _baseUrl = 'http://localhost:5001/api';
+  static const String _baseUrl = 'https://telemed18.onrender.com/api';
 
   Map<String, String> get _headers => {
     'Content-Type': 'application/json',

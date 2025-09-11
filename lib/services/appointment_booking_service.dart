@@ -12,7 +12,7 @@ class AppointmentBookingService extends ChangeNotifier {
   AppointmentBookingService._internal();
 
   final SocketService _socketService = SocketService();
-  final String _baseUrl = 'http://localhost:5001'; // Unified backend
+  final String _baseUrl = 'https://telemed18.onrender.com'; // Unified backend
 
   List<Appointment> _appointments = [];
   List<Appointment> get appointments => List.unmodifiable(_appointments);

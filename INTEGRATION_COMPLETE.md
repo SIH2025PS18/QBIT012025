@@ -11,7 +11,7 @@
 
 ### 2. Unified Backend Integration
 
-- **✅ Single Backend Server** - Running on port 5001 (http://localhost:5001)
+- **✅ Single Backend Server** - Running on port 5001 (https://telemed18.onrender.com)
 - **✅ Combined APIs** - All telemedicine and pharmacy features in one backend
 - **✅ Socket.IO Integration** - Real-time communication for video calls and chat
 - **✅ Database Fallback** - Works with or without MongoDB
@@ -44,7 +44,7 @@
 ```bash
 cd backend
 node server.js
-# Server runs on http://localhost:5001
+# Server runs on https://telemed18.onrender.com
 ```
 
 ### Doctor Dashboard (Port 5175)

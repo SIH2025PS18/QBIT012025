@@ -31,7 +31,7 @@ class _VideoConsultationWidgetState extends State<VideoConsultationWidget> {
   Future<void> _initializeConnection() async {
     try {
       await _socketService.initialize(
-        serverUrl: 'http://localhost:5001',
+        serverUrl: 'https://telemed18.onrender.com',
         userId: widget.patientId,
         userRole: 'patient',
         userName: widget.patientName,

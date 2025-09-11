@@ -7,7 +7,7 @@ import '../models/doctor.dart';
 import '../services/auth_service.dart';
 
 class AppointmentService {
-  static const String _baseUrl = 'http://localhost:5001/api';
+  static const String _baseUrl = 'https://telemed18.onrender.com/api';
   static final AuthService _authService = AuthService();
 
   /// Book a new appointment

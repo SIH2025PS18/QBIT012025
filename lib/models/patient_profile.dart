@@ -1,3 +1,5 @@
+import 'family_member.dart';
+
 class PatientProfile {
   final String id;
   final String fullName;
@@ -13,6 +15,7 @@ class PatientProfile {
   final List<String> allergies;
   final List<String> medications;
   final Map<String, dynamic> medicalHistory;
+  final List<FamilyMember> familyMembers;
   final DateTime? lastVisit;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -32,6 +35,7 @@ class PatientProfile {
     this.allergies = const [],
     this.medications = const [],
     this.medicalHistory = const {},
+    this.familyMembers = const [],
     this.lastVisit,
     required this.createdAt,
     required this.updatedAt,
@@ -54,6 +58,7 @@ class PatientProfile {
       'allergies': allergies,
       'medications': medications,
       'medicalHistory': medicalHistory,
+      'familyMembers': familyMembers.map((member) => member.toMap()).toList(),
       'lastVisit': lastVisit?.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
@@ -85,6 +90,9 @@ class PatientProfile {
       medicalHistory: Map<String, dynamic>.from(
         map['medicalHistory'] ?? map['medical_history'] ?? {},
       ),
+      familyMembers: (map['familyMembers'] ?? map['family_members'] ?? [])
+          .map<FamilyMember>((member) => FamilyMember.fromMap(member))
+          .toList(),
       lastVisit: map['lastVisit'] != null || map['last_visit'] != null
           ? DateTime.parse(map['lastVisit'] ?? map['last_visit'])
           : null,
@@ -135,6 +143,7 @@ class PatientProfile {
     List<String>? allergies,
     List<String>? medications,
     Map<String, dynamic>? medicalHistory,
+    List<FamilyMember>? familyMembers,
     DateTime? lastVisit,
   }) {
     return PatientProfile(
@@ -153,6 +162,7 @@ class PatientProfile {
       allergies: allergies ?? this.allergies,
       medications: medications ?? this.medications,
       medicalHistory: medicalHistory ?? this.medicalHistory,
+      familyMembers: familyMembers ?? this.familyMembers,
       lastVisit: lastVisit ?? this.lastVisit,
       createdAt: createdAt,
       updatedAt: DateTime.now(),

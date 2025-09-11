@@ -213,7 +213,7 @@ class AgoraConfig {
 
 // Socket Configuration
 const socketConfig = {
-  url: 'http://localhost:5001',
+  url: 'https://telemed18.onrender.com',
   options: {
     transports: ['websocket', 'polling'],
     reconnection: true,
@@ -338,7 +338,7 @@ agora:
   app_id: "development_app_id"
 
 backend:
-  url: "http://localhost:5001"
+  url: "https://telemed18.onrender.com"
 
 features:
   recording_enabled: true

@@ -1,157 +1,264 @@
 import 'dart:ui';
+import 'package:flutter/material.dart';
 
 class Doctor {
   final String id;
-  final String fullName;
+  final String doctorId;
+  final String name; // Changed from fullName
   final String email;
-  final String phoneNumber;
-  final String specialization;
+  final String phone; // Changed from phoneNumber
+  final String speciality; // Changed from specialization to match backend
   final String qualification;
-  final int experienceYears;
+  final int experience; // Changed from experienceYears
+  final String licenseNumber;
   final double consultationFee;
-  final List<String> languages;
-  final Map<String, dynamic> availability; // JSON data
-  final double rating;
-  final int totalConsultations;
+  final String status;
   final bool isAvailable;
-  final bool isOnline;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final List<String> languages;
+  final double rating;
+  final int totalRatings;
+  final int totalConsultations;
+  final int todayConsultations;
+  final Map<String, dynamic>? address;
+  final Map<String, dynamic>? workingHours;
+  final bool isVerified;
+  final String? profileImage;
+  final List<dynamic> documents;
+  final Map<String, dynamic>? socialMedia;
+  final DateTime? lastActive;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   Doctor({
     required this.id,
-    required this.fullName,
+    this.doctorId = '',
+    required this.name,
     required this.email,
-    this.phoneNumber = '',
-    required this.specialization,
+    this.phone = '',
+    required this.speciality,
     this.qualification = '',
-    this.experienceYears = 0,
+    this.experience = 0,
+    this.licenseNumber = '',
     this.consultationFee = 0.0,
-    this.languages = const ['Hindi', 'English'],
-    this.availability = const {},
-    this.rating = 0.0,
-    this.totalConsultations = 0,
+    this.status = 'offline',
     this.isAvailable = true,
-    this.isOnline = false,
-    required this.createdAt,
-    required this.updatedAt,
+    this.languages = const ['Hindi', 'English'],
+    this.rating = 0.0,
+    this.totalRatings = 0,
+    this.totalConsultations = 0,
+    this.todayConsultations = 0,
+    this.address,
+    this.workingHours,
+    this.isVerified = false,
+    this.profileImage,
+    this.documents = const [],
+    this.socialMedia,
+    this.lastActive,
+    this.createdAt,
+    this.updatedAt,
   });
 
   // Convert to Map for MongoDB Backend
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'fullName': fullName,
+      'doctorId': doctorId,
+      'name': name,
       'email': email,
-      'phoneNumber': phoneNumber,
-      'specialization': specialization,
+      'phone': phone,
+      'speciality': speciality,
       'qualification': qualification,
-      'experienceYears': experienceYears,
+      'experience': experience,
+      'licenseNumber': licenseNumber,
       'consultationFee': consultationFee,
-      'languages': languages,
-      'availability': availability,
-      'rating': rating,
-      'totalConsultations': totalConsultations,
+      'status': status,
       'isAvailable': isAvailable,
-      'isOnline': isOnline,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'languages': languages,
+      'rating': rating,
+      'totalRatings': totalRatings,
+      'totalConsultations': totalConsultations,
+      'todayConsultations': todayConsultations,
+      'address': address,
+      'workingHours': workingHours,
+      'isVerified': isVerified,
+      'profileImage': profileImage,
+      'documents': documents,
+      'socialMedia': socialMedia,
+      'lastActive': lastActive?.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 
-  // Create from Map (MongoDB backend data)
+  // Create from Map (from MongoDB Backend)
   factory Doctor.fromMap(Map<String, dynamic> map) {
     return Doctor(
-      id: map['id'] ?? '',
-      fullName: map['fullName'] ?? map['full_name'] ?? '',
+      id: map['_id']?.toString() ?? map['id']?.toString() ?? '',
+      doctorId: map['doctorId'] ?? '',
+      name: map['name'] ?? '',
       email: map['email'] ?? '',
-      phoneNumber: map['phoneNumber'] ?? map['phone_number'] ?? '',
-      specialization: map['specialization'] ?? '',
+      phone: map['phone'] ?? '',
+      speciality: map['speciality'] ?? '',
       qualification: map['qualification'] ?? '',
-      experienceYears: map['experienceYears'] ?? map['experience_years'] ?? 0,
-      consultationFee:
-          (map['consultationFee'] ?? map['consultation_fee'] ?? 0.0).toDouble(),
-      languages: List<String>.from(map['languages'] ?? ['Hindi', 'English']),
-      availability: Map<String, dynamic>.from(map['availability'] ?? {}),
-      rating: (map['rating'] ?? 0.0).toDouble(),
-      totalConsultations:
-          map['totalConsultations'] ?? map['total_consultations'] ?? 0,
-      isAvailable: map['isAvailable'] ?? map['is_available'] ?? true,
-      isOnline: map['isOnline'] ?? map['is_online'] ?? false,
-      createdAt: DateTime.parse(
-        map['createdAt'] ??
-            map['created_at'] ??
-            DateTime.now().toIso8601String(),
-      ),
-      updatedAt: DateTime.parse(
-        map['updatedAt'] ??
-            map['updated_at'] ??
-            DateTime.now().toIso8601String(),
-      ),
+      experience: (map['experience'] as num?)?.toInt() ?? 0,
+      licenseNumber: map['licenseNumber'] ?? '',
+      consultationFee: (map['consultationFee'] as num?)?.toDouble() ?? 0.0,
+      status: map['status'] ?? 'offline',
+      isAvailable: map['isAvailable'] ?? true,
+      languages: map['languages'] != null
+          ? List<String>.from(map['languages'])
+          : ['Hindi', 'English'],
+      rating: (map['rating'] as num?)?.toDouble() ?? 0.0,
+      totalRatings: (map['totalRatings'] as num?)?.toInt() ?? 0,
+      totalConsultations: (map['totalConsultations'] as num?)?.toInt() ?? 0,
+      todayConsultations: (map['todayConsultations'] as num?)?.toInt() ?? 0,
+      address: map['address'] as Map<String, dynamic>?,
+      workingHours: map['workingHours'] as Map<String, dynamic>?,
+      isVerified: map['isVerified'] ?? false,
+      profileImage: map['profileImage'],
+      documents: map['documents'] ?? [],
+      socialMedia: map['socialMedia'] as Map<String, dynamic>?,
+      lastActive: map['lastActive'] != null
+          ? DateTime.parse(map['lastActive'])
+          : null,
+      createdAt: map['createdAt'] != null
+          ? DateTime.parse(map['createdAt'])
+          : null,
+      updatedAt: map['updatedAt'] != null
+          ? DateTime.parse(map['updatedAt'])
+          : null,
     );
   }
 
-  // Copy with method for updates
+  // Create updated instance
   Doctor copyWith({
-    String? fullName,
-    String? phoneNumber,
-    String? specialization,
+    String? id,
+    String? doctorId,
+    String? name,
+    String? email,
+    String? phone,
+    String? speciality,
     String? qualification,
-    int? experienceYears,
+    int? experience,
+    String? licenseNumber,
     double? consultationFee,
-    List<String>? languages,
-    Map<String, dynamic>? availability,
-    double? rating,
-    int? totalConsultations,
+    String? status,
     bool? isAvailable,
-    bool? isOnline,
+    List<String>? languages,
+    double? rating,
+    int? totalRatings,
+    int? totalConsultations,
+    int? todayConsultations,
+    Map<String, dynamic>? address,
+    Map<String, dynamic>? workingHours,
+    bool? isVerified,
+    String? profileImage,
+    List<dynamic>? documents,
+    Map<String, dynamic>? socialMedia,
+    DateTime? lastActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return Doctor(
-      id: id,
-      email: email,
-      fullName: fullName ?? this.fullName,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
-      specialization: specialization ?? this.specialization,
+      id: id ?? this.id,
+      doctorId: doctorId ?? this.doctorId,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      speciality: speciality ?? this.speciality,
       qualification: qualification ?? this.qualification,
-      experienceYears: experienceYears ?? this.experienceYears,
+      experience: experience ?? this.experience,
+      licenseNumber: licenseNumber ?? this.licenseNumber,
       consultationFee: consultationFee ?? this.consultationFee,
-      languages: languages ?? this.languages,
-      availability: availability ?? this.availability,
-      rating: rating ?? this.rating,
-      totalConsultations: totalConsultations ?? this.totalConsultations,
+      status: status ?? this.status,
       isAvailable: isAvailable ?? this.isAvailable,
-      isOnline: isOnline ?? this.isOnline,
-      createdAt: createdAt,
-      updatedAt: DateTime.now(),
+      languages: languages ?? this.languages,
+      rating: rating ?? this.rating,
+      totalRatings: totalRatings ?? this.totalRatings,
+      totalConsultations: totalConsultations ?? this.totalConsultations,
+      todayConsultations: todayConsultations ?? this.todayConsultations,
+      address: address ?? this.address,
+      workingHours: workingHours ?? this.workingHours,
+      isVerified: isVerified ?? this.isVerified,
+      profileImage: profileImage ?? this.profileImage,
+      documents: documents ?? this.documents,
+      socialMedia: socialMedia ?? this.socialMedia,
+      lastActive: lastActive ?? this.lastActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
-  // Computed properties
-  String get experienceText {
-    if (experienceYears <= 0) return 'New doctor';
-    if (experienceYears == 1) return '1 year experience';
-    return '$experienceYears years experience';
+  @override
+  String toString() {
+    return 'Doctor(id: $id, name: $name, speciality: $speciality, email: $email)';
   }
 
-  String get ratingText {
-    if (totalConsultations == 0) return 'New doctor';
-    return '${rating.toStringAsFixed(1)} ★ ($totalConsultations reviews)';
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Doctor && other.id == id;
   }
 
-  String get consultationFeeText {
-    if (consultationFee <= 0) return 'Free consultation';
-    return '₹${consultationFee.toStringAsFixed(0)}';
+  @override
+  int get hashCode => id.hashCode;
+
+  // Convenience getters for UI display
+  Color get statusColor {
+    if (!isAvailable) return Colors.grey;
+    switch (status.toLowerCase()) {
+      case 'online':
+        return Colors.green;
+      case 'busy':
+        return Colors.orange;
+      case 'offline':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 
   String get availabilityStatus {
     if (!isAvailable) return 'Unavailable';
-    if (isOnline) return 'Online now';
-    return 'Available';
+    switch (status.toLowerCase()) {
+      case 'online':
+        return 'Available';
+      case 'busy':
+        return 'Busy';
+      case 'offline':
+        return 'Offline';
+      default:
+        return 'Unknown';
+    }
   }
 
-  Color get statusColor {
-    if (!isAvailable) return const Color(0xFFE53E3E);
-    if (isOnline) return const Color(0xFF38A169);
-    return const Color(0xFFD69E2E);
+  String get experienceText {
+    return '$experience year${experience != 1 ? 's' : ''} experience';
   }
+
+  String get ratingText {
+    return rating > 0
+        ? '${rating.toStringAsFixed(1)} (${totalRatings})'
+        : 'No ratings';
+  }
+
+  String get consultationFeeText {
+    return '₹${consultationFee.toStringAsFixed(0)}';
+  }
+}
+
+// Speciality constants to match backend enum
+class DoctorSpecialities {
+  static const List<String> all = [
+    'Cardiologist',
+    'Dermatologist',
+    'Pediatrician',
+    'Neurologist',
+    'General Practitioner',
+    'Psychiatrist',
+    'Orthopedic',
+    'Gynecologist',
+    'ENT Specialist',
+    'Ophthalmologist',
+  ];
 }

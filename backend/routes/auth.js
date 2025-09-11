@@ -907,4 +907,58 @@ router.post("/logout", async (req, res) => {
   }
 });
 
+// @desc    Reset admin password (development helper)
+// @route   POST /api/auth/reset-admin
+// @access  Public (for development only)
+router.post("/reset-admin", async (req, res) => {
+  try {
+    console.log("🔧 POST /api/auth/reset-admin called");
+    
+    // Clear all existing admins
+    await Admin.deleteMany({});
+    console.log("🗑️ Cleared all existing admins");
+
+    // Create new admin with proper password hash
+    const hashedPassword = await bcrypt.hash("password", 12);
+    
+    const adminData = {
+      name: "System Admin",
+      email: "admin@telemed.com",
+      password: hashedPassword,
+      phone: "+91-9876543000",
+      role: "superadmin",
+      permissions: ["all"],
+    };
+
+    const newAdmin = await Admin.create(adminData);
+    console.log("✅ New admin created successfully with ID:", newAdmin._id);
+
+    // Test the password
+    const testMatch = await bcrypt.compare("password", newAdmin.password);
+    console.log("🧪 Password test result:", testMatch);
+
+    res.json({
+      success: true,
+      message: "Admin reset successfully",
+      data: {
+        admin: {
+          id: newAdmin._id,
+          name: newAdmin.name,
+          email: newAdmin.email,
+          role: newAdmin.role,
+        },
+        passwordTest: testMatch,
+        credentials: "admin@telemed.com / password"
+      },
+    });
+  } catch (error) {
+    console.error("💥 Admin reset error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error resetting admin",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;

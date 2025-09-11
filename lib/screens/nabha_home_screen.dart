@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/language_provider.dart';
-import '../generated/l10n/app_localizations.dart';
 import '../widgets/custom_button.dart';
 import 'auth/phone_login_with_password_screen.dart';
 import 'queue_management_screen.dart';
@@ -16,14 +15,14 @@ import '../services/phone_auth_service.dart';
 // Model for doctor status
 class DoctorStatus {
   final String name;
-  final String specialization;
+  final String speciality; // Changed from specialization to match backend
   final bool isAvailable;
   final int waitTime; // in minutes
   final String nextAvailableTime;
 
   DoctorStatus({
     required this.name,
-    required this.specialization,
+    required this.speciality,
     required this.isAvailable,
     this.waitTime = 0,
     this.nextAvailableTime = '',
@@ -38,25 +37,19 @@ class NabhaHomeScreen extends StatefulWidget {
 }
 
 class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
-  // Mock doctor data
-  final List<DoctorStatus> _doctors = [
+  // Live doctor data (limited to 1-2 for home screen preview)
+  final List<DoctorStatus> _liveDoctorsPreview = [
     DoctorStatus(
-      name: 'Dr. Singh',
-      specialization: 'General Medicine',
+      name: 'Dr. Sarah Johnson',
+      speciality: 'General Practitioner',
       isAvailable: true,
-      waitTime: 10,
+      waitTime: 8,
     ),
     DoctorStatus(
-      name: 'Dr. Kaur',
-      specialization: 'Pediatrics',
+      name: 'Dr. Michael Chen',
+      speciality: 'Pediatrician',
       isAvailable: true,
-      waitTime: 30,
-    ),
-    DoctorStatus(
-      name: 'Dr. Patel',
-      specialization: 'Cardiology',
-      isAvailable: false,
-      nextAvailableTime: 'Tue 10 AM',
+      waitTime: 5,
     ),
   ];
 
@@ -438,7 +431,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${_doctors.where((d) => d.isAvailable).length} General Doctors Online',
+            '${_liveDoctorsPreview.where((d) => d.isAvailable).length} General Doctors Online',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -447,11 +440,30 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
           ),
           const SizedBox(height: 16),
 
-          // Doctor status list
+          // Live doctor preview
           Column(
-            children: _doctors.map((doctor) {
+            children: _liveDoctorsPreview.map((doctor) {
               return _buildDoctorStatusItem(doctor);
             }).toList(),
+          ),
+
+          const SizedBox(height: 16),
+
+          // See all doctors button
+          Container(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, '/doctor-queue');
+              },
+              icon: const Icon(Icons.queue),
+              label: const Text('Join Live Doctor Queue'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                side: BorderSide(color: Colors.blue[600]!),
+                foregroundColor: Colors.blue[600],
+              ),
+            ),
           ),
         ],
       ),
@@ -494,7 +506,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                   ),
                 ),
                 Text(
-                  doctor.specialization,
+                  doctor.speciality,
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],

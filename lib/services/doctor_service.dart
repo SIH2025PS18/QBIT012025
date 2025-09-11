@@ -26,13 +26,18 @@ class DoctorService {
     }
   }
 
-  /// Search doctors by specialization using unified backend
-  static Future<List<Doctor>> searchDoctorsBySpecialization(
-    String specialization,
+  /// Get available doctors (alias for getAllDoctors)
+  static Future<List<Doctor>> getAvailableDoctors() async {
+    return getAllDoctors();
+  }
+
+  /// Search doctors by speciality using unified backend
+  static Future<List<Doctor>> searchDoctorsBySpeciality(
+    String speciality,
   ) async {
     try {
       final response = await _apiService.get(
-        '${ApiConfig.doctorsList}?speciality=$specialization&available=true',
+        '${ApiConfig.doctorsList}?speciality=$speciality&available=true',
       );
 
       if (response.isSuccess && response.data != null) {
@@ -160,7 +165,7 @@ class DoctorService {
 
   /// Filter doctors by multiple criteria
   static Future<List<Doctor>> filterDoctors({
-    String? specialization,
+    String? speciality,
     String? searchQuery,
     bool? isOnline,
     double? minRating,
@@ -171,8 +176,8 @@ class DoctorService {
       // Build query parameters
       Map<String, String> queryParams = {'available': 'true'};
 
-      if (specialization != null && specialization.isNotEmpty) {
-        queryParams['speciality'] = specialization;
+      if (speciality != null && speciality.isNotEmpty) {
+        queryParams['speciality'] = speciality;
       }
 
       if (searchQuery != null && searchQuery.isNotEmpty) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/patient_profile.dart';
+import '../models/family_member.dart';
 import '../providers/patient_profile_provider.dart';
 import '../services/auth_service.dart';
 import '../services/image_upload_service.dart';
@@ -29,12 +30,18 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
   bool _isLoading = false;
   bool _isEditing = false;
   bool _isUploadingPhoto = false;
+  String? _errorMessage;
 
   String _selectedGender = '';
   String _selectedBloodGroup = '';
   DateTime? _selectedDateOfBirth;
 
-  final List<String> _genderOptions = ['Male', 'Female', 'Other'];
+  final List<String> _genderOptions = [
+    'Not specified',
+    'Male',
+    'Female',
+    'Other',
+  ];
   final List<String> _bloodGroups = [
     'A+',
     'A-',
@@ -62,7 +69,10 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
   }
 
   Future<void> _loadProfile() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
       // Try to load from provider
@@ -79,6 +89,9 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
         ).profile;
       } catch (e) {
         print('Failed to load profile: $e');
+        setState(() {
+          _errorMessage = 'Failed to load profile: $e';
+        });
       }
 
       if (profile != null) {
@@ -94,13 +107,13 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
           _profile = PatientProfile(
             id: user.id,
             fullName: user.name,
-            email: user.email ?? '',
-            phoneNumber: user.email ?? '',
+            email: user.email,
+            phoneNumber: '', // Will be filled when user edits profile
             dateOfBirth: DateTime.now().subtract(
               const Duration(days: 365 * 25),
             ),
-            gender: 'Not specified',
-            bloodGroup: '',
+            gender: user.gender ?? 'Not specified',
+            bloodGroup: user.bloodGroup ?? '',
             address: '',
             emergencyContact: '',
             emergencyContactPhone: '',
@@ -147,46 +160,6 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
     } finally {
       setState(() => _isLoading = false);
     }
-  }
-
-  DateTime? _parseDate(dynamic value) {
-    if (value == null) return null;
-    if (value is DateTime) return value;
-    if (value is String) {
-      try {
-        return DateTime.parse(value);
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
-  }
-
-  List<String> _parseStringList(dynamic value) {
-    if (value == null) return [];
-    if (value is List) return value.cast<String>();
-    if (value is String) {
-      try {
-        // Try to parse as JSON array
-        final parsed = value.replaceAll('[', '').replaceAll(']', '').split(',');
-        return parsed
-            .map((e) => e.trim().replaceAll('"', ''))
-            .where((e) => e.isNotEmpty)
-            .toList();
-      } catch (e) {
-        return [value];
-      }
-    }
-    return [];
-  }
-
-  Map<String, dynamic> _parseMap(dynamic value) {
-    if (value == null) return {};
-    if (value is Map<String, dynamic>) return value;
-    if (value is String && value.isNotEmpty) {
-      return {'notes': value};
-    }
-    return {};
   }
 
   void _populateFields() {
@@ -382,7 +355,25 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
         ],
       ),
       body: _profile == null
-          ? const Center(child: Text('Unable to load profile'))
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    _errorMessage ?? 'Unable to load profile',
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _loadProfile,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Form(
@@ -657,6 +648,73 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
 
                     const SizedBox(height: 24),
 
+                    // Family Members Section
+                    _buildSectionCard('Family Members', [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Family Members',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          if (_isEditing)
+                            ElevatedButton.icon(
+                              onPressed: _addFamilyMember,
+                              icon: const Icon(Icons.add, size: 18),
+                              label: const Text('Add'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(80, 32),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      if (_profile!.familyMembers.isNotEmpty)
+                        ..._profile!.familyMembers.map(
+                          (member) => _buildFamilyMemberCard(member),
+                        ),
+                      if (_profile!.familyMembers.isEmpty)
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey[300]!),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.family_restroom,
+                                color: Colors.grey[400],
+                                size: 24,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'No family members added yet',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ]),
+
+                    const SizedBox(height: 24),
+
                     // Medical Information
                     _buildSectionCard('Medical Information', [
                       if (_profile!.allergies.isNotEmpty) ...[
@@ -897,7 +955,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value.isEmpty ? null : value,
+          value: value.isEmpty || !options.contains(value) ? null : value,
           onChanged: enabled ? onChanged : null,
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: Colors.grey[600], size: 20),
@@ -951,5 +1009,362 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
         ),
       ],
     );
+  }
+
+  // Family Members Methods
+  void _addFamilyMember() {
+    showDialog(
+      context: context,
+      builder: (context) => _FamilyMemberDialog(
+        onSave: (familyMember) {
+          setState(() {
+            _profile = _profile!.copyWith(
+              familyMembers: [..._profile!.familyMembers, familyMember],
+            );
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildFamilyMemberCard(FamilyMember member) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  member.name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              if (_isEditing)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, size: 20),
+                      onPressed: () => _editFamilyMember(member),
+                      color: Theme.of(context).primaryColor,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.delete, size: 20),
+                      onPressed: () => _deleteFamilyMember(member),
+                      color: Colors.red,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: _buildInfoRow('Relation', member.relation)),
+              Expanded(child: _buildInfoRow('Age', '${member.age} years')),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: _buildInfoRow('Gender', member.gender)),
+              if (member.bloodGroup.isNotEmpty)
+                Expanded(
+                  child: _buildInfoRow('Blood Group', member.bloodGroup),
+                ),
+            ],
+          ),
+          if (member.phoneNumber.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _buildInfoRow('Phone', member.phoneNumber),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _editFamilyMember(FamilyMember member) {
+    showDialog(
+      context: context,
+      builder: (context) => _FamilyMemberDialog(
+        familyMember: member,
+        onSave: (updatedMember) {
+          setState(() {
+            final index = _profile!.familyMembers.indexWhere(
+              (m) => m.id == member.id,
+            );
+            if (index != -1) {
+              final updatedMembers = List<FamilyMember>.from(
+                _profile!.familyMembers,
+              );
+              updatedMembers[index] = updatedMember;
+              _profile = _profile!.copyWith(familyMembers: updatedMembers);
+            }
+          });
+        },
+      ),
+    );
+  }
+
+  void _deleteFamilyMember(FamilyMember member) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Family Member'),
+        content: Text(
+          'Are you sure you want to remove ${member.name} from your family members?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _profile = _profile!.copyWith(
+                  familyMembers: _profile!.familyMembers
+                      .where((m) => m.id != member.id)
+                      .toList(),
+                );
+              });
+              Navigator.of(context).pop();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Family Member Dialog
+class _FamilyMemberDialog extends StatefulWidget {
+  final FamilyMember? familyMember;
+  final Function(FamilyMember) onSave;
+
+  const _FamilyMemberDialog({this.familyMember, required this.onSave});
+
+  @override
+  State<_FamilyMemberDialog> createState() => _FamilyMemberDialogState();
+}
+
+class _FamilyMemberDialogState extends State<_FamilyMemberDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+
+  String _selectedRelation = '';
+  String _selectedGender = '';
+  String _selectedBloodGroup = '';
+  DateTime? _selectedDateOfBirth;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.familyMember != null) {
+      _nameController.text = widget.familyMember!.name;
+      _phoneController.text = widget.familyMember!.phoneNumber;
+      _emailController.text = widget.familyMember!.email;
+      _selectedRelation = widget.familyMember!.relation;
+      _selectedGender = widget.familyMember!.gender;
+      _selectedBloodGroup = widget.familyMember!.bloodGroup;
+      _selectedDateOfBirth = widget.familyMember!.dateOfBirth;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        widget.familyMember == null
+            ? 'Add Family Member'
+            : 'Edit Family Member',
+      ),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  prefixIcon: Icon(Icons.person),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter name';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedRelation.isEmpty ? null : _selectedRelation,
+                decoration: const InputDecoration(
+                  labelText: 'Relation',
+                  prefixIcon: Icon(Icons.family_restroom),
+                ),
+                items: FamilyRelations.relations.map((relation) {
+                  return DropdownMenuItem(
+                    value: relation,
+                    child: Text(relation),
+                  );
+                }).toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedRelation = value ?? ''),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select relation';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Date of Birth',
+                  prefixIcon: Icon(Icons.calendar_today),
+                ),
+                readOnly: true,
+                onTap: () async {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate:
+                        _selectedDateOfBirth ??
+                        DateTime.now().subtract(const Duration(days: 365 * 25)),
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime.now(),
+                  );
+                  if (date != null) {
+                    setState(() => _selectedDateOfBirth = date);
+                  }
+                },
+                controller: TextEditingController(
+                  text: _selectedDateOfBirth != null
+                      ? '${_selectedDateOfBirth!.day}/${_selectedDateOfBirth!.month}/${_selectedDateOfBirth!.year}'
+                      : '',
+                ),
+                validator: (value) {
+                  if (_selectedDateOfBirth == null) {
+                    return 'Please select date of birth';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedGender.isEmpty ? null : _selectedGender,
+                decoration: const InputDecoration(
+                  labelText: 'Gender',
+                  prefixIcon: Icon(Icons.person_outline),
+                ),
+                items: ['Male', 'Female', 'Other'].map((gender) {
+                  return DropdownMenuItem(value: gender, child: Text(gender));
+                }).toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedGender = value ?? ''),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select gender';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedBloodGroup.isEmpty ? null : _selectedBloodGroup,
+                decoration: const InputDecoration(
+                  labelText: 'Blood Group (Optional)',
+                  prefixIcon: Icon(Icons.bloodtype),
+                ),
+                items: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((
+                  bg,
+                ) {
+                  return DropdownMenuItem(value: bg, child: Text(bg));
+                }).toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedBloodGroup = value ?? ''),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _phoneController,
+                decoration: const InputDecoration(
+                  labelText: 'Phone (Optional)',
+                  prefixIcon: Icon(Icons.phone),
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email (Optional)',
+                  prefixIcon: Icon(Icons.email),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(onPressed: _saveFamilyMember, child: const Text('Save')),
+      ],
+    );
+  }
+
+  void _saveFamilyMember() {
+    if (_formKey.currentState!.validate()) {
+      final familyMember = FamilyMember(
+        id:
+            widget.familyMember?.id ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
+        name: _nameController.text.trim(),
+        relation: _selectedRelation,
+        dateOfBirth: _selectedDateOfBirth!,
+        gender: _selectedGender,
+        bloodGroup: _selectedBloodGroup,
+        phoneNumber: _phoneController.text.trim(),
+        email: _emailController.text.trim(),
+        createdAt: widget.familyMember?.createdAt ?? DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      widget.onSave(familyMember);
+      Navigator.of(context).pop();
+    }
   }
 }

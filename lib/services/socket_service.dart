@@ -52,7 +52,7 @@ class SocketService extends ChangeNotifier {
       _userName = userName ?? userId;
 
       // Use unified backend URL
-      final url = serverUrl ?? 'http://localhost:5001';
+      final url = serverUrl ?? 'https://telemed18.onrender.com';
 
       // Create socket connection with auth token
       final prefs = await SharedPreferences.getInstance();

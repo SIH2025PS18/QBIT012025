@@ -14,7 +14,7 @@
 
 ## 🚀 **Backend Server Status**
 
-- **✅ Unified Backend Running**: `http://localhost:5001`
+- **✅ Unified Backend Running**: `https://telemed18.onrender.com`
 - **✅ Admin Portal Running**: `http://localhost:5174`
 - **✅ MongoDB Connected**: Database seeded with initial data
 - **✅ Socket.IO Active**: Real-time communication enabled
@@ -60,7 +60,7 @@
 ### **API Endpoints Completed**
 
 ```
-Backend API (http://localhost:5001/api):
+Backend API (https://telemed18.onrender.com/api):
 ├── Auth
 │   ├── POST /auth/patient/register-mobile ✅
 │   ├── POST /auth/patient/register ✅
@@ -196,7 +196,7 @@ Data: {
 1. **Backend**: `npm run dev` in `/backend` folder
 2. **Admin Portal**: `npm run dev` in `/doctor-dashboard` folder
 3. **Mobile App**: `flutter run` in project root
-4. **API Documentation**: Available at `http://localhost:5001/api`
+4. **API Documentation**: Available at `https://telemed18.onrender.com/api`
 
 ---
 

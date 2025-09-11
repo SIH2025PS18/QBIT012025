@@ -96,8 +96,8 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
       // Book appointment using existing service
       final appointment = await AppointmentService.bookAppointment(
         doctorId: widget.doctor.id,
-        doctorName: widget.doctor.fullName,
-        doctorSpecialization: widget.doctor.specialization,
+        doctorName: widget.doctor.name,
+        doctorSpecialization: widget.doctor.speciality,
         appointmentDate: _selectedDate!,
         appointmentTime: _selectedTime!,
         consultationFee: widget.doctor.consultationFee,
@@ -129,7 +129,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${l10n.appointmentBookedWith} ${widget.doctor.fullName}',
+              '${l10n.appointmentBookedWith} ${widget.doctor.name}',
             ),
             backgroundColor: Colors.green,
           ),
@@ -182,7 +182,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
                         context,
                       ).primaryColor.withOpacity(0.1),
                       child: Text(
-                        widget.doctor.fullName
+                        widget.doctor.name
                             .split(' ')
                             .map((name) => name[0])
                             .take(2)
@@ -200,7 +200,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.doctor.fullName,
+                            widget.doctor.name,
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -209,7 +209,7 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            widget.doctor.specialization,
+                            widget.doctor.speciality,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],

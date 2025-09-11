@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../config/api_config.dart';
+import '../config/env_config.dart';
 import '../utils/network_logger.dart';
 
 /// Core API service for HTTP requests to the telemedicine backend
@@ -12,8 +13,9 @@ class ApiService {
 
   ApiService._internal() {
     _dio = Dio();
-    _dio.options.connectTimeout = EnvConfig.apiTimeout;
-    _dio.options.receiveTimeout = EnvConfig.apiTimeout;
+    _dio.options.baseUrl = ApiConfig.baseUrl;
+    _dio.options.connectTimeout = EnvConfig.connectTimeout;
+    _dio.options.receiveTimeout = EnvConfig.receiveTimeout;
     // Add logging interceptor
     _dio.interceptors.add(NetworkLogger.dioInterceptor);
   }

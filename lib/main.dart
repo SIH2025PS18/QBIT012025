@@ -6,14 +6,16 @@ import 'services/video_consultation_service.dart';
 import 'services/connectivity_service.dart';
 import 'services/auth_service.dart';
 import 'providers/language_provider.dart';
+import 'providers/patient_profile_provider.dart';
 import 'screens/splash_screen.dart';
 import 'screens/auth_wrapper.dart';
-import 'screens/medical_records_screen.dart';
 import 'screens/symptom_chat_screen.dart';
 import 'screens/auth/phone_login_with_password_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/auth/phone_forgot_password_screen.dart';
 import 'screens/nabha_home_screen.dart';
+import 'screens/doctor_queue_screen.dart';
+import 'screens/queue_waiting_screen.dart';
 import 'generated/l10n/app_localizations.dart';
 
 void main() async {
@@ -48,6 +50,11 @@ class TelemedApp extends StatelessWidget {
 
         // Auth service
         ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
+
+        // Patient profile provider
+        ChangeNotifierProvider<PatientProfileProvider>(
+          create: (_) => PatientProfileProvider(),
+        ),
 
         // Video consultation service
         ChangeNotifierProvider<VideoConsultationService>(
@@ -87,6 +94,13 @@ class TelemedApp extends StatelessWidget {
               '/register': (context) =>
                   const RegisterScreen(), // Add register route
               '/home': (context) => const NabhaHomeScreen(), // Add home route
+              '/doctor-queue': (context) =>
+                  const DoctorQueueScreen(), // Add doctor queue route
+              '/queue-waiting': (context) {
+                final doctor =
+                    ModalRoute.of(context)!.settings.arguments as LiveDoctor;
+                return QueueWaitingScreen(doctor: doctor);
+              }, // Add queue waiting route
             },
             debugShowCheckedModeBanner: false,
           );

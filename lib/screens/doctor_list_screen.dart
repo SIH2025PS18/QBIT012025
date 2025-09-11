@@ -17,18 +17,18 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
 
   List<Doctor> _doctors = [];
   List<Doctor> _filteredDoctors = [];
-  List<String> _specializations = [];
+  List<String> _specialities = [];
 
   bool _isLoading = true;
   bool _isSearching = false;
-  String _selectedSpecialization = '';
+  String _selectedSpeciality = '';
   bool _showOnlineOnly = false;
 
   @override
   void initState() {
     super.initState();
     _loadDoctors();
-    _loadSpecializations();
+    _loadSpecialities();
   }
 
   @override
@@ -43,7 +43,8 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final doctors = await DoctorService.getAllDoctors();
+      // Load doctors from backend API
+      final doctors = await DoctorService.getAvailableDoctors();
       setState(() {
         _doctors = doctors;
         _filteredDoctors = doctors;
@@ -60,10 +61,10 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
     }
   }
 
-  Future<void> _loadSpecializations() async {
-    final specializations = await DoctorService.getSpecializations();
+  Future<void> _loadSpecialities() async {
+    final specialities = await DoctorService.getSpecializations();
     setState(() {
-      _specializations = ['All Specializations', ...specializations];
+      _specialities = ['All Specialities', ...specialities];
     });
   }
 
@@ -76,25 +77,25 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
     final searchQuery = _searchController.text.trim().toLowerCase();
     if (searchQuery.isNotEmpty) {
       filtered = filtered.where((doctor) {
-        return doctor.fullName.toLowerCase().contains(searchQuery) ||
-            doctor.specialization.toLowerCase().contains(searchQuery) ||
+        return doctor.name.toLowerCase().contains(searchQuery) ||
+            doctor.speciality.toLowerCase().contains(searchQuery) ||
             doctor.qualification.toLowerCase().contains(searchQuery);
       }).toList();
     }
 
-    // Filter by specialization
-    if (_selectedSpecialization.isNotEmpty &&
-        _selectedSpecialization != 'All Specializations') {
+    // Filter by speciality
+    if (_selectedSpeciality.isNotEmpty &&
+        _selectedSpeciality != 'All Specialities') {
       filtered = filtered.where((doctor) {
-        return doctor.specialization.toLowerCase().contains(
-          _selectedSpecialization.toLowerCase(),
+        return doctor.speciality.toLowerCase().contains(
+          _selectedSpeciality.toLowerCase(),
         );
       }).toList();
     }
 
     // Filter by online status
     if (_showOnlineOnly) {
-      filtered = filtered.where((doctor) => doctor.isOnline).toList();
+      filtered = filtered.where((doctor) => doctor.isAvailable).toList();
     }
 
     setState(() {
@@ -106,7 +107,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
   void _clearFilters() {
     setState(() {
       _searchController.clear();
-      _selectedSpecialization = '';
+      _selectedSpeciality = '';
       _showOnlineOnly = false;
       _filteredDoctors = _doctors;
     });
@@ -116,7 +117,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
     setState(() => _isLoading = true);
     await DoctorService.createSampleDoctors();
     await _loadDoctors();
-    await _loadSpecializations();
+    await _loadSpecialities();
   }
 
   @override
@@ -149,7 +150,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                 CustomTextField(
                   controller: _searchController,
                   labelText: 'Search doctors',
-                  hintText: 'Enter doctor name or specialization',
+                  hintText: 'Enter doctor name or speciality',
                   prefixIcon: Icons.search,
                   onChanged: (value) => _filterDoctors(),
                 ),
@@ -159,15 +160,15 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                 // Filters
                 Row(
                   children: [
-                    // Specialization Dropdown
+                    // Speciality Dropdown
                     Expanded(
                       flex: 2,
                       child: DropdownButtonFormField<String>(
-                        value: _selectedSpecialization.isEmpty
+                        value: _selectedSpeciality.isEmpty
                             ? null
-                            : _selectedSpecialization,
+                            : _selectedSpeciality,
                         decoration: InputDecoration(
-                          labelText: 'Specialization',
+                          labelText: 'Speciality',
                           prefixIcon: const Icon(
                             Icons.medical_services,
                             size: 20,
@@ -183,11 +184,11 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                             borderSide: BorderSide(color: Colors.grey[300]!),
                           ),
                         ),
-                        items: _specializations.map((String specialization) {
+                        items: _specialities.map((String speciality) {
                           return DropdownMenuItem<String>(
-                            value: specialization,
+                            value: speciality,
                             child: Text(
-                              specialization,
+                              speciality,
                               style: const TextStyle(fontSize: 14),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -195,7 +196,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                         }).toList(),
                         onChanged: (String? value) {
                           setState(() {
-                            _selectedSpecialization = value ?? '';
+                            _selectedSpeciality = value ?? '';
                           });
                           _filterDoctors();
                         },
@@ -235,7 +236,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
 
                 // Clear Filters Button
                 if (_searchController.text.isNotEmpty ||
-                    _selectedSpecialization.isNotEmpty ||
+                    _selectedSpeciality.isNotEmpty ||
                     _showOnlineOnly)
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
@@ -346,11 +347,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                   context,
                 ).primaryColor.withOpacity(0.1),
                 child: Text(
-                  doctor.fullName
-                      .split(' ')
-                      .map((name) => name[0])
-                      .take(2)
-                      .join(),
+                  doctor.name.split(' ').map((name) => name[0]).take(2).join(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -367,7 +364,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      doctor.fullName,
+                      doctor.name,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -376,7 +373,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      doctor.specialization,
+                      doctor.speciality,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -582,11 +579,7 @@ class DoctorDetailsModal extends StatelessWidget {
                   context,
                 ).primaryColor.withOpacity(0.1),
                 child: Text(
-                  doctor.fullName
-                      .split(' ')
-                      .map((name) => name[0])
-                      .take(2)
-                      .join(),
+                  doctor.name.split(' ').map((name) => name[0]).take(2).join(),
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -602,7 +595,7 @@ class DoctorDetailsModal extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      doctor.fullName,
+                      doctor.name,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -611,7 +604,7 @@ class DoctorDetailsModal extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      doctor.specialization,
+                      doctor.speciality,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[600],

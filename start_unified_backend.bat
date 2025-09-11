@@ -17,9 +17,9 @@ if not exist node_modules (
 
 echo Starting Unified Backend Server...
 echo.
-echo ✅ Server will be available at: http://localhost:5001
-echo ✅ Health check: http://localhost:5001/api/health
-echo ✅ API endpoints: http://localhost:5001/api
+echo ✅ Server will be available at: https://telemed18.onrender.com
+echo ✅ Health check: https://telemed18.onrender.com/api/health
+echo ✅ API endpoints: https://telemed18.onrender.com/api
 echo ✅ Socket.IO ready for real-time connections
 echo.
 echo 📋 Available APIs:

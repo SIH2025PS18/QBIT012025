@@ -43,7 +43,7 @@ class _TeleMedicineIntegrationWidgetState
     // Initialize socket connection
     try {
       await _socketService.initialize(
-        serverUrl: 'http://localhost:5001', // Unified backend
+        serverUrl: 'https://telemed18.onrender.com', // Unified backend
         userId: widget.patientId,
         userRole: 'patient',
         userName: widget.patientName,
@@ -235,17 +235,17 @@ class _TeleMedicineIntegrationWidgetState
     // Create a mock doctor for demonstration
     final mockDoctor = Doctor(
       id: 'doc_001',
-      fullName: 'Dr. Sarah Wilson',
+      name: 'Dr. Sarah Wilson',
       email: 'sarah.wilson@hospital.com',
-      specialization: 'General Medicine',
+      phone: '+91 9876543210',
+      speciality: 'General Medicine',
       qualification: 'MBBS, MD',
-      experienceYears: 10,
+      experience: 10,
       consultationFee: 500.0,
-      rating: 4.8,
+      licenseNumber: 'LIC123456',
+      status: 'online',
       isAvailable: true,
-      languages: ['English', 'Hindi'],
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      workingHours: {},
     );
 
     Navigator.of(context)

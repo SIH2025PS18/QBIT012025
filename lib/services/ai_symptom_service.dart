@@ -11,7 +11,7 @@ class AISymptomService {
   factory AISymptomService() => _instance;
   AISymptomService._internal();
 
-  static const String _baseUrl = 'http://localhost:5001/api';
+  static const String _baseUrl = 'https://telemed18.onrender.com/api';
 
   /// Analyze symptoms using multilingual AI
   Future<SymptomAnalysis> analyzeSymptoms({

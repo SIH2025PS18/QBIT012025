@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:crypto/crypto.dart';
 
 class ImageUploadService {
-  static const String _baseUrl = 'http://localhost:5001/api';
+  static const String _baseUrl = 'https://telemed18.onrender.com/api';
   static const String _uploadEndpoint = '/upload/profile-photo';
 
   /// Pick image from gallery or camera

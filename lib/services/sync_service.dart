@@ -42,7 +42,7 @@ class SyncService extends ChangeNotifier {
   Timer? _periodicSyncTimer;
 
   // MongoDB backend URL
-  static const String _baseUrl = 'http://localhost:5001/api';
+  static const String _baseUrl = 'https://telemed18.onrender.com/api';
 
   SyncStatus _syncStatus = SyncStatus.offline;
   bool _isSyncing = false;
