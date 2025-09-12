@@ -4,6 +4,11 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:convert';
 import '../models/models.dart';
 
+// Only import Agora on non-web platforms
+// ignore: uri_does_not_exist
+import '../services/agora_service.dart'
+    if (dart.library.html) '../services/agora_service_stub.dart';
+
 class VideoCallProvider with ChangeNotifier {
   Patient? _currentPatient;
   bool _isInCall = false;
@@ -15,6 +20,10 @@ class VideoCallProvider with ChangeNotifier {
   String? _callId;
   IO.Socket? _socket;
   String? _authToken;
+
+  // Agora service for video calling
+  final AgoraService _agoraService = AgoraService();
+  List<int> _remoteUsers = [];
 
   // Backend API URL
   static const String _baseUrl = 'https://telemed18.onrender.com/api';
@@ -28,10 +37,17 @@ class VideoCallProvider with ChangeNotifier {
   bool get isAudioEnabled => _isAudioEnabled;
   bool get isSpeakerEnabled => _isSpeakerEnabled;
   String? get callId => _callId;
+  AgoraService get agoraService => _agoraService;
+  List<int> get remoteUsers => _remoteUsers;
 
   // Initialize socket connection
-  void initializeSocket(String doctorId, String authToken) {
+  void initializeSocket(String doctorId, String authToken) async {
     _authToken = authToken;
+
+    // Initialize Agora service
+    await _agoraService.initialize('your-agora-app-id');
+    _setupAgoraCallbacks();
+
     _socket = IO.io(_socketUrl, <String, dynamic>{
       'transports': ['websocket'],
       'query': {'doctorId': doctorId, 'token': authToken},
@@ -67,6 +83,15 @@ class VideoCallProvider with ChangeNotifier {
     });
   }
 
+  // Setup Agora callbacks
+  void _setupAgoraCallbacks() {
+    // Listen to Agora service changes
+    _agoraService.addListener(() {
+      _remoteUsers = List.from(_agoraService.remoteUsers);
+      notifyListeners();
+    });
+  }
+
   void _handleIncomingCall(Patient patient, String callId) {
     _currentPatient = patient;
     _callId = callId;
@@ -74,7 +99,7 @@ class VideoCallProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void _handleCallEnded() {
+  void _handleCallEnded() async {
     _currentPatient = null;
     _callId = null;
     _isInCall = false;
@@ -83,6 +108,10 @@ class VideoCallProvider with ChangeNotifier {
     _isScreenSharing = false;
     _isAudioEnabled = true;
     _isSpeakerEnabled = false;
+    _remoteUsers.clear();
+
+    // Leave Agora channel
+    await _agoraService.leaveChannel();
     notifyListeners();
   }
 
@@ -104,6 +133,12 @@ class VideoCallProvider with ChangeNotifier {
           _currentPatient = patient;
           _callId = data['callId'];
           _isInCall = true;
+
+          // Join Agora channel using call ID
+          await _agoraService.joinChannel(
+            channelId: _callId!,
+            token: '', // Use empty token for testing
+          );
 
           // Notify patient via socket
           _socket?.emit('start_call', {
@@ -146,8 +181,11 @@ class VideoCallProvider with ChangeNotifier {
   }
 
   // Toggle microphone mute
-  void toggleMute() {
+  void toggleMute() async {
     _isMuted = !_isMuted;
+
+    // Use Agora to mute/unmute microphone
+    await _agoraService.muteLocalAudio(_isMuted);
 
     // Emit mute status to other participants
     _socket?.emit('toggle_audio', {'callId': _callId, 'isMuted': _isMuted});
@@ -156,8 +194,11 @@ class VideoCallProvider with ChangeNotifier {
   }
 
   // Toggle audio on/off
-  void toggleAudio() {
+  void toggleAudio() async {
     _isAudioEnabled = !_isAudioEnabled;
+
+    // Use Agora to enable/disable audio
+    await _agoraService.muteLocalAudio(!_isAudioEnabled);
 
     // Emit audio status to other participants
     _socket?.emit('toggle_audio', {
@@ -182,8 +223,11 @@ class VideoCallProvider with ChangeNotifier {
   }
 
   // Toggle video on/off
-  void toggleVideo() {
+  void toggleVideo() async {
     _isVideoEnabled = !_isVideoEnabled;
+
+    // Use Agora to enable/disable video
+    await _agoraService.enableLocalVideo(_isVideoEnabled);
 
     // Emit video status to other participants
     _socket?.emit('toggle_video', {

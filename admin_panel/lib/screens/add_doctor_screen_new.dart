@@ -28,6 +28,18 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
   bool _isAvailable = true;
   bool _isLoading = false;
 
+  // Helper function to generate password based on doctor's name
+  String _generateDoctorPassword(String doctorName) {
+    // Extract first name from the doctor's name
+    String firstName = doctorName.split(' ').first.toLowerCase();
+    // Remove any special characters and 'dr.' prefix
+    firstName = firstName.replaceAll(RegExp(r'[^a-zA-Z]'), '');
+    if (firstName.startsWith('dr')) {
+      firstName = firstName.substring(2);
+    }
+    return '$firstName@123';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -102,12 +114,12 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
         success = await _adminService.updateDoctor(widget.doctor!.id, doctor);
       } else {
         // Create new doctor with credentials
-        const defaultPassword = 'doctor123';
+        final generatedPassword = _generateDoctorPassword(_nameController.text);
         final result = await _adminService.createDoctorWithCredentials(
-            doctor, defaultPassword);
+            doctor, generatedPassword);
         success = result != null;
 
-        if (success && result != null) {
+        if (success) {
           // Show credentials to admin
           _showCredentialsDialog(result);
         }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/doctor.dart';
 import '../services/admin_service.dart';
 import '../widgets/sidebar.dart';
@@ -28,6 +29,18 @@ class _DoctorManagementScreenState extends State<DoctorManagementScreen> {
     'General Medicine',
     'Emergency Medicine',
   ];
+
+  // Helper function to generate password based on doctor's name
+  String _generateDoctorPassword(Doctor doctor) {
+    // Extract first name from the doctor's name
+    String firstName = doctor.name.split(' ').first.toLowerCase();
+    // Remove any special characters and 'dr.' prefix
+    firstName = firstName.replaceAll(RegExp(r'[^a-zA-Z]'), '');
+    if (firstName.startsWith('dr')) {
+      firstName = firstName.substring(2);
+    }
+    return '$firstName@123';
+  }
 
   @override
   void initState() {
@@ -394,9 +407,71 @@ class _DoctorManagementScreenState extends State<DoctorManagementScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            // Login Credentials Section
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A2D3F),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFF3A3D4F)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.login,
+                          color: const Color(0xFFFF6B9D), size: 14),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'Doctor Login',
+                        style: TextStyle(
+                          color: Color(0xFFFF6B9D),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Email: ${doctor.email}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    'Password: ${_generateDoctorPassword(doctor)}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const Spacer(),
             Row(
               children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _showCredentialsDialog(doctor),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF6B9D),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                    child: const Text(
+                      'View Login',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _toggleDoctorAvailability(doctor),
@@ -421,6 +496,196 @@ class _DoctorManagementScreenState extends State<DoctorManagementScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showCredentialsDialog(Doctor doctor) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1D29),
+        title: const Text(
+          'Doctor Login Credentials',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Container(
+          width: 400,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Use these credentials for doctor dashboard login:',
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2A2D3F),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF3A3D4F)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.person,
+                          color: Color(0xFFFF6B9D),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          doctor.name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Email:',
+                      style: TextStyle(
+                        color: Color(0xFFFF6B9D),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SelectableText(
+                            doctor.email,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () =>
+                              _copyToClipboard(doctor.email, 'Email copied!'),
+                          icon: const Icon(Icons.copy,
+                              color: Color(0xFFFF6B9D), size: 18),
+                          tooltip: 'Copy email',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Password:',
+                      style: TextStyle(
+                        color: Color(0xFFFF6B9D),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SelectableText(
+                            _generateDoctorPassword(doctor),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => _copyToClipboard(
+                              _generateDoctorPassword(doctor),
+                              'Password copied!'),
+                          icon: const Icon(Icons.copy,
+                              color: Color(0xFFFF6B9D), size: 18),
+                          tooltip: 'Copy password',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Doctor Dashboard URL:',
+                      style: TextStyle(
+                        color: Color(0xFFFF6B9D),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const SelectableText(
+                      'http://localhost:8082',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 14,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.info_outline,
+                      color: Colors.blue,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'The doctor can use these credentials to login to the doctor dashboard at localhost:8082',
+                        style: TextStyle(
+                          color: Colors.blue[300],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: Color(0xFFFF6B9D)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _copyToClipboard(String text, String message) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: const Color(0xFFFF6B9D),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

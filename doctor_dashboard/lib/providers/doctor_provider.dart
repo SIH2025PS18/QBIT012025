@@ -26,15 +26,19 @@ class DoctorProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      print('Doctor Login Attempt: $email');
       final response = await http.post(
         Uri.parse('$_baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          'email': email,
+          'loginId': email,
           'password': password,
           'userType': 'doctor',
         }),
       );
+
+      print('Doctor Login Response Status: ${response.statusCode}');
+      print('Doctor Login Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

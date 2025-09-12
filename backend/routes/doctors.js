@@ -108,6 +108,8 @@ router.get("/:id", async (req, res) => {
 // @access  Private (Admin only)
 router.post("/", auth, authorize("admin"), async (req, res) => {
   try {
+    console.log("🏥 Creating new doctor with data:", req.body);
+    
     const {
       name,
       email,
@@ -120,7 +122,38 @@ router.post("/", auth, authorize("admin"), async (req, res) => {
       languages,
       address,
       workingHours,
+      isAvailable,
+      isVerified,
     } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !phone || !speciality || !qualification || 
+        experience === undefined || !licenseNumber || !consultationFee) {
+      console.log("❌ Missing required fields in request");
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        required: ["name", "email", "phone", "speciality", "qualification", "experience", "licenseNumber", "consultationFee"]
+      });
+    }
+
+    // Map specialities to valid enum values
+    const specialityMap = {
+      "General Medicine": "General Practitioner",
+      "General Practitioner": "General Practitioner",
+      "Cardiologist": "Cardiologist",
+      "Dermatologist": "Dermatologist",
+      "Pediatrician": "Pediatrician",
+      "Neurologist": "Neurologist",
+      "Psychiatrist": "Psychiatrist",
+      "Orthopedic": "Orthopedic",
+      "Gynecologist": "Gynecologist",
+      "ENT Specialist": "ENT Specialist",
+      "Ophthalmologist": "Ophthalmologist"
+    };
+    
+    const mappedSpeciality = specialityMap[speciality] || speciality;
+    console.log(`🔄 Mapped speciality "${speciality}" to "${mappedSpeciality}"`);
 
     // Check if doctor already exists
     const existingDoctor = await Doctor.findOne({
@@ -128,6 +161,7 @@ router.post("/", auth, authorize("admin"), async (req, res) => {
     });
 
     if (existingDoctor) {
+      console.log("⚠️ Doctor already exists:", existingDoctor.email);
       return res.status(400).json({
         success: false,
         message:
@@ -138,10 +172,14 @@ router.post("/", auth, authorize("admin"), async (req, res) => {
     // Generate unique doctor ID
     const doctorCount = await Doctor.countDocuments();
     const doctorId = `D${String(doctorCount + 1).padStart(6, "0")}`;
+    console.log("🆔 Generated doctor ID:", doctorId);
 
-    // Default password for admin-created doctors
+    // Generate firstName@123 password format
     const bcrypt = require("bcryptjs");
-    const defaultPassword = "doctor123";
+    const firstName = name.split(' ')[0].toLowerCase().replace(/^dr\.?\s*/i, '');
+    const defaultPassword = `${firstName}@123`;
+    console.log("🔐 Generated password format:", `${firstName}@123`);
+    
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(defaultPassword, salt);
 
@@ -151,25 +189,31 @@ router.post("/", auth, authorize("admin"), async (req, res) => {
       email,
       password: hashedPassword,
       phone,
-      speciality,
+      speciality: mappedSpeciality,
       qualification,
-      experience,
+      experience: Number(experience),
       licenseNumber,
-      consultationFee,
+      consultationFee: Number(consultationFee),
       languages: languages || ["en"],
       address,
       workingHours,
-      isVerified: true, // Admin-created doctors are auto-verified
-      status: "online",
-      isAvailable: true,
+      isVerified: isVerified !== undefined ? isVerified : true, // Admin-created doctors are auto-verified
+      status: "offline", // Start as offline
+      isAvailable: isAvailable !== undefined ? isAvailable : true,
     });
 
+    console.log("💾 Saving doctor to database...");
     await doctor.save();
+
+    console.log("💾 Saving doctor to database...");
+    await doctor.save();
+    console.log("✅ Doctor saved successfully with ID:", doctor._id);
 
     // Remove password from response
     const doctorResponse = doctor.toObject();
     delete doctorResponse.password;
 
+    console.log("📤 Sending success response");
     res.status(201).json({
       success: true,
       message: "Doctor created successfully",
@@ -177,10 +221,35 @@ router.post("/", auth, authorize("admin"), async (req, res) => {
       defaultPassword, // Send default password to admin
     });
   } catch (error) {
-    console.error("Error creating doctor:", error);
+    console.error("❌ Error creating doctor:", error);
+    console.error("📍 Stack trace:", error.stack);
+    
+    // Handle validation errors specifically
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      console.log("🚫 Validation errors:", validationErrors);
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: validationErrors,
+        details: error.errors
+      });
+    }
+    
+    // Handle duplicate key errors
+    if (error.code === 11000) {
+      console.log("🔄 Duplicate key error:", error.keyValue);
+      return res.status(400).json({
+        success: false,
+        message: "Doctor already exists with this information",
+        field: Object.keys(error.keyValue)[0]
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: "Server error creating doctor",
+      error: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
     });
   }
 });

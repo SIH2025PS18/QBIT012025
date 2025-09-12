@@ -50,75 +50,80 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
   }
 
   Widget _buildMainVideoView() {
-    return Stack(
-      children: [
-        // Main patient video background
-        Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF3A3D47), Color(0xFF2A2D37)],
+    return Consumer<VideoCallProvider>(
+      builder: (context, videoProvider, child) {
+        return Stack(
+          children: [
+            // Main patient video background
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF3A3D47), Color(0xFF2A2D37)],
+                ),
+              ),
+              child: videoProvider.remoteUsers.isNotEmpty
+                  ? videoProvider.agoraService.createRemoteVideoView(
+                      videoProvider.remoteUsers.first,
+                    )
+                  : const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 80,
+                            backgroundColor: Color(0xFF6366F1),
+                            child: Icon(Icons.person,
+                                size: 80, color: Colors.white),
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Waiting for patient...',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
             ),
-          ),
-          child: const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 80,
-                  backgroundColor: Color(0xFF6366F1),
-                  child: Icon(Icons.person, size: 80, color: Colors.white),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Patient Video',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Connected',
-                  style: TextStyle(color: Colors.green, fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-        ),
+          ],
+        );
+      },
+    );
+  }
 
-        // Connection status overlay
-        Positioned(
-          top: 16,
-          left: 16,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.circle, color: Colors.green, size: 12),
-                SizedBox(width: 6),
-                Text(
-                  'Connected',
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
+  Widget _buildConnectionStatus() {
+    return Positioned(
+      top: 16,
+      left: 16,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.green.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(20),
         ),
-      ],
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.circle, color: Colors.green, size: 12),
+            SizedBox(width: 6),
+            Text(
+              'Connected',
+              style: TextStyle(
+                color: Colors.green,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -149,30 +154,10 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                     ),
                   ),
                   child: videoProvider.isVideoEnabled
-                      ? const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Colors.white,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 30,
-                                  color: Color(0xFF6366F1),
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'You',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child:
+                              videoProvider.agoraService.createLocalVideoView(),
                         )
                       : Container(
                           color: Colors.black87,
@@ -222,9 +207,8 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
               children: [
                 // Mute/Unmute Audio
                 _buildControlButton(
-                  icon: videoProvider.isAudioEnabled
-                      ? Icons.mic
-                      : Icons.mic_off,
+                  icon:
+                      videoProvider.isAudioEnabled ? Icons.mic : Icons.mic_off,
                   isActive: videoProvider.isAudioEnabled,
                   onPressed: () => videoProvider.toggleAudio(),
                   tooltip: videoProvider.isAudioEnabled ? 'Mute' : 'Unmute',

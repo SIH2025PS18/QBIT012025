@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/admin_dashboard_screen_new.dart';
+import 'screens/admin_login_screen.dart';
 import 'screens/doctor_management_screen.dart';
 import 'screens/add_doctor_screen_new.dart';
 import 'providers/doctor_provider.dart';
@@ -12,11 +13,20 @@ void main() async {
   // Initialize auth service
   await AuthService().init();
 
+  // Clear any existing auth to force fresh login
+  await AuthService().clearAuth();
+
   runApp(const AdminPanelApp());
 }
 
 class AdminPanelApp extends StatelessWidget {
   const AdminPanelApp({Key? key}) : super(key: key);
+
+  // Check authentication status
+  Widget _getInitialScreen() {
+    // Always start with login screen to ensure fresh authentication
+    return const AdminLoginScreen();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +48,9 @@ class AdminPanelApp extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => const AdminDashboardScreen(),
+          '/': (context) => _getInitialScreen(),
+          '/login': (context) => const AdminLoginScreen(),
+          '/dashboard': (context) => const AdminDashboardScreen(),
           '/doctors': (context) => const DoctorManagementScreen(),
           '/add-doctor': (context) => const AddDoctorScreen(),
           '/patients': (context) => const PlaceholderScreen(title: 'Patients'),

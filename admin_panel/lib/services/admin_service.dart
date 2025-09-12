@@ -18,6 +18,46 @@ class AdminService {
 
   Map<String, String> get _headers => _authService.authHeaders;
 
+  // Helper method to create doctor authentication credentials
+  Future<bool> _createDoctorAuth(String email, String password) async {
+    try {
+      // Try different endpoints for creating doctor authentication
+      final endpoints = [
+        '$baseUrl/auth/doctor/register',
+        '$baseUrl/auth/register',
+        '$baseUrl/users',
+      ];
+
+      for (String endpoint in endpoints) {
+        try {
+          final response = await http.post(
+            Uri.parse(endpoint),
+            headers: _headers,
+            body: json.encode({
+              'email': email,
+              'loginId': email,
+              'password': password,
+              'userType': 'doctor',
+            }),
+          );
+
+          print('Auth creation attempt at $endpoint: ${response.statusCode}');
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            print('✅ Auth created successfully at $endpoint');
+            return true;
+          }
+        } catch (e) {
+          print('❌ Auth creation failed at $endpoint: $e');
+          continue;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error creating doctor auth: $e');
+      return false;
+    }
+  }
+
   // Dashboard Statistics
   Future<DashboardStats> getDashboardStats() async {
     try {
@@ -31,14 +71,16 @@ class AdminService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        return DashboardStats.fromJson(data);
-      } else {
-        // Return mock data for now
-        return _getMockDashboardStats();
+        if (data['success'] == true) {
+          return DashboardStats.fromJson(data['data']);
+        }
       }
+
+      // If API fails, return error instead of mock data
+      throw Exception('Failed to load dashboard stats');
     } catch (e) {
       print('Error fetching dashboard stats: $e');
-      return _getMockDashboardStats();
+      rethrow;
     }
   }
 
@@ -62,11 +104,11 @@ class AdminService {
         }
       }
 
-      // Return mock data if API fails
-      return _getMockDoctors();
+      // If API fails, return error instead of mock data
+      throw Exception('Failed to load doctors');
     } catch (e) {
       print('Error fetching doctors: $e');
-      return _getMockDoctors();
+      rethrow;
     }
   }
 
@@ -96,10 +138,25 @@ class AdminService {
   Future<Map<String, dynamic>?> createDoctorWithCredentials(
       Doctor doctor, String password) async {
     try {
-      final doctorData = doctor.toJson();
-      doctorData.remove('id'); // Remove ID for creation
-      // Note: We don't add password here since the /api/doctors endpoint
-      // will generate a default password
+      // Create clean doctor data for creation - only send necessary fields
+      final doctorData = <String, dynamic>{
+        'name': doctor.name,
+        'email': doctor.email,
+        'phone': doctor.phone,
+        'speciality': doctor.speciality,
+        'qualification': doctor.qualification,
+        'experience': doctor.experience,
+        'licenseNumber': doctor.licenseNumber,
+        'consultationFee': doctor.consultationFee,
+        'isAvailable': doctor.isAvailable,
+        'languages': doctor.languages,
+        'isVerified': doctor.isVerified,
+      };
+
+      // Only add optional fields if they have values
+      if (doctor.address != null) doctorData['address'] = doctor.address!;
+      if (doctor.workingHours != null)
+        doctorData['workingHours'] = doctor.workingHours!;
 
       final response = await http.post(
         Uri.parse('$baseUrl/doctors'),
@@ -113,18 +170,25 @@ class AdminService {
       if (response.statusCode == 201 || response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success'] == true) {
-          // Notify WebSocket about new doctor
           final newDoctor =
               data['data'] != null ? Doctor.fromJson(data['data']) : doctor;
+
+          // Try to create authentication credentials separately
+          bool authCreated = await _createDoctorAuth(newDoctor.email, password);
+
+          // Notify WebSocket about new doctor
           _webSocketService.notifyDoctorAdded(newDoctor);
 
           // Return the doctor data with credentials
           return {
             'doctor': newDoctor,
-            'email': doctor.email,
-            'password': data['defaultPassword'] ??
-                'doctor123', // Use backend-provided password
+            'email': newDoctor.email,
+            'password': password, // Use the password we sent
             'doctorId': newDoctor.doctorId,
+            'authCreated': authCreated,
+            'loginInstructions': authCreated
+                ? 'Use email and password to login to the doctor dashboard'
+                : 'Doctor created successfully. Authentication setup may require backend configuration.',
           };
         }
       }
@@ -309,11 +373,11 @@ class AdminService {
         }
       }
 
-      // Return mock data if API fails
-      return _getMockPatients();
+      // If API fails, return error instead of mock data
+      throw Exception('Failed to load patients');
     } catch (e) {
       print('Error fetching patients: $e');
-      return _getMockPatients();
+      rethrow;
     }
   }
 
@@ -447,165 +511,5 @@ class AdminService {
       print('Error searching patients: $e');
       return [];
     }
-  }
-
-  // Mock Data Methods
-  DashboardStats _getMockDashboardStats() {
-    return DashboardStats(
-      totalDoctors: 45,
-      totalPatients: 1250,
-      totalAppointments: 890,
-      activeAppointments: 28,
-      totalDepartments: 8,
-      appointmentsByMonth: [
-        ChartData(label: 'Jan', value: 650),
-        ChartData(label: 'Feb', value: 720),
-        ChartData(label: 'Mar', value: 780),
-        ChartData(label: 'Apr', value: 820),
-        ChartData(label: 'May', value: 890),
-      ],
-      doctorsBySpecialty: [
-        ChartData(label: 'Cardiology', value: 12),
-        ChartData(label: 'Neurology', value: 8),
-        ChartData(label: 'Pediatrics', value: 10),
-        ChartData(label: 'Dermatology', value: 6),
-        ChartData(label: 'Orthopedics', value: 9),
-      ],
-      // Additional fields for backward compatibility
-      todayAppointments: 28,
-      pendingAppointments: 15,
-      completedAppointments: 775,
-      cancelledAppointments: 100,
-      revenue: 125000.0,
-      monthlyGrowth: 12.5,
-      appointmentChart: [
-        ChartData(label: 'Mon', value: 25),
-        ChartData(label: 'Tue', value: 30),
-        ChartData(label: 'Wed', value: 28),
-        ChartData(label: 'Thu', value: 35),
-        ChartData(label: 'Fri', value: 32),
-        ChartData(label: 'Sat', value: 20),
-        ChartData(label: 'Sun', value: 15),
-      ],
-      revenueChart: [
-        ChartData(label: 'Jan', value: 85000),
-        ChartData(label: 'Feb', value: 92000),
-        ChartData(label: 'Mar', value: 105000),
-        ChartData(label: 'Apr', value: 118000),
-        ChartData(label: 'May', value: 125000),
-      ],
-    );
-  }
-
-  List<Doctor> _getMockDoctors() {
-    return [
-      Doctor(
-        id: '1',
-        name: 'Dr. Sarah Johnson',
-        email: 'sarah.johnson@hospital.com',
-        phone: '+1234567890',
-        speciality: 'Cardiologist',
-        qualification: 'MD, FACC',
-        experience: 8,
-        licenseNumber: 'LIC001',
-        consultationFee: 800.0,
-        rating: 4.8,
-        totalConsultations: 150,
-        isAvailable: true,
-        createdAt: DateTime.now().subtract(const Duration(days: 365)),
-      ),
-      Doctor(
-        id: '2',
-        name: 'Dr. Michael Chen',
-        email: 'michael.chen@hospital.com',
-        phone: '+1234567891',
-        speciality: 'Neurologist',
-        qualification: 'MD, PhD',
-        experience: 12,
-        licenseNumber: 'LIC002',
-        consultationFee: 900.0,
-        rating: 4.9,
-        totalConsultations: 200,
-        isAvailable: true,
-        createdAt: DateTime.now().subtract(const Duration(days: 1825)),
-      ),
-      Doctor(
-        id: '3',
-        name: 'Dr. Emily Rodriguez',
-        email: 'emily.rodriguez@hospital.com',
-        phone: '+1234567892',
-        speciality: 'Pediatrician',
-        qualification: 'MD, FAAP',
-        experience: 6,
-        licenseNumber: 'LIC003',
-        consultationFee: 600.0,
-        rating: 4.7,
-        totalConsultations: 120,
-        isAvailable: false,
-        createdAt: DateTime.now().subtract(const Duration(days: 730)),
-      ),
-    ];
-  }
-
-  List<Patient> _getMockPatients() {
-    return [
-      Patient(
-        id: '1',
-        name: 'John Smith',
-        email: 'john.smith@email.com',
-        phone: '+1234567890',
-        age: 35,
-        gender: 'male',
-        patientId: 'PAT001',
-        address: '123 Main Street, City',
-        emergencyContact: '+1234567891',
-        medicalHistory: 'Hypertension, Diabetes',
-        allergies: ['Penicillin', 'Nuts'],
-        bloodGroup: 'O+',
-        createdAt: DateTime.now().subtract(const Duration(days: 365)),
-        lastVisit: DateTime.now().subtract(const Duration(days: 30)),
-        isActive: true,
-        medications: ['Metformin', 'Lisinopril'],
-        medicalRecords: ['Blood Test - Normal', 'X-Ray - Clear'],
-      ),
-      Patient(
-        id: '2',
-        name: 'Sarah Johnson',
-        email: 'sarah.johnson@email.com',
-        phone: '+1234567892',
-        age: 28,
-        gender: 'female',
-        patientId: 'PAT002',
-        address: '456 Oak Avenue, Town',
-        emergencyContact: '+1234567893',
-        medicalHistory: 'Asthma',
-        allergies: ['Dust'],
-        bloodGroup: 'A+',
-        createdAt: DateTime.now().subtract(const Duration(days: 180)),
-        lastVisit: DateTime.now().subtract(const Duration(days: 15)),
-        isActive: true,
-        medications: ['Inhaler'],
-        medicalRecords: ['Lung Function Test - Normal'],
-      ),
-      Patient(
-        id: '3',
-        name: 'Michael Brown',
-        email: 'michael.brown@email.com',
-        phone: '+1234567894',
-        age: 42,
-        gender: 'male',
-        patientId: 'PAT003',
-        address: '789 Pine Street, Village',
-        emergencyContact: '+1234567895',
-        medicalHistory: 'Heart Disease',
-        allergies: ['Latex'],
-        bloodGroup: 'B-',
-        createdAt: DateTime.now().subtract(const Duration(days: 90)),
-        lastVisit: DateTime.now().subtract(const Duration(days: 7)),
-        isActive: true,
-        medications: ['Aspirin', 'Statin'],
-        medicalRecords: ['ECG - Abnormal', 'Echo - Mild LVH'],
-      ),
-    ];
   }
 }

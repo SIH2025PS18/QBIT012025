@@ -45,8 +45,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
       if (response.statusCode == 200 && data['success'] == true) {
         // Store the token and user data using auth service
-        final token = data['token'];
-        final user = data['user'] ?? {};
+        final token = data['data']['token'];
+        final user = data['data']['user'] ?? {};
 
         // Store authentication data
         await AuthService().setAuth(token: token, user: user);
@@ -54,12 +54,65 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         print('Admin logged in successfully with token: $token');
 
         // Navigate to admin dashboard
-        Navigator.of(context).pushReplacementNamed('/');
+        Navigator.of(context).pushReplacementNamed('/dashboard');
       } else {
         _showErrorSnackBar(data['message'] ?? 'Login failed');
       }
     } catch (e) {
       _showErrorSnackBar('Network error. Please check your connection.');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  // Demo login for testing purposes
+  Future<void> _demoLogin() async {
+    setState(() => _isLoading = true);
+
+    try {
+      // First ensure admin user exists
+      await http.post(
+        Uri.parse('https://telemed18.onrender.com/api/auth/reset-admin'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
+
+      // Login with real admin credentials: admin@telemed.com / password
+      final response = await http.post(
+        Uri.parse('https://telemed18.onrender.com/api/auth/login'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'loginId': 'admin@telemed.com',
+          'password': 'password',
+          'userType': 'admin',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true && data['data']?['token'] != null) {
+          // Store real authentication data
+          await AuthService().setAuth(
+            token: data['data']['token'],
+            user: data['data']['user'],
+          );
+
+          // Navigate to dashboard
+          Navigator.of(context).pushReplacementNamed('/dashboard');
+        } else {
+          _showErrorSnackBar('Demo login failed: ${data['message']}');
+        }
+      } else {
+        _showErrorSnackBar(
+            'Demo login failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorSnackBar('Demo login failed: Network error');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -239,6 +292,30 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 color: Colors.white,
                               ),
                             ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Demo Login Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: _isLoading ? null : _demoLogin,
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFF4ECDC4)),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Demo Login (admin@telemed.com / password)',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF4ECDC4),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),

@@ -232,17 +232,18 @@ class _TeleMedicineIntegrationWidgetState
   }
 
   void _bookAppointment() {
-    // Create a mock doctor for demonstration
-    final mockDoctor = Doctor(
-      id: 'doc_001',
-      name: 'Dr. Sarah Wilson',
-      email: 'sarah.wilson@hospital.com',
+    // TODO: Replace with real doctor selection screen
+    // For now, using a placeholder doctor - this should fetch from the backend
+    final placeholderDoctor = Doctor(
+      id: 'placeholder_001',
+      name: 'Dr. Available Doctor',
+      email: 'doctor@telemed.com',
       phone: '+91 9876543210',
       speciality: 'General Medicine',
       qualification: 'MBBS, MD',
-      experience: 10,
+      experience: 5,
       consultationFee: 500.0,
-      licenseNumber: 'LIC123456',
+      licenseNumber: 'LIC_PLACEHOLDER',
       status: 'online',
       isAvailable: true,
       workingHours: {},
@@ -251,7 +252,8 @@ class _TeleMedicineIntegrationWidgetState
     Navigator.of(context)
         .push(
           MaterialPageRoute(
-            builder: (context) => AppointmentBookingScreen(doctor: mockDoctor),
+            builder: (context) =>
+                AppointmentBookingScreen(doctor: placeholderDoctor),
           ),
         )
         .then((appointment) {

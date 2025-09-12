@@ -121,6 +121,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ],
             ),
           ),
+          const SizedBox(width: 16),
+          IconButton(
+            onPressed: _loadDashboardData,
+            icon: const Icon(
+              Icons.refresh,
+              color: Color(0xFFFF6B9D),
+              size: 24,
+            ),
+            tooltip: 'Refresh dashboard data',
+            style: IconButton.styleFrom(
+              backgroundColor: const Color(0xFF2A2D3F),
+              padding: const EdgeInsets.all(12),
+            ),
+          ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
@@ -144,14 +158,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildStatsCards() {
-    if (_stats == null) return const CircularProgressIndicator();
+    if (_stats == null) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFFFF6B9D),
+        ),
+      );
+    }
 
     return Row(
       children: [
         Expanded(
           child: _buildStatCard(
             'Total Doctors',
-            _stats!.totalDoctors.toString(),
+            (_stats?.totalDoctors ?? 0).toString(),
             Icons.local_hospital,
             const Color(0xFFFF6B9D),
             '+12%',
@@ -161,7 +181,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         Expanded(
           child: _buildStatCard(
             'Total Patients',
-            _stats!.totalPatients.toString(),
+            (_stats?.totalPatients ?? 0).toString(),
             Icons.people,
             const Color(0xFF4ECDC4),
             '+8%',
@@ -171,7 +191,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         Expanded(
           child: _buildStatCard(
             'Appointments Today',
-            (_stats!.todayAppointments ?? _stats!.activeAppointments)
+            (_stats?.todayAppointments ?? _stats?.activeAppointments ?? 0)
                 .toString(),
             Icons.calendar_month,
             const Color(0xFFFFE66D),
@@ -182,10 +202,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         Expanded(
           child: _buildStatCard(
             'Revenue',
-            '₹${_formatNumber(_stats!.revenue ?? 0)}',
+            '₹${_formatNumber(_stats?.revenue ?? 0)}',
             Icons.attach_money,
             const Color(0xFF6C5CE7),
-            '+${(_stats!.monthlyGrowth ?? 0).toStringAsFixed(1)}%',
+            '+${(_stats?.monthlyGrowth ?? 0).toStringAsFixed(1)}%',
           ),
         ),
       ],
@@ -255,6 +275,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildChartsSection() {
+    if (_stats == null) {
+      return Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1D29),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF2A2D3F)),
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFFFF6B9D),
+          ),
+        ),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -282,13 +318,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           Row(
             children: [
               _buildChartLegend('Completed', Colors.green,
-                  _stats!.completedAppointments ?? 0),
+                  _stats?.completedAppointments ?? 0),
               const SizedBox(width: 24),
               _buildChartLegend(
-                  'Pending', Colors.orange, _stats!.pendingAppointments ?? 0),
+                  'Pending', Colors.orange, _stats?.pendingAppointments ?? 0),
               const SizedBox(width: 24),
               _buildChartLegend(
-                  'Cancelled', Colors.red, _stats!.cancelledAppointments ?? 0),
+                  'Cancelled', Colors.red, _stats?.cancelledAppointments ?? 0),
             ],
           ),
         ],
@@ -299,9 +335,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget _buildAppointmentChart() {
     if (_stats == null) return const CircularProgressIndicator();
 
-    final total = (_stats!.completedAppointments ?? 0) +
-        (_stats!.pendingAppointments ?? 0) +
-        (_stats!.cancelledAppointments ?? 0);
+    final total = (_stats?.completedAppointments ?? 0) +
+        (_stats?.pendingAppointments ?? 0) +
+        (_stats?.cancelledAppointments ?? 0);
     if (total == 0) {
       return const Center(
         child: Text(
@@ -320,7 +356,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               Expanded(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: (_stats!.appointmentChart ?? []).map((data) {
+                  children: (_stats?.appointmentChart ?? []).map((data) {
                     return Expanded(
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -402,6 +438,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
               ),
               const Spacer(),
+              IconButton(
+                onPressed: _loadDashboardData,
+                icon: const Icon(
+                  Icons.refresh,
+                  color: Color(0xFFFF6B9D),
+                ),
+                tooltip: 'Refresh doctors list',
+              ),
+              const SizedBox(width: 8),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, '/doctors'),
                 child: const Text(
