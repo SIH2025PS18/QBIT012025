@@ -482,4 +482,5 @@ Supporting Data
 • Nabha Civil Hospital serves 173 villages but has only 11 out of 23 sanctioned doctors.
 • Only 31% of rural Punjab households have internet access, highlighting the need for offline features.
 • Telemedicine adoption in India is growing at a 31% CAGR (2020–2025).
-• Sources: Local news reports and government health statistics.
+• Sources: Local news reports and government health statistics.#   B a c k e n d   d e p l o y m e n t   t r i g g e r   0 9 / 1 2 / 2 0 2 5   1 7 : 1 5 : 0 0  
+ 
