@@ -18,8 +18,13 @@ const connectDB = async () => {
 
 // Function to generate firstName@123 password
 const generatePassword = (name) => {
-  const firstName = name.split(' ')[0].toLowerCase().replace(/^dr\.?\s*/i, '');
-  return `${firstName}@123`;
+  // Remove "Dr." prefix and clean up the name
+  let cleanName = name.replace(/^dr\.?\s*/i, '').trim();
+  // Get the first word as first name
+  const firstName = cleanName.split(' ')[0].toLowerCase();
+  // Remove any non-alphabetic characters
+  const cleanFirstName = firstName.replace(/[^a-z]/g, '');
+  return `${cleanFirstName}@123`;
 };
 
 // Update doctor passwords

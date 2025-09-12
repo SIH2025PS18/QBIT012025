@@ -176,9 +176,11 @@ router.post("/", auth, authorize("admin"), async (req, res) => {
 
     // Generate firstName@123 password format
     const bcrypt = require("bcryptjs");
-    const firstName = name.split(' ')[0].toLowerCase().replace(/^dr\.?\s*/i, '');
-    const defaultPassword = `${firstName}@123`;
-    console.log("🔐 Generated password format:", `${firstName}@123`);
+    let cleanName = name.replace(/^dr\.?\s*/i, '').trim();
+    const firstName = cleanName.split(' ')[0].toLowerCase();
+    const cleanFirstName = firstName.replace(/[^a-z]/g, '');
+    const defaultPassword = `${cleanFirstName}@123`;
+    console.log("🔐 Generated password format:", defaultPassword);
     
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(defaultPassword, salt);
