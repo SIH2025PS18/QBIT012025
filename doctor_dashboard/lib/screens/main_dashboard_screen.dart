@@ -214,6 +214,37 @@ class DashboardContent extends StatelessWidget {
 
               const SizedBox(height: 32),
 
+              // Test section for development
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        context.read<DoctorProvider>().addTestPatient();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Test patient added to queue!'),
+                            backgroundColor: Color(0xFF6366F1),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.person_add),
+                      label: const Text('Add Test Patient'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF10B981),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
               // Today's Schedule
               const Text(
                 'Today\'s Schedule',
@@ -306,9 +337,8 @@ class DashboardContent extends StatelessWidget {
             ? const Color(0xFF6366F1).withValues(alpha: 0.1)
             : const Color(0xFF3A3D47),
         borderRadius: BorderRadius.circular(12),
-        border: isNow
-            ? Border.all(color: const Color(0xFF6366F1), width: 1)
-            : null,
+        border:
+            isNow ? Border.all(color: const Color(0xFF6366F1), width: 1) : null,
       ),
       child: Row(
         children: [

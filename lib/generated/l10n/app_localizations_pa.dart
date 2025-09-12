@@ -17,7 +17,7 @@ class AppLocalizationsPa extends AppLocalizations {
   String get appTitle => 'ਟੈਲੀਮੈਡ';
 
   @override
-  String get welcome => 'ਸੁਆਗਤ';
+  String get welcome => 'ਸਵਾਗਤ';
 
   @override
   String get welcomeMessage =>
@@ -555,4 +555,156 @@ class AppLocalizationsPa extends AppLocalizations {
 
   @override
   String get noPatients => 'ਕਤਾਰ ਵਿੱਚ ਕੋਈ ਮਰੀਜ਼ ਨਹੀਂ';
+
+  @override
+  String get settingsAndSupport => 'ਸੈਟਿੰਗਾਂ ਅਤੇ ਸਹਾਇਤਾ';
+
+  @override
+  String get languagePreferences => 'ਭਾਸ਼ਾ ਪਸੰਦਾਂ';
+
+  @override
+  String get dataAndConnectivity => 'ਡੇਟਾ ਅਤੇ ਕਨੈਕਟਿਵਿਟੀ';
+
+  @override
+  String get dataSaverMode => 'ਡੇਟਾ ਸੇਵਰ ਮੋਡ';
+
+  @override
+  String get notificationsEnabled => 'ਨੋਟੀਫਿਕੇਸ਼ਨ ਚਾਲੂ';
+
+  @override
+  String get smsMode => 'ਐਸਐਮਐਸ ਮੋਡ';
+
+  @override
+  String get clearSearch => 'ਖੋਜ ਸਾਫ਼ ਕਰੋ';
+
+  @override
+  String get directions => 'ਦਿਸ਼ਾ ਨਿਰਦੇਸ਼';
+
+  @override
+  String get reserve => 'ਰਿਜ਼ਰਵ ਕਰੋ';
+
+  @override
+  String get medicalRecords => 'ਮੈਡੀਕਲ ਰਿਕਾਰਡ';
+
+  @override
+  String get loadingMedicalRecords => 'ਮੈਡੀਕਲ ਰਿਕਾਰਡ ਲੋਡ ਹੋ ਰਹੇ ਹਨ...';
+
+  @override
+  String get noProfileData => 'ਕੋਈ ਪ੍ਰੋਫਾਈਲ ਡੇਟਾ ਉਪਲਬਧ ਨਹੀਂ';
+
+  @override
+  String get medicalDetailsSaved => 'ਮੈਡੀਕਲ ਵੇਰਵੇ ਸਫਲਤਾਪੂਰਵਕ ਸੁਰੱਖਿਅਤ ਹੋਏ!';
+
+  @override
+  String get failedToSaveMedicalDetails =>
+      'ਮੈਡੀਕਲ ਵੇਰਵੇ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ';
+
+  @override
+  String get addedAllergy => 'ਐਲਰਜੀ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ';
+
+  @override
+  String get errorLoadingMedicalRecords => 'ਮੈਡੀਕਲ ਰਿਕਾਰਡ ਲੋਡ ਕਰਨ ਵਿੱਚ ਗਲਤੀ';
+
+  @override
+  String get quickAccess => 'ਤੇਜ਼ ਪਹੁੰਚ';
+
+  @override
+  String get testVideoCall => 'ਵੀਡੀਓ ਕਾਲ ਟੈਸਟ';
+
+  @override
+  String get joinLiveDoctorQueue => 'ਲਾਈਵ ਡਾਕਟਰ ਕਤਾਰ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ';
+
+  @override
+  String get registrationFailed =>
+      'ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਅਸਫਲ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।';
+
+  @override
+  String get enterFullName => 'ਆਪਣਾ ਪੂਰਾ ਨਾਮ ਦਰਜ ਕਰੋ';
+
+  @override
+  String get enterPhoneNumber => 'ਆਪਣਾ ਫੋਨ ਨੰਬਰ ਦਰਜ ਕਰੋ';
+
+  @override
+  String get enterTenDigitPhone => 'ਆਪਣਾ 10 ਅੰਕਾਂ ਦਾ ਫੋਨ ਨੰਬਰ ਦਰਜ ਕਰੋ';
+
+  @override
+  String get enterPassword => 'ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ';
+
+  @override
+  String get enterPasswordMinSix => 'ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ (ਘੱਟੋ ਘੱਟ 6 ਅੱਖਰ)';
+
+  @override
+  String get reenterPassword => 'ਆਪਣਾ ਪਾਸਵਰਡ ਦੁਬਾਰਾ ਦਰਜ ਕਰੋ';
+
+  @override
+  String get invalidPhoneOrPassword => 'ਗਲਤ ਫੋਨ ਨੰਬਰ ਜਾਂ ਪਾਸਵਰਡ';
+
+  @override
+  String get signInFailed => 'ਸਾਈਨ ਇਨ ਅਸਫਲ';
+
+  @override
+  String get pleaseEnterPhoneNumber => 'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਫੋਨ ਨੰਬਰ ਦਰਜ ਕਰੋ';
+
+  @override
+  String get failedToSendOTP => 'OTP ਭੇਜਣ ਵਿੱਚ ਅਸਫਲ';
+
+  @override
+  String get pleaseEnterOTP => 'ਕਿਰਪਾ ਕਰਕੇ OTP ਦਰਜ ਕਰੋ';
+
+  @override
+  String get otpVerifiedSuccessfully => 'OTP ਸਫਲਤਾਪੂਰਵਕ ਪ੍ਰਮਾਣਿਤ';
+
+  @override
+  String get invalidOTP => 'ਗਲਤ OTP। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।';
+
+  @override
+  String get failedToVerifyOTP => 'OTP ਪ੍ਰਮਾਣਿਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ';
+
+  @override
+  String get pleaseEnterNewPassword => 'ਕਿਰਪਾ ਕਰਕੇ ਨਵਾਂ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ';
+
+  @override
+  String get passwordResetSuccessfully => 'ਪਾਸਵਰਡ ਸਫਲਤਾਪੂਰਵਕ ਰੀਸੈੱਟ ਹੋ ਗਿਆ!';
+
+  @override
+  String get failedToResetPassword =>
+      'ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।';
+
+  @override
+  String get enterSixDigitOTP => '6 ਅੰਕਾਂ ਦਾ OTP ਦਰਜ ਕਰੋ';
+
+  @override
+  String get resendOTP => 'OTP ਦੁਬਾਰਾ ਭੇਜੋ';
+
+  @override
+  String get enterNewPassword => 'ਆਪਣਾ ਨਵਾਂ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ';
+
+  @override
+  String get confirmNewPassword => 'ਆਪਣੇ ਨਵੇਂ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ';
+
+  @override
+  String get healthJourneyStarts => 'ਤੁਹਾਡੀ ਸਿਹਤ ਦੀ ਯਾਤਰਾ ਇੱਥੋਂ ਸ਼ੁਰੂ ਹੁੰਦੀ ਹੈ';
+
+  @override
+  String generalDoctorsOnline(Object count) {
+    return '$count ਆਮ ਡਾਕਟਰ ਔਨਲਾਈਨ';
+  }
+
+  @override
+  String get available => 'ਉਪਲਬਧ';
+
+  @override
+  String get myHealthRecords => 'ਮੇਰੇ ਸਿਹਤ ਰਿਕਾਰਡ';
+
+  @override
+  String get medicineStock => 'ਦਵਾਈ ਸਟਾਕ';
+
+  @override
+  String get firstAidTips => 'ਪਹਿਲੀ ਸਹਾਇਤਾ ਸੁਝਾਅ';
+
+  @override
+  String get dermatologist => 'ਚਮੜੀ ਸਪੈਸ਼ਲਿਸਟ';
+
+  @override
+  String get doctorTitle => 'ਡਾ.';
 }

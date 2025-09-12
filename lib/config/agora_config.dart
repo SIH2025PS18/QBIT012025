@@ -14,8 +14,10 @@ class AgoraConfig {
       ChannelProfileType.channelProfileCommunication;
 
   // Video settings
-  static const VideoDimensions videoDimensions =
-      VideoDimensions(width: 640, height: 480);
+  static const VideoDimensions videoDimensions = VideoDimensions(
+    width: 640,
+    height: 480,
+  );
   static const int videoFrameRate = 15;
   static const int videoBitrate = 400;
 

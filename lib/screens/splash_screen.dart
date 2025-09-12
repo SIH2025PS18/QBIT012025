@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../generated/l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,6 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: const Color(0xFF2563EB),
       body: Center(
@@ -42,8 +45,8 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 32),
             Text(
-              'TeleMed',
-              style: TextStyle(
+              l10n.appTitle,
+              style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -51,11 +54,12 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Your Health, Our Priority',
+              l10n.welcomeMessage,
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white.withOpacity(0.9),
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 48),
             const CircularProgressIndicator(

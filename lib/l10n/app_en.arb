@@ -897,5 +897,278 @@
   "noPatients": "No patients in queue",
   "@noPatients": {
     "description": "No patients message"
+  },
+  
+  "settingsAndSupport": "Settings & Support",
+  "@settingsAndSupport": {
+    "description": "Settings screen title"
+  },
+  
+  "languagePreferences": "Language Preferences",
+  "@languagePreferences": {
+    "description": "Language preferences section title"
+  },
+  
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Select language option text"
+  },
+  
+  "dataAndConnectivity": "Data & Connectivity",
+  "@dataAndConnectivity": {
+    "description": "Data and connectivity section title"
+  },
+  
+  "dataSaverMode": "Data Saver Mode",
+  "@dataSaverMode": {
+    "description": "Data saver mode setting"
+  },
+  
+  "notificationsEnabled": "Notifications Enabled",
+  "@notificationsEnabled": {
+    "description": "Notifications enabled setting"
+  },
+  
+  "smsMode": "SMS Mode",
+  "@smsMode": {
+    "description": "SMS mode setting"
+  },
+  
+  "clearSearch": "Clear Search",
+  "@clearSearch": {
+    "description": "Clear search button text"
+  },
+  
+  "directions": "Directions",
+  "@directions": {
+    "description": "Directions button text"
+  },
+  
+  "reserve": "Reserve",
+  "@reserve": {
+    "description": "Reserve button text"
+  },
+  
+  "medicalRecords": "Medical Records",
+  "@medicalRecords": {
+    "description": "Medical records title"
+  },
+  
+  "loadingMedicalRecords": "Loading medical records...",
+  "@loadingMedicalRecords": {
+    "description": "Loading medical records message"
+  },
+  
+  "noProfileData": "No profile data available",
+  "@noProfileData": {
+    "description": "No profile data message"
+  },
+  
+  "medicalDetailsSaved": "Medical details saved successfully!",
+  "@medicalDetailsSaved": {
+    "description": "Medical details saved success message"
+  },
+  
+  "failedToSaveMedicalDetails": "Failed to save medical details",
+  "@failedToSaveMedicalDetails": {
+    "description": "Failed to save medical details error"
+  },
+  
+  "addedAllergy": "Added allergy",
+  "@addedAllergy": {
+    "description": "Added allergy success message"
+  },
+  
+  "errorLoadingMedicalRecords": "Error loading medical records",
+  "@errorLoadingMedicalRecords": {
+    "description": "Error loading medical records message"
+  },
+  
+  "quickAccess": "Quick Access",
+  "@quickAccess": {
+    "description": "Quick access section title"
+  },
+  
+  "testVideoCall": "Test Video Call",
+  "@testVideoCall": {
+    "description": "Test video call button text"
+  },
+  
+  "joinLiveDoctorQueue": "Join Live Doctor Queue",
+  "@joinLiveDoctorQueue": {
+    "description": "Join live doctor queue button text"
+  },
+  
+  "registrationFailed": "Registration failed. Please try again.",
+  "@registrationFailed": {
+    "description": "Registration failed error message"
+  },
+  
+  "enterFullName": "Enter your full name",
+  "@enterFullName": {
+    "description": "Enter full name hint text"
+  },
+  
+  "enterPhoneNumber": "Enter your phone number",
+  "@enterPhoneNumber": {
+    "description": "Enter phone number hint text"
+  },
+  
+  "enterTenDigitPhone": "Enter your 10-digit phone number",
+  "@enterTenDigitPhone": {
+    "description": "Enter 10-digit phone number hint text"
+  },
+  
+  "enterPassword": "Enter your password",
+  "@enterPassword": {
+    "description": "Enter password hint text"
+  },
+  
+  "enterPasswordMinSix": "Enter your password (min 6 characters)",
+  "@enterPasswordMinSix": {
+    "description": "Enter password with minimum characters hint text"
+  },
+  
+  "reenterPassword": "Re-enter your password",
+  "@reenterPassword": {
+    "description": "Re-enter password hint text"
+  },
+  
+  "invalidPhoneOrPassword": "Invalid phone number or password",
+  "@invalidPhoneOrPassword": {
+    "description": "Invalid phone or password error message"
+  },
+  
+  "signInFailed": "Sign in failed",
+  "@signInFailed": {
+    "description": "Sign in failed error message"
+  },
+  
+  "pleaseEnterPhoneNumber": "Please enter your phone number",
+  "@pleaseEnterPhoneNumber": {
+    "description": "Please enter phone number validation message"
+  },
+  
+  "failedToSendOTP": "Failed to send OTP",
+  "@failedToSendOTP": {
+    "description": "Failed to send OTP error message"
+  },
+  
+  "pleaseEnterOTP": "Please enter the OTP",
+  "@pleaseEnterOTP": {
+    "description": "Please enter OTP validation message"
+  },
+  
+  "otpVerifiedSuccessfully": "OTP verified successfully",
+  "@otpVerifiedSuccessfully": {
+    "description": "OTP verified successfully message"
+  },
+  
+  "invalidOTP": "Invalid OTP. Please try again.",
+  "@invalidOTP": {
+    "description": "Invalid OTP error message"
+  },
+  
+  "failedToVerifyOTP": "Failed to verify OTP",
+  "@failedToVerifyOTP": {
+    "description": "Failed to verify OTP error message"
+  },
+  
+  "pleaseEnterNewPassword": "Please enter a new password",
+  "@pleaseEnterNewPassword": {
+    "description": "Please enter new password validation message"
+  },
+  
+  "passwordResetSuccessfully": "Password reset successfully!",
+  "@passwordResetSuccessfully": {
+    "description": "Password reset successfully message"
+  },
+  
+  "failedToResetPassword": "Failed to reset password. Please try again.",
+  "@failedToResetPassword": {
+    "description": "Failed to reset password error message"
+  },
+  
+  "enterSixDigitOTP": "Enter the 6-digit OTP",
+  "@enterSixDigitOTP": {
+    "description": "Enter 6-digit OTP hint text"
+  },
+  
+  "resendOTP": "Resend OTP",
+  "@resendOTP": {
+    "description": "Resend OTP button text"
+  },
+  
+  "enterNewPassword": "Enter your new password",
+  "@enterNewPassword": {
+    "description": "Enter new password hint text"
+  },
+  
+  "confirmNewPassword": "Confirm your new password",
+  "@confirmNewPassword": {
+    "description": "Confirm new password hint text"
+  },
+  
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome greeting text"
+  },
+  
+  "healthJourneyStarts": "Your health journey starts here",
+  "@healthJourneyStarts": {
+    "description": "Health journey subtitle text"
+  },
+  
+  "generalDoctorsOnline": "{count} General Doctors Online",
+  "@generalDoctorsOnline": {
+    "description": "Number of doctors online",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@generalDoctorsOnline": {
+    "description": "General doctors online counter text"
+  },
+  
+  "available": "Available",
+  "@available": {
+    "description": "Available status for doctors"
+  },
+  
+  "myHealthRecords": "My Health Records",
+  "@myHealthRecords": {
+    "description": "My health records shortcut text"
+  },
+  
+  "medicineStock": "Medicine Stock",
+  "@medicineStock": {
+    "description": "Medicine stock shortcut text"
+  },
+  
+  "firstAidTips": "First Aid Tips",
+  "@firstAidTips": {
+    "description": "First aid tips shortcut text"
+  },
+  
+  "dermatologist": "Dermatologist",
+  "@dermatologist": {
+    "description": "Dermatologist specialization"
+  },
+  
+  "doctorTitle": "Dr.",
+  "@doctorTitle": {
+    "description": "Doctor title prefix"
+  },
+
+  "offline": "Offline",
+  "@offline": {
+    "description": "Doctor offline status"
+  },
+
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings menu item"
   }
 }

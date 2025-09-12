@@ -54,8 +54,8 @@ class _PhoneLoginWithPasswordScreenState
           _isLoading = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invalid phone number or password'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.invalidPhoneOrPassword),
             backgroundColor: Colors.red,
           ),
         );
@@ -142,14 +142,14 @@ class _PhoneLoginWithPasswordScreenState
                 // Phone number field
                 CustomTextField(
                   controller: _phoneController,
-                  labelText: 'Phone Number',
-                  hintText: 'Enter your phone number',
+                  labelText: AppLocalizations.of(context)!.phoneNumber,
+                  hintText: AppLocalizations.of(context)!.enterPhoneNumber,
                   prefixIcon: Icons.phone,
                   keyboardType: TextInputType.phone,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Phone number is required';
+                      return AppLocalizations.of(context)!.fieldRequired;
                     }
                     if (value.length < 10) {
                       return 'Please enter a valid phone number';
@@ -166,16 +166,16 @@ class _PhoneLoginWithPasswordScreenState
                   children: [
                     CustomTextField(
                       controller: _passwordController,
-                      labelText: 'Password',
-                      hintText: 'Enter your password',
+                      labelText: AppLocalizations.of(context)!.password,
+                      hintText: AppLocalizations.of(context)!.enterPassword,
                       prefixIcon: Icons.lock_outline,
                       isPassword: !_passwordVisible,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Password is required';
+                          return AppLocalizations.of(context)!.fieldRequired;
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return AppLocalizations.of(context)!.passwordTooShort;
                         }
                         return null;
                       },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../providers/video_call_provider.dart';
+import '../services/agora_service_web.dart';
 
 class VideoCallWidget extends StatefulWidget {
   final Patient patient;
@@ -20,6 +21,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
       child: Stack(
         children: [
           // Main video area (patient's video)
+          // Refresh analyzer
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -66,7 +68,8 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                 ),
               ),
               child: videoProvider.remoteUsers.isNotEmpty
-                  ? videoProvider.agoraService.createRemoteVideoView(
+                  ? (videoProvider.agoraService as dynamic)
+                      .createRemoteVideoView(
                       videoProvider.remoteUsers.first,
                     )
                   : const Center(
@@ -156,8 +159,8 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                   child: videoProvider.isVideoEnabled
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child:
-                              videoProvider.agoraService.createLocalVideoView(),
+                          child: (videoProvider.agoraService as dynamic)
+                              .createLocalVideoView(),
                         )
                       : Container(
                           color: Colors.black87,

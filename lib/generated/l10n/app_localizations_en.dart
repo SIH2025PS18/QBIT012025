@@ -554,4 +554,154 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPatients => 'No patients in queue';
+
+  @override
+  String get settingsAndSupport => 'Settings & Support';
+
+  @override
+  String get languagePreferences => 'Language Preferences';
+
+  @override
+  String get dataAndConnectivity => 'Data & Connectivity';
+
+  @override
+  String get dataSaverMode => 'Data Saver Mode';
+
+  @override
+  String get notificationsEnabled => 'Notifications Enabled';
+
+  @override
+  String get smsMode => 'SMS Mode';
+
+  @override
+  String get clearSearch => 'Clear Search';
+
+  @override
+  String get directions => 'Directions';
+
+  @override
+  String get reserve => 'Reserve';
+
+  @override
+  String get medicalRecords => 'Medical Records';
+
+  @override
+  String get loadingMedicalRecords => 'Loading medical records...';
+
+  @override
+  String get noProfileData => 'No profile data available';
+
+  @override
+  String get medicalDetailsSaved => 'Medical details saved successfully!';
+
+  @override
+  String get failedToSaveMedicalDetails => 'Failed to save medical details';
+
+  @override
+  String get addedAllergy => 'Added allergy';
+
+  @override
+  String get errorLoadingMedicalRecords => 'Error loading medical records';
+
+  @override
+  String get quickAccess => 'Quick Access';
+
+  @override
+  String get testVideoCall => 'Test Video Call';
+
+  @override
+  String get joinLiveDoctorQueue => 'Join Live Doctor Queue';
+
+  @override
+  String get registrationFailed => 'Registration failed. Please try again.';
+
+  @override
+  String get enterFullName => 'Enter your full name';
+
+  @override
+  String get enterPhoneNumber => 'Enter your phone number';
+
+  @override
+  String get enterTenDigitPhone => 'Enter your 10-digit phone number';
+
+  @override
+  String get enterPassword => 'Enter your password';
+
+  @override
+  String get enterPasswordMinSix => 'Enter your password (min 6 characters)';
+
+  @override
+  String get reenterPassword => 'Re-enter your password';
+
+  @override
+  String get invalidPhoneOrPassword => 'Invalid phone number or password';
+
+  @override
+  String get signInFailed => 'Sign in failed';
+
+  @override
+  String get pleaseEnterPhoneNumber => 'Please enter your phone number';
+
+  @override
+  String get failedToSendOTP => 'Failed to send OTP';
+
+  @override
+  String get pleaseEnterOTP => 'Please enter the OTP';
+
+  @override
+  String get otpVerifiedSuccessfully => 'OTP verified successfully';
+
+  @override
+  String get invalidOTP => 'Invalid OTP. Please try again.';
+
+  @override
+  String get failedToVerifyOTP => 'Failed to verify OTP';
+
+  @override
+  String get pleaseEnterNewPassword => 'Please enter a new password';
+
+  @override
+  String get passwordResetSuccessfully => 'Password reset successfully!';
+
+  @override
+  String get failedToResetPassword =>
+      'Failed to reset password. Please try again.';
+
+  @override
+  String get enterSixDigitOTP => 'Enter the 6-digit OTP';
+
+  @override
+  String get resendOTP => 'Resend OTP';
+
+  @override
+  String get enterNewPassword => 'Enter your new password';
+
+  @override
+  String get confirmNewPassword => 'Confirm your new password';
+
+  @override
+  String get healthJourneyStarts => 'Your health journey starts here';
+
+  @override
+  String generalDoctorsOnline(Object count) {
+    return '$count General Doctors Online';
+  }
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get myHealthRecords => 'My Health Records';
+
+  @override
+  String get medicineStock => 'Medicine Stock';
+
+  @override
+  String get firstAidTips => 'First Aid Tips';
+
+  @override
+  String get dermatologist => 'Dermatologist';
+
+  @override
+  String get doctorTitle => 'Dr.';
 }

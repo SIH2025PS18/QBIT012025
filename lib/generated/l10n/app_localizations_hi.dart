@@ -66,7 +66,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get home => 'घर';
 
   @override
-  String get profile => 'प्रोफाइल';
+  String get profile => 'प्रोफ़ाइल';
 
   @override
   String get appointments => 'अपॉइंटमेंट';
@@ -555,4 +555,156 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get noPatients => 'कतार में कोई मरीज़ नहीं';
+
+  @override
+  String get settingsAndSupport => 'सेटिंग्स और सहायता';
+
+  @override
+  String get languagePreferences => 'भाषा प्राथमिकताएं';
+
+  @override
+  String get dataAndConnectivity => 'डेटा और कनेक्टिविटी';
+
+  @override
+  String get dataSaverMode => 'डेटा सेवर मोड';
+
+  @override
+  String get notificationsEnabled => 'नोटिफिकेशन सक्रिय';
+
+  @override
+  String get smsMode => 'एसएमएस मोड';
+
+  @override
+  String get clearSearch => 'खोज साफ़ करें';
+
+  @override
+  String get directions => 'दिशा निर्देश';
+
+  @override
+  String get reserve => 'आरक्षित करें';
+
+  @override
+  String get medicalRecords => 'चिकित्सा रिकॉर्ड';
+
+  @override
+  String get loadingMedicalRecords => 'चिकित्सा रिकॉर्ड लोड हो रहे हैं...';
+
+  @override
+  String get noProfileData => 'कोई प्रोफ़ाइल डेटा उपलब्ध नहीं';
+
+  @override
+  String get medicalDetailsSaved => 'चिकित्सा विवरण सफलतापूर्वक सहेजे गए!';
+
+  @override
+  String get failedToSaveMedicalDetails => 'चिकित्सा विवरण सहेजने में विफल';
+
+  @override
+  String get addedAllergy => 'एलर्जी जोड़ी गई';
+
+  @override
+  String get errorLoadingMedicalRecords =>
+      'चिकित्सा रिकॉर्ड लोड करने में त्रुटि';
+
+  @override
+  String get quickAccess => 'त्वरित पहुंच';
+
+  @override
+  String get testVideoCall => 'वीडियो कॉल परीक्षण';
+
+  @override
+  String get joinLiveDoctorQueue => 'लाइव डॉक्टर कतार में शामिल हों';
+
+  @override
+  String get registrationFailed => 'पंजीकरण विफल। कृपया पुनः प्रयास करें।';
+
+  @override
+  String get enterFullName => 'अपना पूरा नाम दर्ज करें';
+
+  @override
+  String get enterPhoneNumber => 'अपना फोन नंबर दर्ज करें';
+
+  @override
+  String get enterTenDigitPhone => 'अपना 10 अंकों का फोन नंबर दर्ज करें';
+
+  @override
+  String get enterPassword => 'अपना पासवर्ड दर्ज करें';
+
+  @override
+  String get enterPasswordMinSix => 'अपना पासवर्ड दर्ज करें (न्यूनतम 6 अक्षर)';
+
+  @override
+  String get reenterPassword => 'अपना पासवर्ड फिर से दर्ज करें';
+
+  @override
+  String get invalidPhoneOrPassword => 'अमान्य फोन नंबर या पासवर्ड';
+
+  @override
+  String get signInFailed => 'साइन इन विफल';
+
+  @override
+  String get pleaseEnterPhoneNumber => 'कृपया अपना फोन नंबर दर्ज करें';
+
+  @override
+  String get failedToSendOTP => 'OTP भेजने में विफल';
+
+  @override
+  String get pleaseEnterOTP => 'कृपया OTP दर्ज करें';
+
+  @override
+  String get otpVerifiedSuccessfully => 'OTP सफलतापूर्वक सत्यापित';
+
+  @override
+  String get invalidOTP => 'अमान्य OTP। कृपया पुनः प्रयास करें।';
+
+  @override
+  String get failedToVerifyOTP => 'OTP सत्यापन में विफल';
+
+  @override
+  String get pleaseEnterNewPassword => 'कृपया नया पासवर्ड दर्ज करें';
+
+  @override
+  String get passwordResetSuccessfully => 'पासवर्ड सफलतापूर्वक रीसेट हो गया!';
+
+  @override
+  String get failedToResetPassword =>
+      'पासवर्ड रीसेट करने में विफल। कृपया पुनः प्रयास करें।';
+
+  @override
+  String get enterSixDigitOTP => '6 अंकों का OTP दर्ज करें';
+
+  @override
+  String get resendOTP => 'OTP पुनः भेजें';
+
+  @override
+  String get enterNewPassword => 'अपना नया पासवर्ड दर्ज करें';
+
+  @override
+  String get confirmNewPassword => 'अपने नए पासवर्ड की पुष्टि करें';
+
+  @override
+  String get healthJourneyStarts =>
+      'आपकी स्वास्थ्य यात्रा यहाँ से शुरू होती है';
+
+  @override
+  String generalDoctorsOnline(Object count) {
+    return '$count सामान्य डॉक्टर ऑनलाइन';
+  }
+
+  @override
+  String get available => 'उपलब्ध';
+
+  @override
+  String get myHealthRecords => 'मेरे स्वास्थ्य रिकॉर्ड';
+
+  @override
+  String get medicineStock => 'दवा स्टॉक';
+
+  @override
+  String get firstAidTips => 'प्राथमिक चिकित्सा सुझाव';
+
+  @override
+  String get dermatologist => 'त्वचा विशेषज्ञ';
+
+  @override
+  String get doctorTitle => 'डॉ.';
 }

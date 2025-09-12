@@ -39,13 +39,17 @@ dependencies:
   # UUID generator
   uuid: ^4.2.2
 
-  # Agora video calling
-  agora_rtc_engine: ^6.3.2
+  # Agora video calling - using stable version for web compatibility
+  # agora_rtc_engine: ^6.3.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+
+# Force specific versions for web compatibility
+dependency_overrides:
+  agora_rtc_engine: ^6.3.2
 
 flutter:
   uses-material-design: true

@@ -73,9 +73,7 @@ class PatientQueueWidget extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 12),
-
           const Text(
             'Patients waiting for consultation',
             style: TextStyle(color: Colors.grey, fontSize: 14),
@@ -208,22 +206,22 @@ class PatientQueueWidget extends StatelessWidget {
                     color: isOverdue
                         ? Colors.red.withValues(alpha: 0.2)
                         : isNext
-                        ? const Color(0xFF10B981).withValues(alpha: 0.2)
-                        : const Color(0xFF3A3D47),
+                            ? const Color(0xFF10B981).withValues(alpha: 0.2)
+                            : const Color(0xFF3A3D47),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     isOverdue
                         ? 'Overdue'
                         : isNext
-                        ? 'Next'
-                        : 'Waiting',
+                            ? 'Next'
+                            : 'Waiting',
                     style: TextStyle(
                       color: isOverdue
                           ? Colors.red
                           : isNext
-                          ? const Color(0xFF10B981)
-                          : Colors.grey,
+                              ? const Color(0xFF10B981)
+                              : Colors.grey,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),
@@ -261,9 +259,7 @@ class PatientQueueWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 8),
-
                   Row(
                     children: [
                       const Icon(
@@ -312,7 +308,6 @@ class PatientQueueWidget extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                 ],
-
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _viewPatientDetails(context, patient),
@@ -328,9 +323,7 @@ class PatientQueueWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(width: 8),
-
                 IconButton(
                   onPressed: () => _showPatientOptions(context, patient),
                   icon: const Icon(
@@ -367,25 +360,64 @@ class PatientQueueWidget extends StatelessWidget {
     }
   }
 
-  void _startCall(BuildContext context, Patient patient) {
+  void _startCall(BuildContext context, Patient patient) async {
     final videoCallProvider = context.read<VideoCallProvider>();
     final doctorProvider = context.read<DoctorProvider>();
 
-    // Start the video call
-    videoCallProvider.startCall(patient);
+    try {
+      // Show loading indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              Text('Starting video call with ${patient.name}...'),
+            ],
+          ),
+          backgroundColor: const Color(0xFF6366F1),
+          duration: const Duration(seconds: 2),
+        ),
+      );
 
-    // Remove patient from queue
-    doctorProvider.removePatientFromQueue(patient.id);
+      // Start the video call
+      final success = await videoCallProvider.startCall(patient);
 
-    // Increment today's calls count
-    doctorProvider.incrementTodaysCallsCount();
+      if (success) {
+        // Remove patient from queue
+        doctorProvider.removePatientFromQueue(patient.id);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Starting video call with ${patient.name}'),
-        backgroundColor: const Color(0xFF6366F1),
-      ),
-    );
+        // Increment today's calls count
+        doctorProvider.incrementTodaysCallsCount();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Video call started with ${patient.name}'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to start video call with ${patient.name}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error in _startCall: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error starting video call: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _viewPatientDetails(BuildContext context, Patient patient) {
@@ -651,7 +683,6 @@ class PatientQueueWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
               Text(
                 patient.name,
                 style: const TextStyle(
@@ -660,9 +691,7 @@ class PatientQueueWidget extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-
               const SizedBox(height: 20),
-
               _buildOptionTile(
                 icon: Icons.schedule,
                 title: 'Reschedule',
@@ -671,7 +700,6 @@ class PatientQueueWidget extends StatelessWidget {
                   // Handle reschedule
                 },
               ),
-
               _buildOptionTile(
                 icon: Icons.message,
                 title: 'Send Message',
@@ -680,7 +708,6 @@ class PatientQueueWidget extends StatelessWidget {
                   // Handle send message
                 },
               ),
-
               _buildOptionTile(
                 icon: Icons.cancel,
                 title: 'Cancel Appointment',
@@ -739,8 +766,8 @@ class PatientQueueWidget extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
                 context.read<DoctorProvider>().removePatientFromQueue(
-                  patient.id,
-                );
+                      patient.id,
+                    );
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Appointment with ${patient.name} cancelled'),

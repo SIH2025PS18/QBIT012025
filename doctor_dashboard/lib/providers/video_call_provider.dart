@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'dart:convert';
 import '../models/models.dart';
+import '../utils/channel_utils.dart';
 
-// Only import Agora on non-web platforms
-// ignore: uri_does_not_exist
-import '../services/agora_service.dart'
-    if (dart.library.html) '../services/agora_service_stub.dart';
+// Use only web implementation for Agora service
+import '../services/agora_service_web.dart';
 
 class VideoCallProvider with ChangeNotifier {
   Patient? _currentPatient;
@@ -45,7 +43,7 @@ class VideoCallProvider with ChangeNotifier {
     _authToken = authToken;
 
     // Initialize Agora service
-    await _agoraService.initialize('your-agora-app-id');
+    await _agoraService.initialize();
     _setupAgoraCallbacks();
 
     _socket = IO.io(_socketUrl, <String, dynamic>{
@@ -118,41 +116,53 @@ class VideoCallProvider with ChangeNotifier {
   // Start a video call with a patient
   Future<bool> startCall(Patient patient) async {
     try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/calls/start'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_authToken',
-        },
-        body: json.encode({'patientId': patient.id, 'type': 'video'}),
+      print('🚀 Starting video call with patient: ${patient.name}');
+
+      // Generate a call ID based on current timestamp and patient ID
+      _callId = 'call_${DateTime.now().millisecondsSinceEpoch}_${patient.id}';
+
+      // Create channel name using consistent utility
+      String channelName = ChannelUtils.generateChannelId(
+        callId: _callId,
+        patientId: patient.id,
+        doctorId: 'doctor', // In real app, this would be the actual doctor ID
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['success']) {
-          _currentPatient = patient;
-          _callId = data['callId'];
-          _isInCall = true;
+      print('📱 Video Call Details:');
+      print('   - Call ID: $_callId');
+      print('   - Channel: $channelName');
+      print('   - Patient: ${patient.name} (${patient.id})');
 
-          // Join Agora channel using call ID
-          await _agoraService.joinChannel(
-            channelId: _callId!,
-            token: '', // Use empty token for testing
-          );
+      _currentPatient = patient;
+      _isInCall = true;
 
-          // Notify patient via socket
-          _socket?.emit('start_call', {
-            'callId': _callId,
-            'patientId': patient.id,
-          });
+      // Join Agora channel using the generated channel name
+      await _agoraService.joinChannel(
+        channelId: channelName,
+        token: '', // Use empty token for testing
+      );
 
-          notifyListeners();
-          return true;
-        }
-      }
-      return false;
+      // Explicitly enable video and audio after joining
+      await _agoraService.enableLocalVideo(true);
+      await _agoraService.muteLocalAudio(false);
+
+      // Notify patient via socket if available
+      _socket?.emit('start_call', {
+        'callId': _callId,
+        'patientId': patient.id,
+        'channelName': channelName,
+        'doctorName': 'Dr. SATYAM',
+      });
+
+      print('✅ Doctor joined video call successfully');
+      notifyListeners();
+      return true;
     } catch (e) {
-      print('Error starting call: $e');
+      print('❌ Error starting call: $e');
+      _isInCall = false;
+      _currentPatient = null;
+      _callId = null;
+      notifyListeners();
       return false;
     }
   }

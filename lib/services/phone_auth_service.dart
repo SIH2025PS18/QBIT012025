@@ -78,8 +78,10 @@ class PhoneAuthService {
       // Use the unified backend via AuthService
       print('📡 Calling AuthService.registerWithMobile...');
       final startTime = DateTime.now();
-      print('🕒 Registration process started at: ${startTime.toIso8601String()}');
-      
+      print(
+        '🕒 Registration process started at: ${startTime.toIso8601String()}',
+      );
+
       final result = await _authService.registerWithMobile(
         name: fullName,
         phone: phoneNumber,
@@ -98,7 +100,9 @@ class PhoneAuthService {
       if (result.isSuccess && result.user != null) {
         print('✅ Registration successful in backend');
         print('🆔 User ID: ${result.user!.id}');
-        print('📧 Phone (from email): ${result.user!.email}');  // Changed from phone to email
+        print(
+          '📧 Phone (from email): ${result.user!.email}',
+        ); // Changed from phone to email
         print('👤 Name: ${result.user!.name}');
         print('🎭 Role: ${result.user!.role}');
 
@@ -209,7 +213,9 @@ class PhoneAuthService {
       if (result.isSuccess && result.user != null) {
         print('✅ Login successful');
         print('🆔 User ID: ${result.user!.id}');
-        print('📧 Phone (from email): ${result.user!.email}');  // Changed from phone to email
+        print(
+          '📧 Phone (from email): ${result.user!.email}',
+        ); // Changed from phone to email
         print('👤 Name: ${result.user!.name}');
 
         final userData = {
@@ -330,26 +336,78 @@ class PhoneAuthService {
     }
   }
 
-  // Check if user is logged in
+  // Check if user is logged in with enhanced validation
   static Future<bool> isLoggedIn() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final isLoggedIn = prefs.getBool(_isLoggedInKey) ?? false;
       final userData = await getStoredUserData();
-      return isLoggedIn && userData != null;
+
+      // If basic checks pass, verify with auth service
+      if (isLoggedIn && userData != null) {
+        // Additional validation: check if auth token is still valid
+        try {
+          if (_authService.isAuthenticated) {
+            print('✅ User is authenticated with valid token');
+            return true;
+          } else {
+            print('⚠️ Auth token expired, clearing login status');
+            await _setLoggedInStatus(false);
+            return false;
+          }
+        } catch (e) {
+          print('⚠️ Error validating auth token: $e');
+          // Keep user logged in if validation fails (offline mode)
+          return true;
+        }
+      }
+
+      return false;
     } catch (e) {
       print('❌ Error checking login status: $e');
       return false;
     }
   }
 
-  // Set login status
+  // Set login status with enhanced persistence
   static Future<void> _setLoggedInStatus(bool status) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_isLoggedInKey, status);
+
+      // Also store timestamp for session management
+      if (status) {
+        await prefs.setInt(
+          'login_timestamp',
+          DateTime.now().millisecondsSinceEpoch,
+        );
+        print('✅ Login status set to true with timestamp');
+      } else {
+        await prefs.remove('login_timestamp');
+        print('✅ Login status cleared');
+      }
     } catch (e) {
       print('❌ Error setting login status: $e');
+    }
+  }
+
+  // Check if login session is still valid (24 hours)
+  static Future<bool> isSessionValid() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final loginTimestamp = prefs.getInt('login_timestamp');
+
+      if (loginTimestamp == null) return false;
+
+      final sessionDuration =
+          DateTime.now().millisecondsSinceEpoch - loginTimestamp;
+      const maxSessionDuration =
+          24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+      return sessionDuration < maxSessionDuration;
+    } catch (e) {
+      print('❌ Error checking session validity: $e');
+      return false;
     }
   }
 

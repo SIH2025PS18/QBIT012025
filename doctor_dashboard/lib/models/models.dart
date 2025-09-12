@@ -46,12 +46,12 @@ class Doctor {
       phone: json['phone'] ?? '',
       specialization: json['speciality'] ?? json['specialization'] ?? '',
       qualification: json['qualification'] ?? '',
-      experience: json['experience'] ?? 0,
-      licenseNumber: json['licenseNumber'] ?? '',
+      experience: (json['experience'] ?? 0).toInt(),
+      licenseNumber: json['licenseNumber'] ?? 'N/A',
       consultationFee: (json['consultationFee'] ?? 0).toDouble(),
       status: json['status'] ?? 'offline',
       isAvailable: json['isAvailable'] ?? false,
-      languages: List<String>.from(json['languages'] ?? ['en']),
+      languages: (json['languages'] as List?)?.cast<String>() ?? ['English'],
       rating: (json['rating'] ?? 0).toDouble(),
       totalRatings: json['totalRatings'] ?? 0,
       totalConsultations: json['totalConsultations'] ?? 0,
@@ -189,6 +189,8 @@ class ChatMessage {
 
 enum VideoCallStatus { idle, connecting, connected, ended }
 
+enum Priority { low, normal, high, urgent }
+
 class VideoCallSession {
   final String sessionId;
   final String doctorId;
@@ -219,9 +221,8 @@ class VideoCallSession {
         orElse: () => VideoCallStatus.idle,
       ),
       startTime: DateTime.tryParse(json['start_time'] ?? '') ?? DateTime.now(),
-      endTime: json['end_time'] != null
-          ? DateTime.tryParse(json['end_time'])
-          : null,
+      endTime:
+          json['end_time'] != null ? DateTime.tryParse(json['end_time']) : null,
     );
   }
 }

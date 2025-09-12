@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:async';
 
 import '../config/agora_config.dart';
@@ -129,7 +130,26 @@ class AgoraService extends ChangeNotifier {
 
   /// Request camera and microphone permissions
   Future<void> _requestPermissions() async {
-    await [Permission.microphone, Permission.camera].request();
+    // For web, permissions are handled by the browser when accessing camera/microphone
+    if (kIsWeb) {
+      debugPrint('🌐 Running on web - permissions will be handled by browser');
+      return;
+    }
+
+    // For mobile platforms, use permission_handler
+    final statuses = await [Permission.microphone, Permission.camera].request();
+
+    if (statuses[Permission.camera] != PermissionStatus.granted) {
+      debugPrint('❌ Camera permission not granted');
+      throw Exception('Camera permission is required for video calls');
+    }
+
+    if (statuses[Permission.microphone] != PermissionStatus.granted) {
+      debugPrint('❌ Microphone permission not granted');
+      throw Exception('Microphone permission is required for video calls');
+    }
+
+    debugPrint('✅ Camera and microphone permissions granted');
   }
 
   /// Set up event handlers for Agora events
@@ -138,7 +158,9 @@ class AgoraService extends ChangeNotifier {
       RtcEngineEventHandler(
         // User joined channel
         onUserJoined: (connection, uid, elapsed) {
-          debugPrint('User joined: $uid');
+          debugPrint(
+            '🎉 Remote user joined channel: $uid (total users: ${_remoteUsers.length + 1})',
+          );
           _remoteUsers.add(uid);
           _userStates[uid] = UserConnectionState.connected;
           notifyListeners();
@@ -146,7 +168,9 @@ class AgoraService extends ChangeNotifier {
 
         // User left channel
         onUserOffline: (connection, uid, reason) {
-          debugPrint('User left: $uid, reason: $reason');
+          debugPrint(
+            '👋 Remote user left channel: $uid, reason: $reason (remaining users: ${_remoteUsers.length - 1})',
+          );
           _remoteUsers.remove(uid);
           _userStates.remove(uid);
           _networkQualities.remove(uid);
@@ -288,6 +312,10 @@ class AgoraService extends ChangeNotifier {
           options: const ChannelMediaOptions(
             clientRoleType: ClientRoleType.clientRoleBroadcaster,
             channelProfile: AgoraConfig.channelProfile,
+            publishCameraTrack: true,
+            publishMicrophoneTrack: true,
+            autoSubscribeVideo: true,
+            autoSubscribeAudio: true,
           ),
         );
         return; // Success, exit retry loop
@@ -391,7 +419,11 @@ class AgoraService extends ChangeNotifier {
     return AgoraVideoView(
       controller: VideoViewController(
         rtcEngine: _engine!,
-        canvas: const VideoCanvas(uid: 0),
+        canvas: const VideoCanvas(
+          uid: 0,
+          renderMode: RenderModeType.renderModeHidden,
+          mirrorMode: VideoMirrorModeType.videoMirrorModeAuto,
+        ),
       ),
     );
   }
@@ -410,8 +442,11 @@ class AgoraService extends ChangeNotifier {
     return AgoraVideoView(
       controller: VideoViewController.remote(
         rtcEngine: _engine!,
-        canvas: VideoCanvas(uid: uid),
-        connection: RtcConnection(channelId: _currentChannelId),
+        canvas: VideoCanvas(
+          uid: uid,
+          renderMode: RenderModeType.renderModeHidden,
+        ),
+        connection: RtcConnection(channelId: _currentChannelId ?? ''),
       ),
     );
   }

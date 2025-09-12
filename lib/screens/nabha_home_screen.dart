@@ -1,33 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/language_provider.dart';
-import '../widgets/custom_button.dart';
+import '../services/doctor_provider.dart';
+import '../models/doctor.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'auth/phone_login_with_password_screen.dart';
-import 'queue_management_screen.dart';
 import 'medical_records_screen.dart';
 import 'offline_symptom_checker_screen.dart';
 import 'medicine_checker_screen.dart';
 import 'settings_screen.dart';
 import 'patient_profile_screen.dart';
+import 'doctor_selection_screen.dart';
 import '../constants/app_constants.dart';
 import '../services/phone_auth_service.dart';
-
-// Model for doctor status
-class DoctorStatus {
-  final String name;
-  final String speciality; // Changed from specialization to match backend
-  final bool isAvailable;
-  final int waitTime; // in minutes
-  final String nextAvailableTime;
-
-  DoctorStatus({
-    required this.name,
-    required this.speciality,
-    required this.isAvailable,
-    this.waitTime = 0,
-    this.nextAvailableTime = '',
-  });
-}
+import '../services/auth_service.dart';
 
 class NabhaHomeScreen extends StatefulWidget {
   const NabhaHomeScreen({super.key});
@@ -37,22 +23,6 @@ class NabhaHomeScreen extends StatefulWidget {
 }
 
 class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
-  // Live doctor data (limited to 1-2 for home screen preview)
-  final List<DoctorStatus> _liveDoctorsPreview = [
-    DoctorStatus(
-      name: 'Dr. Sarah Johnson',
-      speciality: 'General Practitioner',
-      isAvailable: true,
-      waitTime: 8,
-    ),
-    DoctorStatus(
-      name: 'Dr. Michael Chen',
-      speciality: 'Pediatrician',
-      isAvailable: true,
-      waitTime: 5,
-    ),
-  ];
-
   bool _isOnline = true;
   String _userName = 'Patient'; // Add user name variable
 
@@ -60,6 +30,11 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
   void initState() {
     super.initState();
     _loadUserData();
+    // Initialize doctor service
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final doctorService = Provider.of<DoctorService>(context, listen: false);
+      doctorService.initialize();
+    });
   }
 
   Future<void> _loadUserData() async {
@@ -166,7 +141,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
               Center(
                 child: ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Close'),
+                  child: Text(AppLocalizations.of(context).close),
                 ),
               ),
             ],
@@ -276,7 +251,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                   children: [
                     const Icon(Icons.person, color: Colors.blue),
                     const SizedBox(width: 8),
-                    const Text('Profile'),
+                    Text(AppLocalizations.of(context).profile),
                   ],
                 ),
               ),
@@ -287,7 +262,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                   children: [
                     const Icon(Icons.language, color: Colors.green),
                     const SizedBox(width: 8),
-                    const Text('Language'),
+                    Text(AppLocalizations.of(context).language),
                   ],
                 ),
               ),
@@ -298,7 +273,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                   children: [
                     const Icon(Icons.settings, color: Colors.purple),
                     const SizedBox(width: 8),
-                    const Text('Settings'),
+                    Text(AppLocalizations.of(context).settings),
                   ],
                 ),
               ),
@@ -310,7 +285,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                   children: [
                     const Icon(Icons.logout, color: Colors.red),
                     const SizedBox(width: 8),
-                    const Text('Logout'),
+                    Text(AppLocalizations.of(context).logout),
                   ],
                 ),
               ),
@@ -353,7 +328,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                       Icon(Icons.waving_hand, color: Colors.white, size: 24),
                       const SizedBox(width: 8),
                       Text(
-                        'Welcome',
+                        AppLocalizations.of(context).welcome,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -373,7 +348,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Your health journey starts here',
+                    AppLocalizations.of(context).healthJourneyStarts,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white.withOpacity(0.9),
@@ -390,14 +365,9 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
 
             const SizedBox(height: 24),
 
-            // Primary Action Button
-            _buildPrimaryActionButton(),
-
-            const SizedBox(height: 24),
-
             // Quick Access Shortcuts
             Text(
-              'Quick Access',
+              AppLocalizations.of(context).quickAccess,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -410,6 +380,39 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
           ],
         ),
       ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () {
+      //     // Navigate to video call with Dr. SATYAM for testing
+      //     final testDoctor = Doctor(
+      //       id: '68c3dad2fe137120af5dceba',
+      //       name: 'SATYAM',
+      //       email: 'new@satyma.com',
+      //       speciality: 'Gynecologist',
+      //       qualification: 'MD',
+      //       experience: 5,
+      //       consultationFee: 0.0,
+      //       rating: 0.0,
+      //       isAvailable: true,
+      //       languages: ['English', 'Hindi'],
+      //       profileImage: '',
+      //     );
+
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => RealtimeVideoCallScreen(
+      //           doctor: testDoctor,
+      //           patientId: '68c2cf5e3f1d8dc55cabdd9f',
+      //           patientName: 'Test Patient',
+      //           symptoms: 'Testing video call functionality',
+      //         ),
+      //       ),
+      //     );
+      //   },
+      //   backgroundColor: Colors.green,
+      //   icon: const Icon(Icons.video_call),
+      //   label: const Text('Test Video Call'),
+      // ),
     );
   }
 
@@ -427,50 +430,73 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '${_liveDoctorsPreview.where((d) => d.isAvailable).length} General Doctors Online',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Live doctor preview
-          Column(
-            children: _liveDoctorsPreview.map((doctor) {
-              return _buildDoctorStatusItem(doctor);
-            }).toList(),
-          ),
-
-          const SizedBox(height: 16),
-
-          // See all doctors button
-          Container(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () {
-                Navigator.pushNamed(context, '/doctor-queue');
-              },
-              icon: const Icon(Icons.queue),
-              label: const Text('Join Live Doctor Queue'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                side: BorderSide(color: Colors.blue[600]!),
-                foregroundColor: Colors.blue[600],
+      child: Consumer<DoctorService>(
+        builder: (context, doctorService, child) {
+          final onlineDoctors = doctorService.onlineDoctors;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppLocalizations.of(
+                  context,
+                ).generalDoctorsOnline(onlineDoctors.length),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-            ),
-          ),
-        ],
+              const SizedBox(height: 16),
+
+              // Live doctor preview
+              Column(
+                children: onlineDoctors.take(2).map((doctor) {
+                  return _buildDoctorStatusItem(doctor);
+                }).toList(),
+              ),
+
+              const SizedBox(height: 16),
+
+              // See all doctors button
+              Container(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    final authService = Provider.of<AuthService>(
+                      context,
+                      listen: false,
+                    );
+                    final user = authService.currentUser;
+
+                    if (user != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DoctorSelectionScreen(
+                            patientId: user.id,
+                            patientName: user.name,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.queue),
+                  label: Text(AppLocalizations.of(context).joinLiveDoctorQueue),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: BorderSide(color: Colors.blue[600]!),
+                    foregroundColor: Colors.blue[600],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildDoctorStatusItem(DoctorStatus doctor) {
+  Widget _buildDoctorStatusItem(Doctor doctor) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -486,7 +512,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
             width: 12,
             height: 12,
             decoration: BoxDecoration(
-              color: doctor.isAvailable ? Colors.green : Colors.red,
+              color: doctor.status == 'online' ? Colors.green : Colors.red,
               shape: BoxShape.circle,
             ),
           ),
@@ -498,7 +524,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  doctor.name,
+                  '${AppLocalizations.of(context).doctorTitle} ${doctor.name}',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -515,80 +541,16 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
 
           // Status text
           Text(
-            doctor.isAvailable
-                ? 'Wait: ~${doctor.waitTime} min'
-                : 'Next: ${doctor.nextAvailableTime}',
+            doctor.status == 'online'
+                ? AppLocalizations.of(context).available
+                : AppLocalizations.of(context).offline,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: doctor.isAvailable ? Colors.green[700] : Colors.red[700],
+              color: doctor.status == 'online'
+                  ? Colors.green[700]
+                  : Colors.red[700],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPrimaryActionButton() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).primaryColor,
-            Theme.of(context).primaryColor.withOpacity(0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(Icons.medical_services, size: 48, color: Colors.white),
-          const SizedBox(height: 16),
-          Text(
-            'CONSULT DOCTOR NOW',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Join the queue for immediate consultation',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white.withOpacity(0.9),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          CustomButton(
-            text: 'Join Queue',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const QueueManagementScreen(
-                    doctorId:
-                        'doctor-placeholder-id', // Provide a placeholder doctor ID
-                  ),
-                ),
-              );
-            },
-            backgroundColor: Colors.white,
-            textColor: Theme.of(context).primaryColor,
-            icon: Icons.queue,
           ),
         ],
       ),
@@ -606,7 +568,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
       children: [
         _buildShortcutCard(
           icon: Icons.folder_open,
-          title: 'My Health Records',
+          title: AppLocalizations.of(context).myHealthRecords,
           color: Colors.blue,
           onTap: () {
             Navigator.of(context).push(
@@ -620,7 +582,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
         ),
         _buildShortcutCard(
           icon: Icons.medication,
-          title: 'Medicine Stock',
+          title: AppLocalizations.of(context).medicineStock,
           color: Colors.green,
           onTap: () {
             Navigator.of(context).push(
@@ -632,7 +594,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
         ),
         _buildShortcutCard(
           icon: Icons.health_and_safety,
-          title: 'First Aid Tips',
+          title: AppLocalizations.of(context).firstAidTips,
           color: Colors.orange,
           onTap: () {
             Navigator.of(context).push(
@@ -644,7 +606,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
         ),
         _buildShortcutCard(
           icon: Icons.settings,
-          title: 'Settings',
+          title: AppLocalizations.of(context).settings,
           color: Colors.purple,
           onTap: () {
             Navigator.of(context).push(

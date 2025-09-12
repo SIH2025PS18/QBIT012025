@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../database/offline_database.dart';
 import '../services/phone_auth_service.dart';
 import '../core/service_locator.dart'; // Add this import
@@ -126,7 +127,9 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading medical records: $e'),
+            content: Text(
+              '${AppLocalizations.of(context)!.errorLoadingMedicalRecords}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -165,7 +168,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Medical Records'),
+        title: Text(AppLocalizations.of(context)!.medicalRecords),
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
         actions: [
@@ -215,13 +218,13 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: Colors.teal),
-                  SizedBox(height: 16),
-                  Text('Loading medical records...'),
+                  const CircularProgressIndicator(color: Colors.teal),
+                  const SizedBox(height: 16),
+                  Text(AppLocalizations.of(context)!.loadingMedicalRecords),
                 ],
               ),
             )
@@ -238,7 +241,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
 
   Widget _buildProfileTab() {
     if (_patientProfile == null) {
-      return const Center(child: Text('No profile data available'));
+      return Center(child: Text(AppLocalizations.of(context)!.noProfileData));
     }
 
     return SingleChildScrollView(

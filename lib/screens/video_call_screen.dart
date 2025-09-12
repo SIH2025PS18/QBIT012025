@@ -14,6 +14,7 @@ import '../widgets/participant_grid_widget.dart';
 import '../widgets/chat_widget.dart' hide PrescriptionData;
 import '../widgets/recording_consent_dialog.dart';
 import '../widgets/recording_status_widget.dart';
+import '../utils/channel_utils.dart';
 
 class VideoCallScreen extends StatefulWidget {
   final VideoConsultation consultation;
@@ -397,8 +398,9 @@ class _VideoCallScreenState extends State<VideoCallScreen>
       // Initialize Agora service
       await _agoraService.initialize();
 
-      // Generate channel name from consultation room ID
-      final channelId = widget.consultation.roomId ?? _consultationId!;
+      // Generate channel name using consistent utility
+      final roomId = widget.consultation.roomId ?? _consultationId!;
+      final channelId = ChannelUtils.generateConsultationChannelId(roomId);
 
       // Use session token or null for testing
       final token = widget.consultation.sessionToken;

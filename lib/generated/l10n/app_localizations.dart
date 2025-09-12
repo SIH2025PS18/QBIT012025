@@ -111,7 +111,7 @@ abstract class AppLocalizations {
   /// **'TeleMed'**
   String get appTitle;
 
-  /// Welcome message
+  /// Welcome greeting text
   ///
   /// In en, this message translates to:
   /// **'Welcome'**
@@ -225,7 +225,7 @@ abstract class AppLocalizations {
   /// **'Doctors'**
   String get doctors;
 
-  /// Settings navigation item
+  /// Settings menu item
   ///
   /// In en, this message translates to:
   /// **'Settings'**
@@ -471,7 +471,7 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
-  /// Select language button text
+  /// Select language option text
   ///
   /// In en, this message translates to:
   /// **'Select Language'**
@@ -831,7 +831,7 @@ abstract class AppLocalizations {
   /// **'Pending Sync'**
   String get pendingSync;
 
-  /// Offline status
+  /// Doctor offline status
   ///
   /// In en, this message translates to:
   /// **'Offline'**
@@ -1166,6 +1166,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No patients in queue'**
   String get noPatients;
+
+  /// Settings screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Settings & Support'**
+  String get settingsAndSupport;
+
+  /// Language preferences section title
+  ///
+  /// In en, this message translates to:
+  /// **'Language Preferences'**
+  String get languagePreferences;
+
+  /// Data and connectivity section title
+  ///
+  /// In en, this message translates to:
+  /// **'Data & Connectivity'**
+  String get dataAndConnectivity;
+
+  /// Data saver mode setting
+  ///
+  /// In en, this message translates to:
+  /// **'Data Saver Mode'**
+  String get dataSaverMode;
+
+  /// Notifications enabled setting
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications Enabled'**
+  String get notificationsEnabled;
+
+  /// SMS mode setting
+  ///
+  /// In en, this message translates to:
+  /// **'SMS Mode'**
+  String get smsMode;
+
+  /// Clear search button text
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Search'**
+  String get clearSearch;
+
+  /// Directions button text
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get directions;
+
+  /// Reserve button text
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve'**
+  String get reserve;
+
+  /// Medical records title
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Records'**
+  String get medicalRecords;
+
+  /// Loading medical records message
+  ///
+  /// In en, this message translates to:
+  /// **'Loading medical records...'**
+  String get loadingMedicalRecords;
+
+  /// No profile data message
+  ///
+  /// In en, this message translates to:
+  /// **'No profile data available'**
+  String get noProfileData;
+
+  /// Medical details saved success message
+  ///
+  /// In en, this message translates to:
+  /// **'Medical details saved successfully!'**
+  String get medicalDetailsSaved;
+
+  /// Failed to save medical details error
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save medical details'**
+  String get failedToSaveMedicalDetails;
+
+  /// Added allergy success message
+  ///
+  /// In en, this message translates to:
+  /// **'Added allergy'**
+  String get addedAllergy;
+
+  /// Error loading medical records message
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading medical records'**
+  String get errorLoadingMedicalRecords;
+
+  /// Quick access section title
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Access'**
+  String get quickAccess;
+
+  /// Test video call button text
+  ///
+  /// In en, this message translates to:
+  /// **'Test Video Call'**
+  String get testVideoCall;
+
+  /// Join live doctor queue button text
+  ///
+  /// In en, this message translates to:
+  /// **'Join Live Doctor Queue'**
+  String get joinLiveDoctorQueue;
+
+  /// Registration failed error message
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed. Please try again.'**
+  String get registrationFailed;
+
+  /// Enter full name hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your full name'**
+  String get enterFullName;
+
+  /// Enter phone number hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number'**
+  String get enterPhoneNumber;
+
+  /// Enter 10-digit phone number hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your 10-digit phone number'**
+  String get enterTenDigitPhone;
+
+  /// Enter password hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enterPassword;
+
+  /// Enter password with minimum characters hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password (min 6 characters)'**
+  String get enterPasswordMinSix;
+
+  /// Re-enter password hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get reenterPassword;
+
+  /// Invalid phone or password error message
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number or password'**
+  String get invalidPhoneOrPassword;
+
+  /// Sign in failed error message
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in failed'**
+  String get signInFailed;
+
+  /// Please enter phone number validation message
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your phone number'**
+  String get pleaseEnterPhoneNumber;
+
+  /// Failed to send OTP error message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send OTP'**
+  String get failedToSendOTP;
+
+  /// Please enter OTP validation message
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the OTP'**
+  String get pleaseEnterOTP;
+
+  /// OTP verified successfully message
+  ///
+  /// In en, this message translates to:
+  /// **'OTP verified successfully'**
+  String get otpVerifiedSuccessfully;
+
+  /// Invalid OTP error message
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid OTP. Please try again.'**
+  String get invalidOTP;
+
+  /// Failed to verify OTP error message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to verify OTP'**
+  String get failedToVerifyOTP;
+
+  /// Please enter new password validation message
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a new password'**
+  String get pleaseEnterNewPassword;
+
+  /// Password reset successfully message
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successfully!'**
+  String get passwordResetSuccessfully;
+
+  /// Failed to reset password error message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reset password. Please try again.'**
+  String get failedToResetPassword;
+
+  /// Enter 6-digit OTP hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit OTP'**
+  String get enterSixDigitOTP;
+
+  /// Resend OTP button text
+  ///
+  /// In en, this message translates to:
+  /// **'Resend OTP'**
+  String get resendOTP;
+
+  /// Enter new password hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password'**
+  String get enterNewPassword;
+
+  /// Confirm new password hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your new password'**
+  String get confirmNewPassword;
+
+  /// Health journey subtitle text
+  ///
+  /// In en, this message translates to:
+  /// **'Your health journey starts here'**
+  String get healthJourneyStarts;
+
+  /// General doctors online counter text
+  ///
+  /// In en, this message translates to:
+  /// **'{count} General Doctors Online'**
+  String generalDoctorsOnline(Object count);
+
+  /// Available status for doctors
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// My health records shortcut text
+  ///
+  /// In en, this message translates to:
+  /// **'My Health Records'**
+  String get myHealthRecords;
+
+  /// Medicine stock shortcut text
+  ///
+  /// In en, this message translates to:
+  /// **'Medicine Stock'**
+  String get medicineStock;
+
+  /// First aid tips shortcut text
+  ///
+  /// In en, this message translates to:
+  /// **'First Aid Tips'**
+  String get firstAidTips;
+
+  /// Dermatologist specialization
+  ///
+  /// In en, this message translates to:
+  /// **'Dermatologist'**
+  String get dermatologist;
+
+  /// Doctor title prefix
+  ///
+  /// In en, this message translates to:
+  /// **'Dr.'**
+  String get doctorTitle;
 }
 
 class _AppLocalizationsDelegate

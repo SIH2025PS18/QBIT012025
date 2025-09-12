@@ -48,15 +48,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     print('Full Name: ${_fullNameController.text.trim()}');
     print('Phone Number: ${_phoneController.text.trim()}');
     print('Password Length: ${_passwordController.text.length} characters');
-    print('Confirm Password Length: ${_confirmPasswordController.text.length} characters');
-    print('Passwords Match: ${_passwordController.text == _confirmPasswordController.text}');
+    print(
+      'Confirm Password Length: ${_confirmPasswordController.text.length} characters',
+    );
+    print(
+      'Passwords Match: ${_passwordController.text == _confirmPasswordController.text}',
+    );
 
     try {
       // Use the PhoneAuthService method for registration
       print('📤 Sending registration request to backend...');
       final startTime = DateTime.now();
-      print('🕒 Registration request started at: ${startTime.toIso8601String()}');
-      
+      print(
+        '🕒 Registration request started at: ${startTime.toIso8601String()}',
+      );
+
       final response = await PhoneAuthService.registerWithPhone(
         phoneNumber: _phoneController.text.trim(),
         password: _passwordController.text.trim(),
@@ -75,7 +81,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         print('📱 User Phone: ${response['phone_number']}');
         print('🎭 User Role: ${response['role']}');
         print('🕒 Registration completed at: ${endTime.toIso8601String()}');
-        
+
         setState(() {
           _isLoading = false;
         });
@@ -103,8 +109,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _isLoading = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registration failed. Please try again.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.registrationFailed),
             backgroundColor: Colors.red,
           ),
         );
@@ -210,13 +216,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Full name field
                 CustomTextField(
                   controller: _fullNameController,
-                  labelText: 'Full Name',
-                  hintText: 'Enter your full name',
+                  labelText: AppLocalizations.of(context)!.fullName,
+                  hintText: AppLocalizations.of(context)!.enterFullName,
                   prefixIcon: Icons.person,
                   textCapitalization: TextCapitalization.words,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Full name is required';
+                      return AppLocalizations.of(context)!.fieldRequired;
                     }
                     if (value.trim().length < 2) {
                       return 'Please enter a valid name (at least 2 characters)';
@@ -237,8 +243,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     CustomTextField(
                       controller: _phoneController,
-                      labelText: 'Phone Number',
-                      hintText: 'Enter your 10-digit phone number',
+                      labelText: AppLocalizations.of(context)!.phoneNumber,
+                      hintText: AppLocalizations.of(
+                        context,
+                      )!.enterTenDigitPhone,
                       prefixIcon: Icons.phone,
                       keyboardType: TextInputType.phone,
                       inputFormatters: [
@@ -247,7 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Phone number is required';
+                          return AppLocalizations.of(context)!.fieldRequired;
                         }
                         if (value.length != 10) {
                           return 'Please enter a valid 10-digit phone number';

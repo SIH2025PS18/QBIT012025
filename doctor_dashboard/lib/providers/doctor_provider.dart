@@ -43,8 +43,8 @@ class DoctorProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success']) {
-          _authToken = data['token'];
-          _currentDoctor = Doctor.fromJson(data['doctor']);
+          _authToken = data['data']['token'];
+          _currentDoctor = Doctor.fromJson(data['data']['user']);
 
           // Load doctor's queue and today's calls
           await _loadDoctorData();
@@ -226,4 +226,26 @@ class DoctorProvider with ChangeNotifier {
   }
 
   // Remove mock data - we now use real data from backend
+
+  /// Add test patient for testing video call functionality
+  void addTestPatient() {
+    final testPatient = Patient(
+      id: '68c2cf5e3f1d8dc55cabdd9f', // Real patient ID from the app
+      name: 'Shaurya (Test Patient)',
+      profileImage: 'https://avatar.iran.liara.run/public/boy?username=shaurya',
+      age: 25,
+      gender: 'Male',
+      phone: '9026508435',
+      email: '9026508435@telemed.local',
+      symptoms: 'Testing video call functionality',
+      appointmentTime: DateTime.now(),
+      status: 'waiting',
+      medicalHistory: ['No major medical history'],
+      attachments: [],
+    );
+
+    _patientQueue.insert(0, testPatient); // Add at the beginning
+    notifyListeners();
+    print('✅ Added test patient: ${testPatient.name} to doctor queue');
+  }
 }

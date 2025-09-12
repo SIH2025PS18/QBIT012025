@@ -25,9 +25,22 @@ class _AuthWrapperState extends State<AuthWrapper> {
     setState(() => _isCheckingAuth = true);
 
     try {
-      // Check if user is logged in with phone auth
+      // Check if user is logged in with enhanced validation
       final isLoggedIn = await PhoneAuthService.isLoggedIn();
-      setState(() => _isLoggedIn = isLoggedIn);
+
+      // Additional session validity check
+      if (isLoggedIn) {
+        final isSessionValid = await PhoneAuthService.isSessionValid();
+        if (!isSessionValid) {
+          print('⚠️ Session expired, requiring re-login');
+          setState(() => _isLoggedIn = false);
+        } else {
+          print('✅ User session is valid, auto-login successful');
+          setState(() => _isLoggedIn = true);
+        }
+      } else {
+        setState(() => _isLoggedIn = false);
+      }
     } catch (e) {
       print('Error checking auth status: $e');
       setState(() => _isLoggedIn = false);

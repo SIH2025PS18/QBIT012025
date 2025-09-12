@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../models/medicine_stock.dart';
 import '../models/pharmacy.dart';
 
@@ -388,7 +389,7 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
                 foregroundColor: Colors.white,
                 minimumSize: const Size(200, 45),
               ),
-              child: const Text('Clear Search'),
+              child: Text(AppLocalizations.of(context)!.clearSearch),
             ),
           ],
         ),
@@ -643,7 +644,7 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
                       ),
                     );
                   },
-                  child: const Text('Directions'),
+                  child: Text(AppLocalizations.of(context)!.directions),
                 ),
               ),
               const SizedBox(width: 12),
@@ -662,7 +663,7 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: const Text('Reserve'),
+                  child: Text(AppLocalizations.of(context)!.reserve),
                 ),
               ),
             ],

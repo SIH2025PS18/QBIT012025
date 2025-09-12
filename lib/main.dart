@@ -5,6 +5,7 @@ import 'core/service_locator.dart';
 import 'services/video_consultation_service.dart';
 import 'services/connectivity_service.dart';
 import 'services/auth_service.dart';
+import 'services/doctor_provider.dart';
 import 'providers/language_provider.dart';
 import 'providers/patient_profile_provider.dart';
 import 'screens/splash_screen.dart';
@@ -50,6 +51,9 @@ class TelemedApp extends StatelessWidget {
 
         // Auth service
         ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
+
+        // Doctor service
+        ChangeNotifierProvider<DoctorService>(create: (_) => DoctorService()),
 
         // Patient profile provider
         ChangeNotifierProvider<PatientProfileProvider>(

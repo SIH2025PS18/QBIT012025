@@ -3,6 +3,7 @@ import 'dart:async';
 
 import '../models/video_consultation.dart';
 import '../services/agora_service.dart';
+import '../utils/channel_utils.dart';
 
 class MobileVideoCallScreen extends StatefulWidget {
   final VideoConsultation consultation;
@@ -76,8 +77,14 @@ class _MobileVideoCallScreenState extends State<MobileVideoCallScreen>
       _agoraService = AgoraService();
 
       await _agoraService.initialize();
+
+      // Use consistent channel ID generation
+      final channelId = ChannelUtils.generateConsultationChannelId(
+        widget.consultation.id,
+      );
+
       await _agoraService.joinChannel(
-        channelId: widget.consultation.id,
+        channelId: channelId,
         token: "", // Empty token for testing
       );
 

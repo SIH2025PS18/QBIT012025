@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../models/patient_profile.dart';
 import '../providers/patient_profile_provider.dart';
 import '../widgets/custom_button.dart';
@@ -74,8 +75,8 @@ class _MedicalDetailsScreenState extends State<MedicalDetailsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Medical details saved successfully!'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.medicalDetailsSaved),
             backgroundColor: Colors.green,
           ),
         );
@@ -85,7 +86,9 @@ class _MedicalDetailsScreenState extends State<MedicalDetailsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to save medical details: $e'),
+            content: Text(
+              '${AppLocalizations.of(context)!.failedToSaveMedicalDetails}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -105,7 +108,9 @@ class _MedicalDetailsScreenState extends State<MedicalDetailsScreen> {
       // Show a brief confirmation
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Added allergy: $allergy'),
+          content: Text(
+            '${AppLocalizations.of(context)!.addedAllergy}: $allergy',
+          ),
           duration: const Duration(seconds: 1),
           backgroundColor: Colors.green.withOpacity(0.8),
         ),

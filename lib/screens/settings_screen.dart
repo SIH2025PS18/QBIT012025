@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/language_provider.dart';
 import '../constants/app_constants.dart';
+import '../generated/l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -17,14 +18,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Settings & Support',
-          style: TextStyle(
+        title: Text(
+          l10n.settingsAndSupport,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -39,13 +42,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Language Settings
-              _buildSectionHeader('Language Preferences'),
+              _buildSectionHeader(l10n.languagePreferences),
               const SizedBox(height: 16),
               _buildLanguageSelector(),
               const SizedBox(height: 24),
 
               // Data & Connectivity
-              _buildSectionHeader('Data & Connectivity'),
+              _buildSectionHeader(l10n.dataAndConnectivity),
               const SizedBox(height: 16),
               _buildDataSaverToggle(),
               const SizedBox(height: 16),
