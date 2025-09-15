@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../models/doctor.dart';
 import '../services/doctor_provider.dart';
 import 'realtime_video_call_screen.dart';
@@ -221,13 +222,13 @@ class _DoctorSelectionScreenState extends State<DoctorSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Choose Doctor'),
-        backgroundColor: Colors.blue[600],
+        title: Text('${l10n.findDoctors} & ${l10n.joinLiveDoctorQueue}'),
+        backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
-        elevation: 0,
       ),
       body: Column(
         children: [

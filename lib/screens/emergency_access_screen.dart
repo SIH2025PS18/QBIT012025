@@ -89,25 +89,24 @@ class _EmergencyAccessScreenState extends State<EmergencyAccessScreen>
   }
 
   Future<void> _revokeCurrentToken() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_currentToken == null) return;
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Revoke Emergency Access'),
-        content: const Text(
-          'Are you sure you want to revoke this emergency QR code? '
-          'This will prevent access to your emergency medical information.',
-        ),
+        title: Text(l10n.revokeEmergencyAccess),
+        content: Text(l10n.revokeEmergencyConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Revoke'),
+            child: Text(l10n.revoke),
           ),
         ],
       ),
@@ -121,15 +120,15 @@ class _EmergencyAccessScreenState extends State<EmergencyAccessScreen>
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Emergency QR code revoked successfully'),
+          SnackBar(
+            content: Text(l10n.emergencyQRRevoked),
             backgroundColor: Colors.orange,
           ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error revoking QR code: $e'),
+            content: Text('${l10n.errorRevokingQR}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -139,10 +138,12 @@ class _EmergencyAccessScreenState extends State<EmergencyAccessScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Emergency Access'),
+        title: Text(l10n.emergencyAccess),
         backgroundColor: Colors.red.shade700,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -151,11 +152,17 @@ class _EmergencyAccessScreenState extends State<EmergencyAccessScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           indicatorColor: Colors.white,
-          tabs: const [
-            Tab(icon: Icon(Icons.medical_information), text: 'Emergency Data'),
-            Tab(icon: Icon(Icons.qr_code), text: 'QR Code'),
-            Tab(icon: Icon(Icons.display_settings), text: 'Display Options'),
-            Tab(icon: Icon(Icons.history), text: 'Access History'),
+          tabs: [
+            Tab(
+              icon: const Icon(Icons.medical_information),
+              text: l10n.emergencyInfo,
+            ),
+            Tab(icon: const Icon(Icons.qr_code), text: l10n.emergencyQR),
+            Tab(
+              icon: const Icon(Icons.display_settings),
+              text: l10n.accountSettings,
+            ),
+            Tab(icon: const Icon(Icons.history), text: l10n.recentActivity),
           ],
         ),
       ),

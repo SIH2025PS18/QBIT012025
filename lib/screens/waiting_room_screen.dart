@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../models/video_consultation.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/queue_position_widget.dart';
@@ -74,14 +75,16 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Waiting Room',
-          style: TextStyle(
+        title: Text(
+          l10n.waitingRoom,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -93,9 +96,9 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
             icon: const Icon(Icons.refresh),
             onPressed: () {
               // In a real app, this would refresh the queue position
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Refreshing queue position...')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(l10n.tapToRefresh)));
             },
           ),
         ],
@@ -107,9 +110,9 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              const Text(
-                'Your Consultation is Coming Up',
-                style: TextStyle(
+              Text(
+                l10n.consultationScheduled,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -117,7 +120,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Please stay nearby. You\'ll receive a call when it\'s your turn.',
+                l10n.waitingRoomMessage,
                 style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
               const SizedBox(height: 32),
@@ -142,7 +145,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
 
               // Actions
               CustomButton(
-                text: 'Leave Queue',
+                text: l10n.cancelConsultation,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -157,7 +160,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                 onPressed: () {
                   // In a real app, this would minimize the app but keep the queue position
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text(
                         'You can close the app. We\'ll hold your place.',
                       ),

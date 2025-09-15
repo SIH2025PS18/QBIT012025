@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../models/patient_profile.dart';
 import '../models/family_member.dart';
 import '../providers/patient_profile_provider.dart';
@@ -10,7 +12,6 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import 'medical_details_screen.dart';
 import 'medical_records_screen.dart';
-import 'package:provider/provider.dart';
 
 class PatientProfileScreen extends StatefulWidget {
   const PatientProfileScreen({super.key});
@@ -378,6 +379,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_isLoading && _profile == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -385,7 +388,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F9FF),
       appBar: AppBar(
-        title: const Text('My Profile'),
+        title: Text(l10n.myProfile),
         backgroundColor: Colors.white,
         actions: [
           if (!_isEditing && _profile != null)

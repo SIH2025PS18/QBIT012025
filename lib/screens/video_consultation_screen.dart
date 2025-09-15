@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
-
+import '../generated/l10n/app_localizations.dart';
 import '../models/video_consultation.dart';
 import '../services/video_consultation_service.dart';
 import '../services/agora_service.dart';
@@ -37,8 +37,10 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen>
   @override
   void initState() {
     super.initState();
-    _tabController =
-        TabController(length: widget.isDoctor ? 3 : 2, vsync: this);
+    _tabController = TabController(
+      length: widget.isDoctor ? 3 : 2,
+      vsync: this,
+    );
     _setupListeners();
   }
 
@@ -46,8 +48,9 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen>
     final service = context.read<VideoConsultationService>();
 
     // Listen for consultation updates
-    _consultationSubscription =
-        service.consultationStream.listen((consultation) {
+    _consultationSubscription = service.consultationStream.listen((
+      consultation,
+    ) {
       if (consultation?.status == ConsultationStatus.inProgress) {
         _navigateToVideoCall(consultation!);
       }
@@ -62,13 +65,10 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen>
   void _navigateToVideoCall(VideoConsultation consultation) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ChangeNotifierProvider<AgoraService>(
-          create: (_) => AgoraService(),
-          child: VideoCallScreen(
-            consultation: consultation,
-            userId: widget.userId,
-            isDoctor: widget.isDoctor,
-          ),
+        builder: (context) => VideoCallScreen(
+          consultation: consultation,
+          userId: widget.userId,
+          isDoctor: widget.isDoctor,
         ),
       ),
     );
@@ -82,10 +82,10 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen>
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            const Tab(text: 'Active', icon: Icon(Icons.videocam)),
-            const Tab(text: 'Queue', icon: Icon(Icons.queue)),
+            const Tab(text: 'Active', icon: const Icon(Icons.videocam)),
+            const Tab(text: 'Queue', icon: const Icon(Icons.queue)),
             if (widget.isDoctor)
-              const Tab(text: 'History', icon: Icon(Icons.history)),
+              const Tab(text: 'History', icon: const Icon(Icons.history)),
           ],
         ),
       ),
@@ -106,11 +106,11 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen>
       builder: (context, service, child) {
         final activeConsultations = widget.isDoctor
             ? service.activeConsultations
-                .where((c) => c.doctorId == widget.userId)
-                .toList()
+                  .where((c) => c.doctorId == widget.userId)
+                  .toList()
             : service.activeConsultations
-                .where((c) => c.patientId == widget.userId)
-                .toList();
+                  .where((c) => c.patientId == widget.userId)
+                  .toList();
 
         if (activeConsultations.isEmpty) {
           return const Center(
@@ -294,9 +294,9 @@ class _VideoConsultationScreenState extends State<VideoConsultationScreen>
         const SnackBar(content: Text('Joined consultation queue')),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 

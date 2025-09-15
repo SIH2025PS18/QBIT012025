@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../services/phone_auth_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../providers/language_provider.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../nabha_home_screen.dart';
 import 'register_screen.dart';
@@ -67,7 +69,7 @@ class _PhoneLoginWithPasswordScreenState
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Sign in failed: $e'),
+            content: Text('${AppLocalizations.of(context)!.signInFailed}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -88,6 +90,43 @@ class _PhoneLoginWithPasswordScreenState
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          Consumer<LanguageProvider>(
+            builder: (context, languageProvider, child) {
+              return Container(
+                margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildLanguageButton(
+                      languageProvider,
+                      'en',
+                      'English',
+                      isSelected: languageProvider.currentLanguageCode == 'en',
+                    ),
+                    _buildLanguageButton(
+                      languageProvider,
+                      'hi',
+                      'हिंदी',
+                      isSelected: languageProvider.currentLanguageCode == 'hi',
+                    ),
+                    _buildLanguageButton(
+                      languageProvider,
+                      'pa',
+                      'ਪੰਜਾਬੀ',
+                      isSelected: languageProvider.currentLanguageCode == 'pa',
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -120,7 +159,7 @@ class _PhoneLoginWithPasswordScreenState
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Phone Login',
+                        l10n.login,
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -129,7 +168,7 @@ class _PhoneLoginWithPasswordScreenState
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Sign in with your phone number and password',
+                        'Sign in with your phone number',
                         style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                         textAlign: TextAlign.center,
                       ),
@@ -142,17 +181,17 @@ class _PhoneLoginWithPasswordScreenState
                 // Phone number field
                 CustomTextField(
                   controller: _phoneController,
-                  labelText: AppLocalizations.of(context)!.phoneNumber,
-                  hintText: AppLocalizations.of(context)!.enterPhoneNumber,
+                  labelText: l10n.phoneNumber,
+                  hintText: l10n.enterPhoneNumber,
                   prefixIcon: Icons.phone,
                   keyboardType: TextInputType.phone,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!.fieldRequired;
+                      return l10n.fieldRequired;
                     }
                     if (value.length < 10) {
-                      return 'Please enter a valid phone number';
+                      return l10n.pleaseEnterPhoneNumber;
                     }
                     return null;
                   },
@@ -166,16 +205,16 @@ class _PhoneLoginWithPasswordScreenState
                   children: [
                     CustomTextField(
                       controller: _passwordController,
-                      labelText: AppLocalizations.of(context)!.password,
-                      hintText: AppLocalizations.of(context)!.enterPassword,
+                      labelText: l10n.password,
+                      hintText: l10n.enterPassword,
                       prefixIcon: Icons.lock_outline,
                       isPassword: !_passwordVisible,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return AppLocalizations.of(context)!.fieldRequired;
+                          return l10n.fieldRequired;
                         }
                         if (value.length < 6) {
-                          return AppLocalizations.of(context)!.passwordTooShort;
+                          return l10n.passwordTooShort;
                         }
                         return null;
                       },
@@ -214,7 +253,7 @@ class _PhoneLoginWithPasswordScreenState
                       );
                     },
                     child: Text(
-                      'Forgot Password?',
+                      l10n.forgotPassword,
                       style: TextStyle(
                         fontSize: 14,
                         color: Theme.of(context).primaryColor,
@@ -228,7 +267,7 @@ class _PhoneLoginWithPasswordScreenState
 
                 // Sign in button
                 CustomButton(
-                  text: 'Sign In',
+                  text: l10n.signIn,
                   onPressed: _signIn,
                   isLoading: _isLoading,
                   icon: Icons.login,
@@ -243,7 +282,7 @@ class _PhoneLoginWithPasswordScreenState
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'or',
+                        l10n.or,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],
@@ -262,7 +301,7 @@ class _PhoneLoginWithPasswordScreenState
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Don\'t have an account?',
+                      l10n.dontHaveAccount,
                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                     const SizedBox(width: 4),
@@ -276,7 +315,7 @@ class _PhoneLoginWithPasswordScreenState
                         );
                       },
                       child: Text(
-                        'Sign Up',
+                        l10n.signUp,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).primaryColor,
@@ -288,6 +327,38 @@ class _PhoneLoginWithPasswordScreenState
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageButton(
+    LanguageProvider languageProvider,
+    String languageCode,
+    String languageName, {
+    required bool isSelected,
+  }) {
+    return GestureDetector(
+      onTap: () => languageProvider.changeLanguage(languageCode),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        decoration: BoxDecoration(
+          color: isSelected 
+              ? Colors.white.withOpacity(0.3)
+              : Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(15),
+          border: isSelected 
+              ? Border.all(color: Colors.white, width: 1)
+              : null,
+        ),
+        child: Text(
+          languageName,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            color: Colors.white,
           ),
         ),
       ),

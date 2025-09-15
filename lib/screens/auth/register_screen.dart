@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../services/phone_auth_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../providers/language_provider.dart';
 import '../../generated/l10n/app_localizations.dart';
 import 'phone_login_with_password_screen.dart';
 import '../health_profile_setup_screen.dart';
@@ -32,6 +34,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _confirmPasswordController.dispose();
     _fullNameController.dispose();
     super.dispose();
+  }
+
+  Widget _buildLanguageButton(
+    LanguageProvider languageProvider,
+    String languageCode,
+    String languageText, {
+    required bool isSelected,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        languageProvider.changeLanguage(languageCode);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white.withOpacity(0.2) : Colors.transparent,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Text(
+          languageText,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _register() async {
@@ -157,11 +188,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Create Account',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
+        title: Text(
+          l10n.createAccount,
+          style: const TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         centerTitle: true,
+        actions: [
+          Consumer<LanguageProvider>(
+            builder: (context, languageProvider, child) {
+              return Container(
+                margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildLanguageButton(
+                      languageProvider,
+                      'en',
+                      'English',
+                      isSelected: languageProvider.currentLanguageCode == 'en',
+                    ),
+                    _buildLanguageButton(
+                      languageProvider,
+                      'hi',
+                      'हिंदी',
+                      isSelected: languageProvider.currentLanguageCode == 'hi',
+                    ),
+                    _buildLanguageButton(
+                      languageProvider,
+                      'pa',
+                      'ਪੰਜਾਬੀ',
+                      isSelected: languageProvider.currentLanguageCode == 'pa',
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -385,7 +456,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 // Register button
                 CustomButton(
-                  text: 'Create Account',
+                  text: l10n.createAccount,
                   onPressed: _register,
                   isLoading: _isLoading,
                   icon: Icons.person_add,

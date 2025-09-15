@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../constants/villages.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../generated/l10n/app_localizations.dart';
+import '../providers/language_provider.dart';
 import 'nabha_home_screen.dart';
 
 // Model for family member
@@ -49,7 +52,8 @@ class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen> {
   // Form controllers
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
-  final _ageController = TextEditingController();
+  DateTime? _selectedDateOfBirth;
+  int? _calculatedAge;
   final _phoneController = TextEditingController();
   final _emergencyContactController = TextEditingController();
   final _emergencyPhoneController = TextEditingController();
@@ -95,7 +99,6 @@ class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen> {
   void dispose() {
     _pageController.dispose();
     _fullNameController.dispose();
-    _ageController.dispose();
     _phoneController.dispose();
     _emergencyContactController.dispose();
     _emergencyPhoneController.dispose();
@@ -103,6 +106,32 @@ class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen> {
     _familyAgeController.dispose();
     _familyRelationshipController.dispose();
     super.dispose();
+  }
+
+  int _calculateAge(DateTime dateOfBirth) {
+    final now = DateTime.now();
+    int age = now.year - dateOfBirth.year;
+    if (now.month < dateOfBirth.month || 
+        (now.month == dateOfBirth.month && now.day < dateOfBirth.day)) {
+      age--;
+    }
+    return age;
+  }
+
+  Future<void> _selectDateOfBirth() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 25)), // Default to 25 years ago
+      firstDate: DateTime.now().subtract(const Duration(days: 365 * 120)), // 120 years ago
+      lastDate: DateTime.now().subtract(const Duration(days: 365 * 1)), // At least 1 year old
+    );
+    
+    if (picked != null && picked != _selectedDateOfBirth) {
+      setState(() {
+        _selectedDateOfBirth = picked;
+        _calculatedAge = _calculateAge(picked);
+      });
+    }
   }
 
   void _nextStep() {
@@ -129,12 +158,8 @@ class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen> {
           _showValidationError('Please enter your full name');
           return false;
         }
-        if (_ageController.text.trim().isEmpty) {
-          _showValidationError('Please enter your age');
-          return false;
-        }
-        if (int.tryParse(_ageController.text.trim()) == null) {
-          _showValidationError('Please enter a valid age');
+        if (_selectedDateOfBirth == null) {
+          _showValidationError('Please select your date of birth');
           return false;
         }
         if (_gender == null || _gender!.isEmpty) {
@@ -393,14 +418,50 @@ class _HealthProfileSetupScreenState extends State<HealthProfileSetupScreen> {
 
             const SizedBox(height: 20),
 
-            // Age field
-            CustomTextField(
-              controller: _ageController,
-              labelText: 'Age',
-              hintText: 'Enter your age',
-              prefixIcon: Icons.calendar_today_outlined,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            // Date of Birth field
+            GestureDetector(
+              onTap: _selectDateOfBirth,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today_outlined, color: Colors.grey.shade600),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Date of Birth',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _selectedDateOfBirth != null
+                                ? '${_selectedDateOfBirth!.day}/${_selectedDateOfBirth!.month}/${_selectedDateOfBirth!.year}${_calculatedAge != null ? " (Age: $_calculatedAge)" : ""}'
+                                : 'Select your date of birth',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: _selectedDateOfBirth != null 
+                                  ? Colors.black87 
+                                  : Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+                  ],
+                ),
+              ),
             ),
 
             const SizedBox(height: 20),

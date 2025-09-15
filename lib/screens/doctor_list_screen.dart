@@ -133,7 +133,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
           IconButton(
             icon: const Icon(Icons.add_box),
             onPressed: _createSampleData,
-            tooltip: 'Add Sample Doctors',
+            tooltip: l10n.addSampleDoctors,
           ),
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadDoctors),
         ],
@@ -149,7 +149,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                 // Search Bar
                 CustomTextField(
                   controller: _searchController,
-                  labelText: 'Search doctors',
+                  labelText: l10n.searchDoctors,
                   hintText: 'Enter doctor name or speciality',
                   prefixIcon: Icons.search,
                   onChanged: (value) => _filterDoctors(),
@@ -168,7 +168,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
                             ? null
                             : _selectedSpeciality,
                         decoration: InputDecoration(
-                          labelText: 'Speciality',
+                          labelText: l10n.specialization,
                           prefixIcon: const Icon(
                             Icons.medical_services,
                             size: 20,

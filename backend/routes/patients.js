@@ -195,6 +195,46 @@ router.get("/profile", auth, authorize("patient"), async (req, res) => {
   }
 });
 
+// @desc    Update patient profile
+// @route   PUT /api/patients/profile
+// @access  Private (Patient only)
+router.put("/profile", auth, authorize("patient"), async (req, res) => {
+  try {
+    console.log("Updating patient profile for user:", req.user._id);
+    console.log("Update data:", req.body);
+
+    const patient = await Patient.findById(req.user._id);
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient profile not found",
+      });
+    }
+
+    const updatedPatient = await Patient.findByIdAndUpdate(
+      req.user._id,
+      { ...req.body, updatedAt: new Date() },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    console.log("Updated patient:", updatedPatient);
+
+    res.json({
+      success: true,
+      message: "Patient profile updated successfully",
+      data: updatedPatient,
+    });
+  } catch (error) {
+    console.error("Error updating patient profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error updating patient profile",
+      error: error.message,
+    });
+  }
+});
+
 // @desc    Get patient consultations
 // @route   GET /api/patients/consultations
 // @access  Private (Patient only)

@@ -598,14 +598,16 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Medicine Availability',
-          style: TextStyle(
+        title: Text(
+          l10n.medicineStock,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -665,7 +667,7 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Search for medicine...',
+                    hintText: l10n.searchMedicineHint,
                     hintStyle: TextStyle(color: Colors.grey[400]),
                     prefixIcon: const Icon(Icons.search, color: Colors.grey),
                     suffixIcon: _searchController.text.isNotEmpty
@@ -710,9 +712,12 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Search Medicine',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Text(
+                  l10n.searchMedicines,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -736,6 +741,8 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
   }
 
   Widget _buildWelcomeMessage() {
+    final l10n = AppLocalizations.of(context)!;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -747,18 +754,18 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
               children: [
                 Icon(Icons.medication, size: 80, color: Colors.blue[300]),
                 const SizedBox(height: 24),
-                const Text(
-                  'Find Medicine Availability',
-                  style: TextStyle(
+                Text(
+                  l10n.medicineStock,
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Search for any medicine to see availability in pharmacies near you',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Colors.grey,
                     height: 1.5,
@@ -772,9 +779,9 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
           const SizedBox(height: 32),
 
           // Medicine suggestions section
-          const Text(
+          Text(
             'Common Medicine Categories',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black87,

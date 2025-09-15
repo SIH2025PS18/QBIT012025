@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../services/offline_symptom_service.dart';
 import '../models/symptom_data.dart';
 
@@ -77,9 +78,11 @@ class _OfflineSymptomCheckerScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Offline Symptom Checker'),
+        title: Text(l10n.firstAidTips),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: _isLoading
