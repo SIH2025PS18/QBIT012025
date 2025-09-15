@@ -345,13 +345,11 @@ class _PhoneLoginWithPasswordScreenState
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         margin: const EdgeInsets.symmetric(horizontal: 2),
         decoration: BoxDecoration(
-          color: isSelected 
+          color: isSelected
               ? Colors.white.withOpacity(0.3)
               : Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(15),
-          border: isSelected 
-              ? Border.all(color: Colors.white, width: 1)
-              : null,
+          border: isSelected ? Border.all(color: Colors.white, width: 1) : null,
         ),
         child: Text(
           languageName,

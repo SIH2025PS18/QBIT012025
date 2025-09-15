@@ -56,7 +56,7 @@ class PatientProfileProvider extends ChangeNotifier {
             fullName: patientData['name'] ?? currentUser.name,
             email: patientData['email'] ?? currentUser.email,
             phoneNumber: patientData['phone'] ?? '',
-            dateOfBirth: patientData['dateOfBirth'] != null 
+            dateOfBirth: patientData['dateOfBirth'] != null
                 ? DateTime.parse(patientData['dateOfBirth'])
                 : DateTime.now().subtract(const Duration(days: 365 * 25)),
             gender: patientData['gender'] ?? 'Not specified',
@@ -65,7 +65,7 @@ class PatientProfileProvider extends ChangeNotifier {
             emergencyContact: patientData['emergencyContact'] ?? '',
             emergencyContactPhone: patientData['emergencyContactPhone'] ?? '',
             profilePhotoUrl: patientData['profilePhotoUrl'] ?? '',
-            allergies: patientData['allergies'] != null 
+            allergies: patientData['allergies'] != null
                 ? List<String>.from(patientData['allergies'])
                 : [],
             medications: patientData['medications'] != null
@@ -90,7 +90,7 @@ class PatientProfileProvider extends ChangeNotifier {
         // Create default profile if backend request fails
         _profile = _createDefaultProfile(currentUser);
       }
-      
+
       notifyListeners();
     } catch (e) {
       print('Error loading profile: $e');
@@ -211,22 +211,27 @@ class PatientProfileProvider extends ChangeNotifier {
             fullName: patientData['name'] ?? profile.fullName,
             email: patientData['email'] ?? profile.email,
             phoneNumber: patientData['phone'] ?? profile.phoneNumber,
-            dateOfBirth: patientData['dateOfBirth'] != null 
+            dateOfBirth: patientData['dateOfBirth'] != null
                 ? DateTime.parse(patientData['dateOfBirth'])
                 : profile.dateOfBirth,
             gender: patientData['gender'] ?? profile.gender,
             bloodGroup: patientData['bloodGroup'] ?? profile.bloodGroup,
             address: patientData['address'] ?? profile.address,
-            emergencyContact: patientData['emergencyContact'] ?? profile.emergencyContact,
-            emergencyContactPhone: patientData['emergencyContactPhone'] ?? profile.emergencyContactPhone,
-            profilePhotoUrl: patientData['profilePhotoUrl'] ?? profile.profilePhotoUrl,
-            allergies: patientData['allergies'] != null 
+            emergencyContact:
+                patientData['emergencyContact'] ?? profile.emergencyContact,
+            emergencyContactPhone:
+                patientData['emergencyContactPhone'] ??
+                profile.emergencyContactPhone,
+            profilePhotoUrl:
+                patientData['profilePhotoUrl'] ?? profile.profilePhotoUrl,
+            allergies: patientData['allergies'] != null
                 ? List<String>.from(patientData['allergies'])
                 : profile.allergies,
             medications: patientData['medications'] != null
                 ? List<String>.from(patientData['medications'])
                 : profile.medications,
-            medicalHistory: patientData['medicalHistory'] ?? profile.medicalHistory,
+            medicalHistory:
+                patientData['medicalHistory'] ?? profile.medicalHistory,
             lastVisit: patientData['lastVisit'] != null
                 ? DateTime.parse(patientData['lastVisit'])
                 : profile.lastVisit,
