@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:convert';
 import '../models/models.dart';
 
@@ -9,9 +10,11 @@ class DoctorProvider with ChangeNotifier {
   bool _isLoading = false;
   int _todaysCallsCount = 0;
   String? _authToken;
+  IO.Socket? _socket;
 
   // Backend API URL
   static const String _baseUrl = 'https://telemed18.onrender.com/api';
+  static const String _socketUrl = 'https://telemed18.onrender.com';
 
   Doctor? get currentDoctor => _currentDoctor;
   List<Patient> get patientQueue => _patientQueue;
@@ -48,6 +51,9 @@ class DoctorProvider with ChangeNotifier {
 
           // Load doctor's queue and today's calls
           await _loadDoctorData();
+
+          // Initialize socket connection for real-time updates
+          _initializeSocket();
 
           _isLoading = false;
           notifyListeners();
@@ -247,5 +253,299 @@ class DoctorProvider with ChangeNotifier {
     _patientQueue.insert(0, testPatient); // Add at the beginning
     notifyListeners();
     print('✅ Added test patient: ${testPatient.name} to doctor queue');
+  }
+
+  /// Add multiple dummy patients for testing with comprehensive data including attachments
+  void addDummyPatients() {
+    final dummyPatients = [
+      Patient(
+        id: 'patient_001',
+        name: 'Rajesh Kumar',
+        profileImage:
+            'https://avatar.iran.liara.run/public/boy?username=rajesh',
+        age: 45,
+        gender: 'Male',
+        phone: '+91-9876543210',
+        email: 'rajesh.kumar@email.com',
+        symptoms:
+            'Chronic back pain for 2 weeks, difficulty in walking, pain radiates to left leg',
+        appointmentTime: DateTime.now().subtract(const Duration(minutes: 5)),
+        status: 'waiting',
+        medicalHistory: [
+          'Diabetes Type 2 (2018)',
+          'Hypertension (2020)',
+          'Previous back surgery (2019)',
+          'Regular medication: Metformin, Lisinopril'
+        ],
+        attachments: [
+          'X-Ray_Lumbar_Spine_2024.pdf',
+          'Blood_Test_Results_Sept2024.pdf',
+          'MRI_Report_Lower_Back.pdf',
+          'Previous_Prescription_Aug2024.jpg'
+        ],
+      ),
+      Patient(
+        id: 'patient_002',
+        name: 'Priya Sharma',
+        profileImage:
+            'https://avatar.iran.liara.run/public/girl?username=priya',
+        age: 32,
+        gender: 'Female',
+        phone: '+91-8765432109',
+        email: 'priya.sharma@email.com',
+        symptoms:
+            'Persistent headaches, nausea, blurred vision for past 3 days',
+        appointmentTime: DateTime.now().add(const Duration(minutes: 10)),
+        status: 'waiting',
+        medicalHistory: [
+          'Migraine episodes since 2020',
+          'Anxiety disorder (2021)',
+          'No known allergies',
+          'Regular medication: Sumatriptan as needed'
+        ],
+        attachments: [
+          'CT_Scan_Head_Sept2024.pdf',
+          'Eye_Examination_Report.pdf',
+          'Neurologist_Consultation_Aug2024.pdf',
+          'Symptom_Diary_3Days.jpg'
+        ],
+      ),
+      Patient(
+        id: 'patient_003',
+        name: 'Mohammed Ali',
+        profileImage:
+            'https://avatar.iran.liara.run/public/boy?username=mohammed',
+        age: 28,
+        gender: 'Male',
+        phone: '+91-7654321098',
+        email: 'mohammed.ali@email.com',
+        symptoms:
+            'Fever 102°F, cough with phlegm, body aches, fatigue for 4 days',
+        appointmentTime: DateTime.now().add(const Duration(minutes: 25)),
+        status: 'waiting',
+        medicalHistory: [
+          'No chronic conditions',
+          'Seasonal allergies',
+          'Previous COVID-19 infection (2022)',
+          'Fully vaccinated'
+        ],
+        attachments: [
+          'Temperature_Chart_4Days.jpg',
+          'COVID_Test_Result_Negative.pdf',
+          'Chest_X_Ray_Current.pdf'
+        ],
+      ),
+      Patient(
+        id: 'patient_004',
+        name: 'Sunita Devi',
+        profileImage:
+            'https://avatar.iran.liara.run/public/girl?username=sunita',
+        age: 58,
+        gender: 'Female',
+        phone: '+91-6543210987',
+        email: 'sunita.devi@email.com',
+        symptoms: 'Joint pain in knees and hands, morning stiffness, swelling',
+        appointmentTime: DateTime.now().add(const Duration(minutes: 40)),
+        status: 'waiting',
+        medicalHistory: [
+          'Rheumatoid Arthritis (2015)',
+          'Osteoporosis (2020)',
+          'Hypothyroidism (2018)',
+          'Regular medication: Methotrexate, Levothyroxine, Calcium supplements'
+        ],
+        attachments: [
+          'Rheumatology_Report_Sept2024.pdf',
+          'Joint_X_Rays_Hands_Knees.pdf',
+          'Blood_Work_RA_Factor.pdf',
+          'Bone_Density_Scan_2024.pdf',
+          'Current_Medications_List.jpg'
+        ],
+      ),
+      Patient(
+        id: 'patient_005',
+        name: 'Amit Patel',
+        profileImage: 'https://avatar.iran.liara.run/public/boy?username=amit',
+        age: 35,
+        gender: 'Male',
+        phone: '+91-5432109876',
+        email: 'amit.patel@email.com',
+        symptoms:
+            'Chest discomfort, shortness of breath during exercise, palpitations',
+        appointmentTime: DateTime.now().add(const Duration(hours: 1)),
+        status: 'waiting',
+        medicalHistory: [
+          'Family history of heart disease',
+          'High cholesterol (2022)',
+          'Sedentary lifestyle',
+          'Smoker (10 cigarettes/day)',
+          'Regular medication: Atorvastatin'
+        ],
+        attachments: [
+          'ECG_Report_Current.pdf',
+          'Stress_Test_Results.pdf',
+          'Lipid_Profile_Sept2024.pdf',
+          'Cardiology_Consultation.pdf',
+          'Exercise_Tolerance_Test.pdf'
+        ],
+      ),
+      Patient(
+        id: 'patient_006',
+        name: 'Neha Gupta',
+        profileImage: 'https://avatar.iran.liara.run/public/girl?username=neha',
+        age: 26,
+        gender: 'Female',
+        phone: '+91-4321098765',
+        email: 'neha.gupta@email.com',
+        symptoms:
+            'Irregular menstrual cycles, weight gain, acne, excessive hair growth',
+        appointmentTime:
+            DateTime.now().add(const Duration(hours: 1, minutes: 15)),
+        status: 'waiting',
+        medicalHistory: [
+          'PCOS diagnosed 2023',
+          'No other medical conditions',
+          'Family history of diabetes',
+          'Taking oral contraceptives'
+        ],
+        attachments: [
+          'Ultrasound_Pelvis_Sept2024.pdf',
+          'Hormone_Panel_Results.pdf',
+          'Gynecology_Consultation.pdf',
+          'Menstrual_Cycle_Chart.jpg'
+        ],
+      ),
+      Patient(
+        id: 'patient_007',
+        name: 'Ramesh Singh',
+        profileImage:
+            'https://avatar.iran.liara.run/public/boy?username=ramesh',
+        age: 62,
+        gender: 'Male',
+        phone: '+91-3210987654',
+        email: 'ramesh.singh@email.com',
+        symptoms:
+            'Frequent urination, excessive thirst, unexplained weight loss',
+        appointmentTime:
+            DateTime.now().add(const Duration(hours: 1, minutes: 30)),
+        status: 'waiting',
+        medicalHistory: [
+          'Pre-diabetes (2022)',
+          'Hypertension (2020)',
+          'Family history of Type 2 diabetes',
+          'Regular medication: Amlodipine, Aspirin'
+        ],
+        attachments: [
+          'HbA1c_Test_Results.pdf',
+          'Fasting_Glucose_Levels.pdf',
+          'Kidney_Function_Tests.pdf',
+          'Diabetic_Eye_Screening.pdf',
+          'Nutritionist_Diet_Plan.pdf'
+        ],
+      ),
+    ];
+
+    // Add all dummy patients to the queue
+    _patientQueue.addAll(dummyPatients);
+    _patientQueue
+        .sort((a, b) => a.appointmentTime.compareTo(b.appointmentTime));
+
+    notifyListeners();
+    print(
+        '✅ Added ${dummyPatients.length} dummy patients with comprehensive medical data to doctor queue');
+  }
+
+  /// Initialize socket connection for real-time queue updates
+  void _initializeSocket() {
+    if (_currentDoctor == null) return;
+
+    try {
+      _socket = IO.io(_socketUrl, <String, dynamic>{
+        'transports': ['websocket'],
+        'query': {'doctorId': _currentDoctor!.id, 'token': _authToken},
+      });
+
+      _socket!.connect();
+
+      _socket!.onConnect((_) {
+        print('📡 Doctor provider connected to socket server');
+        // Join doctor room to receive queue updates
+        _socket!.emit('join_doctor_room', {'doctorId': _currentDoctor!.id});
+      });
+
+      _socket!.onDisconnect((_) {
+        print('📡 Doctor provider disconnected from socket server');
+      });
+
+      // Listen for patients joining queue
+      _socket!.on('join_queue', (data) {
+        print('📋 Patient joining queue: $data');
+        _handlePatientJoinQueue(data);
+      });
+
+      // Listen for patients leaving queue
+      _socket!.on('leave_queue', (data) {
+        print('📋 Patient leaving queue: $data');
+        _handlePatientLeaveQueue(data);
+      });
+
+      print('✅ Socket initialized for doctor ${_currentDoctor!.name}');
+    } catch (e) {
+      print('❌ Error initializing socket: $e');
+    }
+  }
+
+  /// Handle patient joining queue via socket
+  void _handlePatientJoinQueue(Map<String, dynamic> data) {
+    try {
+      final patientId = data['patientId'];
+      final patientName = data['patientName'] ?? 'Unknown Patient';
+      final symptoms = data['symptoms'] ?? 'No symptoms provided';
+
+      // Create patient object
+      final patient = Patient(
+        id: patientId,
+        name: patientName,
+        profileImage:
+            'https://avatar.iran.liara.run/public/boy?username=$patientId',
+        age: 0,
+        gender: '',
+        phone: '',
+        email: '',
+        symptoms: symptoms,
+        appointmentTime: DateTime.now(),
+        status: 'waiting',
+        medicalHistory: [],
+        attachments: [],
+      );
+
+      // Check if patient is already in queue
+      bool alreadyInQueue = _patientQueue.any((p) => p.id == patientId);
+      if (!alreadyInQueue) {
+        _patientQueue.add(patient);
+        notifyListeners();
+        print('✅ Added patient ${patient.name} to queue');
+      }
+    } catch (e) {
+      print('❌ Error handling patient join queue: $e');
+    }
+  }
+
+  /// Handle patient leaving queue via socket
+  void _handlePatientLeaveQueue(Map<String, dynamic> data) {
+    try {
+      final patientId = data['patientId'];
+      _patientQueue.removeWhere((patient) => patient.id == patientId);
+      notifyListeners();
+      print('✅ Removed patient $patientId from queue');
+    } catch (e) {
+      print('❌ Error handling patient leave queue: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _socket?.disconnect();
+    _socket?.dispose();
+    super.dispose();
   }
 }

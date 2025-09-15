@@ -60,14 +60,16 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
     ),
   ];
 
-  // Mock medicine data
+  // Mock medicine data with expanded inventory
   final List<MedicineStock> _mockMedicines = [
+    // Pain Relief & Fever
     MedicineStock(
       id: '1',
       pharmacyId: '1',
       medicineName: 'Paracetamol',
       brandName: 'Crocin',
       genericName: 'Paracetamol',
+      manufacturer: 'GlaxoSmithKline',
       strength: '500mg',
       dosageForm: 'Tablet',
       quantityAvailable: 100,
@@ -77,22 +79,31 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
       pharmacyName: 'Nabha Medical Store',
       pharmacyAddress: 'Main Bazaar, Near Bus Stand',
       distanceKm: 0.5,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 365)),
+      batchNumber: 'CR001234',
     ),
     MedicineStock(
       id: '2',
       pharmacyId: '1',
-      medicineName: 'Amoxicillin',
-      brandName: 'Amoxil',
-      genericName: 'Amoxicillin',
-      strength: '250mg',
-      dosageForm: 'Capsule',
-      quantityAvailable: 50,
-      quantityReserved: 5,
-      unitPrice: 45.00,
+      medicineName: 'Ibuprofen',
+      brandName: 'Brufen',
+      genericName: 'Ibuprofen',
+      manufacturer: 'Abbott',
+      strength: '400mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 85,
+      quantityReserved: 15,
+      unitPrice: 25.00,
       lastUpdated: DateTime.now(),
       pharmacyName: 'Nabha Medical Store',
       pharmacyAddress: 'Main Bazaar, Near Bus Stand',
       distanceKm: 0.5,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 300)),
+      batchNumber: 'BF002345',
     ),
     MedicineStock(
       id: '3',
@@ -100,6 +111,7 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
       medicineName: 'Paracetamol',
       brandName: 'Dolo 650',
       genericName: 'Paracetamol',
+      manufacturer: 'Micro Labs',
       strength: '650mg',
       dosageForm: 'Tablet',
       quantityAvailable: 75,
@@ -109,23 +121,437 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
       pharmacyName: 'Sukhmani Pharmacy',
       pharmacyAddress: 'Civil Hospital Road',
       distanceKm: 0.8,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 400)),
+      batchNumber: 'DL003456',
     ),
     MedicineStock(
       id: '4',
       pharmacyId: '3',
-      medicineName: 'Cetrizine',
+      medicineName: 'Aspirin',
+      brandName: 'Disprin',
+      genericName: 'Aspirin',
+      manufacturer: 'Reckitt Benckiser',
+      strength: '325mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 60,
+      quantityReserved: 5,
+      unitPrice: 18.75,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'City Chemist',
+      pharmacyAddress: 'Market Chowk',
+      distanceKm: 1.2,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 250)),
+      batchNumber: 'DP004567',
+    ),
+
+    // Antibiotics
+    MedicineStock(
+      id: '5',
+      pharmacyId: '1',
+      medicineName: 'Amoxicillin',
+      brandName: 'Amoxil',
+      genericName: 'Amoxicillin',
+      manufacturer: 'GSK',
+      strength: '250mg',
+      dosageForm: 'Capsule',
+      quantityAvailable: 50,
+      quantityReserved: 5,
+      unitPrice: 45.00,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Nabha Medical Store',
+      pharmacyAddress: 'Main Bazaar, Near Bus Stand',
+      distanceKm: 0.5,
+      category: MedicineCategory.prescription,
+      requiresPrescription: true,
+      expiryDate: DateTime.now().add(Duration(days: 180)),
+      batchNumber: 'AM005678',
+    ),
+    MedicineStock(
+      id: '6',
+      pharmacyId: '2',
+      medicineName: 'Azithromycin',
+      brandName: 'Azithral',
+      genericName: 'Azithromycin',
+      manufacturer: 'Alembic',
+      strength: '500mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 30,
+      quantityReserved: 3,
+      unitPrice: 120.00,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Sukhmani Pharmacy',
+      pharmacyAddress: 'Civil Hospital Road',
+      distanceKm: 0.8,
+      category: MedicineCategory.prescription,
+      requiresPrescription: true,
+      expiryDate: DateTime.now().add(Duration(days: 220)),
+      batchNumber: 'AZ006789',
+    ),
+    MedicineStock(
+      id: '7',
+      pharmacyId: '3',
+      medicineName: 'Ciprofloxacin',
+      brandName: 'Cipro',
+      genericName: 'Ciprofloxacin',
+      manufacturer: 'Ranbaxy',
+      strength: '500mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 40,
+      quantityReserved: 8,
+      unitPrice: 85.50,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'City Chemist',
+      pharmacyAddress: 'Market Chowk',
+      distanceKm: 1.2,
+      category: MedicineCategory.prescription,
+      requiresPrescription: true,
+      expiryDate: DateTime.now().add(Duration(days: 160)),
+      batchNumber: 'CP007890',
+    ),
+
+    // Allergy & Cold
+    MedicineStock(
+      id: '8',
+      pharmacyId: '1',
+      medicineName: 'Cetirizine',
       brandName: 'Cetzine',
-      genericName: 'Cetrizine',
+      genericName: 'Cetirizine',
+      manufacturer: 'Dr. Reddy\'s',
       strength: '10mg',
       dosageForm: 'Tablet',
       quantityAvailable: 30,
       quantityReserved: 5,
       unitPrice: 22.50,
       lastUpdated: DateTime.now(),
+      pharmacyName: 'Nabha Medical Store',
+      pharmacyAddress: 'Main Bazaar, Near Bus Stand',
+      distanceKm: 0.5,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 340)),
+      batchNumber: 'CT008901',
+    ),
+    MedicineStock(
+      id: '9',
+      pharmacyId: '2',
+      medicineName: 'Loratadine',
+      brandName: 'Lorinol',
+      genericName: 'Loratadine',
+      manufacturer: 'Cipla',
+      strength: '10mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 45,
+      quantityReserved: 0,
+      unitPrice: 28.00,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Sukhmani Pharmacy',
+      pharmacyAddress: 'Civil Hospital Road',
+      distanceKm: 0.8,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 280)),
+      batchNumber: 'LR009012',
+    ),
+    MedicineStock(
+      id: '10',
+      pharmacyId: '3',
+      medicineName: 'Phenylephrine',
+      brandName: 'D-Cold',
+      genericName: 'Phenylephrine + Paracetamol',
+      manufacturer: 'Paras Pharma',
+      strength: '5mg + 325mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 55,
+      quantityReserved: 10,
+      unitPrice: 35.75,
+      lastUpdated: DateTime.now(),
       pharmacyName: 'City Chemist',
       pharmacyAddress: 'Market Chowk',
       distanceKm: 1.2,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 200)),
+      batchNumber: 'DC010123',
     ),
+
+    // Digestive Health
+    MedicineStock(
+      id: '11',
+      pharmacyId: '1',
+      medicineName: 'Omeprazole',
+      brandName: 'Omez',
+      genericName: 'Omeprazole',
+      manufacturer: 'Dr. Reddy\'s',
+      strength: '20mg',
+      dosageForm: 'Capsule',
+      quantityAvailable: 70,
+      quantityReserved: 12,
+      unitPrice: 68.50,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Nabha Medical Store',
+      pharmacyAddress: 'Main Bazaar, Near Bus Stand',
+      distanceKm: 0.5,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 320)),
+      batchNumber: 'OM011234',
+    ),
+    MedicineStock(
+      id: '12',
+      pharmacyId: '2',
+      medicineName: 'Ranitidine',
+      brandName: 'Rantac',
+      genericName: 'Ranitidine',
+      manufacturer: 'J&J',
+      strength: '150mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 35,
+      quantityReserved: 7,
+      unitPrice: 42.25,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Sukhmani Pharmacy',
+      pharmacyAddress: 'Civil Hospital Road',
+      distanceKm: 0.8,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 260)),
+      batchNumber: 'RT012345',
+    ),
+    MedicineStock(
+      id: '13',
+      pharmacyId: '3',
+      medicineName: 'Loperamide',
+      brandName: 'Lopamide',
+      genericName: 'Loperamide',
+      manufacturer: 'Sun Pharma',
+      strength: '2mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 25,
+      quantityReserved: 3,
+      unitPrice: 55.00,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'City Chemist',
+      pharmacyAddress: 'Market Chowk',
+      distanceKm: 1.2,
+      category: MedicineCategory.overTheCounter,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 150)),
+      batchNumber: 'LP013456',
+    ),
+
+    // Vitamins & Supplements
+    MedicineStock(
+      id: '14',
+      pharmacyId: '1',
+      medicineName: 'Vitamin D3',
+      brandName: 'Calcirol',
+      genericName: 'Cholecalciferol',
+      manufacturer: 'Cadila',
+      strength: '60000 IU',
+      dosageForm: 'Sachet',
+      quantityAvailable: 80,
+      quantityReserved: 5,
+      unitPrice: 125.00,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Nabha Medical Store',
+      pharmacyAddress: 'Main Bazaar, Near Bus Stand',
+      distanceKm: 0.5,
+      category: MedicineCategory.supplement,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 450)),
+      batchNumber: 'VD014567',
+    ),
+    MedicineStock(
+      id: '15',
+      pharmacyId: '2',
+      medicineName: 'Multivitamin',
+      brandName: 'Revital',
+      genericName: 'Multivitamin + Minerals',
+      manufacturer: 'Ranbaxy',
+      strength: '30 tablets',
+      dosageForm: 'Tablet',
+      quantityAvailable: 65,
+      quantityReserved: 8,
+      unitPrice: 295.00,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Sukhmani Pharmacy',
+      pharmacyAddress: 'Civil Hospital Road',
+      distanceKm: 0.8,
+      category: MedicineCategory.supplement,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 380)),
+      batchNumber: 'MV015678',
+    ),
+    MedicineStock(
+      id: '16',
+      pharmacyId: '3',
+      medicineName: 'Calcium Carbonate',
+      brandName: 'Shelcal',
+      genericName: 'Calcium Carbonate + Vitamin D3',
+      manufacturer: 'Torrent',
+      strength: '500mg + 250 IU',
+      dosageForm: 'Tablet',
+      quantityAvailable: 90,
+      quantityReserved: 15,
+      unitPrice: 180.50,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'City Chemist',
+      pharmacyAddress: 'Market Chowk',
+      distanceKm: 1.2,
+      category: MedicineCategory.supplement,
+      requiresPrescription: false,
+      expiryDate: DateTime.now().add(Duration(days: 420)),
+      batchNumber: 'SH016789',
+    ),
+
+    // Diabetes
+    MedicineStock(
+      id: '17',
+      pharmacyId: '1',
+      medicineName: 'Metformin',
+      brandName: 'Glycomet',
+      genericName: 'Metformin',
+      manufacturer: 'USV',
+      strength: '500mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 95,
+      quantityReserved: 20,
+      unitPrice: 85.00,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Nabha Medical Store',
+      pharmacyAddress: 'Main Bazaar, Near Bus Stand',
+      distanceKm: 0.5,
+      category: MedicineCategory.prescription,
+      requiresPrescription: true,
+      expiryDate: DateTime.now().add(Duration(days: 300)),
+      batchNumber: 'GL017890',
+    ),
+    MedicineStock(
+      id: '18',
+      pharmacyId: '2',
+      medicineName: 'Glimepiride',
+      brandName: 'Amaryl',
+      genericName: 'Glimepiride',
+      manufacturer: 'Sanofi',
+      strength: '2mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 40,
+      quantityReserved: 8,
+      unitPrice: 195.50,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Sukhmani Pharmacy',
+      pharmacyAddress: 'Civil Hospital Road',
+      distanceKm: 0.8,
+      category: MedicineCategory.prescription,
+      requiresPrescription: true,
+      expiryDate: DateTime.now().add(Duration(days: 240)),
+      batchNumber: 'AM018901',
+    ),
+
+    // Heart & Blood Pressure
+    MedicineStock(
+      id: '19',
+      pharmacyId: '3',
+      medicineName: 'Amlodipine',
+      brandName: 'Amlodac',
+      genericName: 'Amlodipine',
+      manufacturer: 'Zydus Cadila',
+      strength: '5mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 75,
+      quantityReserved: 12,
+      unitPrice: 125.75,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'City Chemist',
+      pharmacyAddress: 'Market Chowk',
+      distanceKm: 1.2,
+      category: MedicineCategory.prescription,
+      requiresPrescription: true,
+      expiryDate: DateTime.now().add(Duration(days: 270)),
+      batchNumber: 'AD019012',
+    ),
+    MedicineStock(
+      id: '20',
+      pharmacyId: '1',
+      medicineName: 'Atorvastatin',
+      brandName: 'Atorlip',
+      genericName: 'Atorvastatin',
+      manufacturer: 'Cipla',
+      strength: '20mg',
+      dosageForm: 'Tablet',
+      quantityAvailable: 60,
+      quantityReserved: 10,
+      unitPrice: 145.25,
+      lastUpdated: DateTime.now(),
+      pharmacyName: 'Nabha Medical Store',
+      pharmacyAddress: 'Main Bazaar, Near Bus Stand',
+      distanceKm: 0.5,
+      category: MedicineCategory.prescription,
+      requiresPrescription: true,
+      expiryDate: DateTime.now().add(Duration(days: 290)),
+      batchNumber: 'AT020123',
+    ),
+  ];
+
+  // Medicine suggestions for common conditions
+  final List<String> _commonMedicineSearches = [
+    'Paracetamol',
+    'Fever medicine',
+    'Cold medicine',
+    'Cough syrup',
+    'Headache relief',
+    'Stomach pain',
+    'Vitamin D',
+    'Calcium',
+    'Blood pressure',
+    'Diabetes medicine',
+    'Allergy medicine',
+    'Antibiotic',
+    'Pain relief',
+    'Indigestion',
+  ];
+
+  final List<Map<String, dynamic>> _medicineSuggestions = [
+    {
+      'condition': 'Fever & Body Pain',
+      'medicines': ['Paracetamol', 'Ibuprofen', 'Aspirin'],
+      'icon': Icons.thermostat,
+      'color': Colors.red,
+    },
+    {
+      'condition': 'Cold & Cough',
+      'medicines': ['Phenylephrine', 'Cetirizine', 'Loratadine'],
+      'icon': Icons.masks,
+      'color': Colors.blue,
+    },
+    {
+      'condition': 'Stomach Issues',
+      'medicines': ['Omeprazole', 'Ranitidine', 'Loperamide'],
+      'icon': Icons.restaurant,
+      'color': Colors.green,
+    },
+    {
+      'condition': 'Allergies',
+      'medicines': ['Cetirizine', 'Loratadine', 'Montelukast'],
+      'icon': Icons.healing,
+      'color': Colors.purple,
+    },
+    {
+      'condition': 'Vitamins & Health',
+      'medicines': ['Vitamin D3', 'Multivitamin', 'Calcium'],
+      'icon': Icons.favorite,
+      'color': Colors.orange,
+    },
+    {
+      'condition': 'Chronic Conditions',
+      'medicines': ['Metformin', 'Amlodipine', 'Atorvastatin'],
+      'icon': Icons.medical_services,
+      'color': Colors.teal,
+    },
   ];
 
   @override
@@ -310,39 +736,268 @@ class _MedicineCheckerScreenState extends State<MedicineCheckerScreen> {
   }
 
   Widget _buildWelcomeMessage() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.medication, size: 80, color: Colors.blue[300]),
-            const SizedBox(height: 24),
-            const Text(
-              'Find Medicine Availability',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Welcome section
+          Center(
+            child: Column(
+              children: [
+                Icon(Icons.medication, size: 80, color: Colors.blue[300]),
+                const SizedBox(height: 24),
+                const Text(
+                  'Find Medicine Availability',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Search for any medicine to see availability in pharmacies near you',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Search for any medicine to see availability in pharmacies near you',
-              style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
-              textAlign: TextAlign.center,
+          ),
+
+          const SizedBox(height: 32),
+
+          // Medicine suggestions section
+          const Text(
+            'Common Medicine Categories',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
             ),
-            const SizedBox(height: 32),
-            const Text(
-              '💡 Tip: Search by medicine name, brand, or generic name',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.orange,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+
+          // Suggestion cards grid
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 1.2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemCount: _medicineSuggestions.length,
+            itemBuilder: (context, index) {
+              final suggestion = _medicineSuggestions[index];
+              return _buildSuggestionCard(suggestion);
+            },
+          ),
+
+          const SizedBox(height: 32),
+
+          // Quick search chips
+          const Text(
+            'Quick Searches',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _commonMedicineSearches.map((search) {
+              return ActionChip(
+                label: Text(search),
+                onPressed: () {
+                  _searchController.text = search;
+                  _searchMedicine();
+                },
+                backgroundColor: Colors.blue[50],
+                labelStyle: TextStyle(color: Colors.blue[700]),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuggestionCard(Map<String, dynamic> suggestion) {
+    return GestureDetector(
+      onTap: () {
+        // Show medicine options for this category
+        _showCategoryMedicines(suggestion);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: (suggestion['color'] as Color).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  suggestion['icon'],
+                  size: 32,
+                  color: suggestion['color'],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                suggestion['condition'],
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${(suggestion['medicines'] as List).length} medicines',
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showCategoryMedicines(Map<String, dynamic> suggestion) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        minChildSize: 0.3,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Handle
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+
+              // Header
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: (suggestion['color'] as Color).withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        suggestion['icon'],
+                        color: suggestion['color'],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            suggestion['condition'],
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Recommended medicines',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Medicine list
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: (suggestion['medicines'] as List).length,
+                  itemBuilder: (context, index) {
+                    final medicineName = suggestion['medicines'][index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: (suggestion['color'] as Color)
+                              .withOpacity(0.1),
+                          child: Icon(
+                            Icons.medication,
+                            color: suggestion['color'],
+                            size: 20,
+                          ),
+                        ),
+                        title: Text(
+                          medicineName,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: const Text('Tap to search availability'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _searchController.text = medicineName;
+                          _searchMedicine();
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

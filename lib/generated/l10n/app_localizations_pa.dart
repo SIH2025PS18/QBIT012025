@@ -707,4 +707,141 @@ class AppLocalizationsPa extends AppLocalizations {
 
   @override
   String get doctorTitle => 'ਡਾ.';
+
+  @override
+  String get findHospitalsLabs => 'ਹਸਪਤਾਲ ਅਤੇ ਲੈਬ ਲੱਭੋ';
+
+  @override
+  String get emergencyQR => 'ਐਮਰਜੈਂਸੀ QR';
+
+  @override
+  String get emergencyAccess => 'ਐਮਰਜੈਂਸੀ ਪਹੁੰਚ';
+
+  @override
+  String get emergencyQRGenerated => 'ਐਮਰਜੈਂਸੀ QR ਕੋਡ ਸਫਲਤਾਪੂਰਵਕ ਜੇਨਰੇਟ ਹੋਇਆ!';
+
+  @override
+  String get errorGeneratingQR => 'QR ਕੋਡ ਜੇਨਰੇਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ';
+
+  @override
+  String get revokeEmergencyAccess => 'ਐਮਰਜੈਂਸੀ ਪਹੁੰਚ ਰੱਦ ਕਰੋ';
+
+  @override
+  String get revokeEmergencyConfirm =>
+      'ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ \'ਤੇ ਐਮਰਜੈਂਸੀ ਪਹੁੰਚ ਰੱਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਇਹ QR ਕੋਡ ਨੂੰ ਅਯੋਗ ਕਰ ਦੇਵੇਗਾ ਅਤੇ ਐਮਰਜੈਂਸੀ ਰਿਸਪਾਂਡਰ ਤੁਹਾਡੀ ਮੈਡੀਕਲ ਜਾਣਕਾਰੀ ਤੱਕ ਪਹੁੰਚਣ ਦੇ ਯੋਗ ਨਹੀਂ ਹੋਣਗੇ।';
+
+  @override
+  String get revoke => 'ਰੱਦ ਕਰੋ';
+
+  @override
+  String get emergencyQRRevoked => 'ਐਮਰਜੈਂਸੀ QR ਕੋਡ ਸਫਲਤਾਪੂਰਵਕ ਰੱਦ ਕੀਤਾ ਗਿਆ';
+
+  @override
+  String get errorRevokingQR => 'QR ਕੋਡ ਰੱਦ ਕਰਨ ਵਿੱਚ ਅਸਫਲ';
+
+  @override
+  String get regenerate => 'ਦੁਬਾਰਾ ਜੇਨਰੇਟ ਕਰੋ';
+
+  @override
+  String get generateQR => 'QR ਜੇਨਰੇਟ ਕਰੋ';
+
+  @override
+  String get noActiveQR => 'ਕੋਈ ਕਿਰਿਆਸ਼ੀਲ ਐਮਰਜੈਂਸੀ QR ਕੋਡ ਨਹੀਂ';
+
+  @override
+  String get generateNewQR =>
+      'ਐਮਰਜੈਂਸੀ ਰਿਸਪਾਂਡਰਾਂ ਨੂੰ ਤੁਹਾਡੀ ਮੈਡੀਕਲ ਜਾਣਕਾਰੀ ਤੱਕ ਪਹੁੰਚਣ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਇੱਕ ਨਵਾਂ ਐਮਰਜੈਂਸੀ QR ਕੋਡ ਜੇਨਰੇਟ ਕਰੋ।';
+
+  @override
+  String get activeQRCode => 'ਕਿਰਿਆਸ਼ੀਲ QR ਕੋਡ';
+
+  @override
+  String get expiresOn => 'ਸਮਾਪਤੀ ਮਿਤੀ';
+
+  @override
+  String get emergencyInfo => 'ਐਮਰਜੈਂਸੀ ਜਾਣਕਾਰੀ';
+
+  @override
+  String get medicalConditions => 'ਮੈਡੀਕਲ ਸਥਿਤੀਆਂ';
+
+  @override
+  String get medications => 'ਦਵਾਈਆਂ';
+
+  @override
+  String get emergencyContacts => 'ਐਮਰਜੈਂਸੀ ਸੰਪਰਕ';
+
+  @override
+  String get searchMedicines => 'ਦਵਾਈਆਂ ਖੋਜੋ';
+
+  @override
+  String get searchMedicineHint => 'ਦਵਾਈ ਦਾ ਨਾਮ ਦਰਜ ਕਰੋ...';
+
+  @override
+  String get hospitalDetails => 'ਹਸਪਤਾਲ ਵੇਰਵੇ';
+
+  @override
+  String get facilitySearch => 'ਸੁਵਿਧਾ ਖੋਜ';
+
+  @override
+  String get searchHospitals => 'ਹਸਪਤਾਲ ਅਤੇ ਲੈਬ ਖੋਜੋ';
+
+  @override
+  String get nearbyFacilities => 'ਨੇੜਲੀਆਂ ਸੁਵਿਧਾਵਾਂ';
+
+  @override
+  String get distance => 'ਦੂਰੀ';
+
+  @override
+  String get openNow => 'ਹੁਣ ਖੁੱਲ੍ਹਾ';
+
+  @override
+  String get closed => 'ਬੰਦ';
+
+  @override
+  String get getDirections => 'ਦਿਸ਼ਾ-ਨਿਰਦੇਸ਼ ਪ੍ਰਾਪਤ ਕਰੋ';
+
+  @override
+  String get callNow => 'ਹੁਣ ਕਾਲ ਕਰੋ';
+
+  @override
+  String get noFacilitiesFound => 'ਕੋਈ ਸੁਵਿਧਾ ਨਹੀਂ ਮਿਲੀ';
+
+  @override
+  String get searchRadius => 'ਦੇ ਅੰਦਰ ਖੋਜੋ';
+
+  @override
+  String get km => 'ਕਿਮੀ';
+
+  @override
+  String get accountSettings => 'ਖਾਤਾ ਸੈਟਿੰਗਜ਼';
+
+  @override
+  String get notificationSettings => 'ਸੂਚਨਾ ਸੈਟਿੰਗਜ਼';
+
+  @override
+  String get privacySettings => 'ਗੁਪਤਤਾ ਸੈਟਿੰਗਜ਼';
+
+  @override
+  String get languageSettings => 'ਭਾਸ਼ਾ ਸੈਟਿੰਗਜ਼';
+
+  @override
+  String get helpSupport => 'ਸਹਾਇਤਾ ਅਤੇ ਸਮਰਥਨ';
+
+  @override
+  String get aboutApp => 'ਐਪ ਬਾਰੇ';
+
+  @override
+  String get version => 'ਸੰਸਕਰਣ';
+
+  @override
+  String get contactSupport => 'ਸਹਾਇਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋ';
+
+  @override
+  String get faq => 'ਅਕਸਰ ਪੁੱਛੇ ਜਾਣ ਵਾਲੇ ਸਵਾਲ';
+
+  @override
+  String get termsConditions => 'ਨਿਯਮ ਅਤੇ ਸ਼ਰਤਾਂ';
+
+  @override
+  String get privacyPolicy => 'ਗੁਪਤਤਾ ਨੀਤੀ';
 }

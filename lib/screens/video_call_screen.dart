@@ -407,7 +407,7 @@ class _VideoCallScreenState extends State<VideoCallScreen>
 
       // Join the channel
       await _agoraService.joinChannel(
-        channelId: channelId,
+        channelName: channelId,
         token: token ?? '', // Empty string for testing without token
       );
 

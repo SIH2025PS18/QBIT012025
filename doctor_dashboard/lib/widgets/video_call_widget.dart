@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../providers/video_call_provider.dart';
-import '../services/agora_service_web.dart';
 
 class VideoCallWidget extends StatefulWidget {
   final Patient patient;
@@ -68,10 +67,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                 ),
               ),
               child: videoProvider.remoteUsers.isNotEmpty
-                  ? (videoProvider.agoraService as dynamic)
-                      .createRemoteVideoView(
-                      videoProvider.remoteUsers.first,
-                    )
+                  ? videoProvider.webrtcService.createRemoteVideoView()
                   : const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -98,35 +94,6 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildConnectionStatus() {
-    return Positioned(
-      top: 16,
-      left: 16,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.green.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.circle, color: Colors.green, size: 12),
-            SizedBox(width: 6),
-            Text(
-              'Connected',
-              style: TextStyle(
-                color: Colors.green,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -159,7 +126,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                   child: videoProvider.isVideoEnabled
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: (videoProvider.agoraService as dynamic)
+                          child: videoProvider.webrtcService
                               .createLocalVideoView(),
                         )
                       : Container(
@@ -198,13 +165,15 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
     return Consumer<VideoCallProvider>(
       builder: (context, videoProvider, child) {
         return Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2A2D37).withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: const Color(0xFF3A3D47), width: 1),
-            ),
+            child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF2A2D37).withValues(alpha: 0.9),
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: const Color(0xFF3A3D47), width: 1),
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -217,7 +186,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                   tooltip: videoProvider.isAudioEnabled ? 'Mute' : 'Unmute',
                 ),
 
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
 
                 // Video On/Off
                 _buildControlButton(
@@ -231,7 +200,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                       : 'Turn on camera',
                 ),
 
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
 
                 // Screen Share
                 _buildControlButton(
@@ -249,7 +218,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                   tooltip: 'Share screen',
                 ),
 
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
 
                 // More options
                 _buildControlButton(
@@ -261,12 +230,12 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                   tooltip: 'More options',
                 ),
 
-                const SizedBox(width: 24),
+                const SizedBox(width: 20),
 
                 // End Call (Red button like in image)
                 Container(
-                  width: 56,
-                  height: 56,
+                  width: 48,
+                  height: 48,
                   decoration: const BoxDecoration(
                     color: Color(0xFFEF4444),
                     shape: BoxShape.circle,
@@ -278,7 +247,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                     icon: const Icon(
                       Icons.call_end,
                       color: Colors.white,
-                      size: 24,
+                      size: 20,
                     ),
                     tooltip: 'End call',
                   ),
@@ -286,7 +255,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
               ],
             ),
           ),
-        );
+        ));
       },
     );
   }

@@ -11,7 +11,6 @@ import 'medicine_checker_screen.dart';
 import 'settings_screen.dart';
 import 'patient_profile_screen.dart';
 import 'doctor_selection_screen.dart';
-import '../constants/app_constants.dart';
 import '../services/phone_auth_service.dart';
 import '../services/auth_service.dart';
 
@@ -59,124 +58,6 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
     }
   }
 
-  void _showLanguageSelector(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(
-      context,
-      listen: false,
-    );
-
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Center(
-                child: Text(
-                  'Select Language',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ...AppConstants.supportedLanguages.map((languageCode) {
-                final languageName = _getLanguageName(languageCode);
-                final isSelected =
-                    languageProvider.currentLanguageCode == languageCode;
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? Theme.of(context).primaryColor.withOpacity(0.1)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Center(
-                        child: Text(
-                          _getLanguageFlag(languageCode),
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      languageName,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        color: isSelected
-                            ? Theme.of(context).primaryColor
-                            : Colors.black87,
-                      ),
-                    ),
-                    trailing: isSelected
-                        ? Icon(
-                            Icons.check,
-                            color: Theme.of(context).primaryColor,
-                          )
-                        : null,
-                    onTap: () {
-                      languageProvider.changeLanguage(languageCode);
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                );
-              }).toList(),
-              const SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(AppLocalizations.of(context).close),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  String _getLanguageName(String languageCode) {
-    switch (languageCode) {
-      case 'en':
-        return 'English';
-      case 'hi':
-        return 'हिंदी';
-      case 'pa':
-        return 'ਪੰਜਾਬੀ';
-      default:
-        return 'English';
-    }
-  }
-
-  String _getLanguageFlag(String languageCode) {
-    switch (languageCode) {
-      case 'en':
-        return '🇺🇸';
-      case 'hi':
-        return '🇮🇳';
-      case 'pa':
-        return '🇮🇳';
-      default:
-        return '🇺🇸';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,6 +65,16 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.person, color: Colors.black87, size: 28),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const PatientProfileScreen(),
+              ),
+            );
+          },
+        ),
         title: Text(
           'Nabha Sehat',
           style: TextStyle(
@@ -222,74 +113,10 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
               ),
             ),
           ),
-          // Menu button
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'profile') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const PatientProfileScreen(),
-                  ),
-                );
-              } else if (value == 'language') {
-                _showLanguageSelector(context);
-              } else if (value == 'settings') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsScreen(),
-                  ),
-                );
-              } else if (value == 'logout') {
-                _signOut();
-              }
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'profile',
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.person, color: Colors.blue),
-                    const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context).profile),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'language',
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.language, color: Colors.green),
-                    const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context).language),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'settings',
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.settings, color: Colors.purple),
-                    const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context).settings),
-                  ],
-                ),
-              ),
-              const PopupMenuDivider(),
-              PopupMenuItem(
-                value: 'logout',
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.logout, color: Colors.red),
-                    const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context).logout),
-                  ],
-                ),
-              ),
-            ],
+          // Logout button
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.red, size: 28),
+            onPressed: () => _signOut(),
           ),
         ],
       ),
@@ -324,16 +151,153 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.waving_hand, color: Colors.white, size: 24),
-                      const SizedBox(width: 8),
-                      Text(
-                        AppLocalizations.of(context).welcome,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.waving_hand,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            AppLocalizations.of(context).welcome,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Language selection
+                      Consumer<LanguageProvider>(
+                        builder: (context, languageProvider, child) {
+                          return Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () =>
+                                    languageProvider.changeLanguage('en'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        languageProvider.currentLanguageCode ==
+                                            'en'
+                                        ? Colors.white.withOpacity(0.3)
+                                        : Colors.white.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border:
+                                        languageProvider.currentLanguageCode ==
+                                            'en'
+                                        ? Border.all(
+                                            color: Colors.white,
+                                            width: 1,
+                                          )
+                                        : null,
+                                  ),
+                                  child: Text(
+                                    'English',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight:
+                                          languageProvider
+                                                  .currentLanguageCode ==
+                                              'en'
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              GestureDetector(
+                                onTap: () =>
+                                    languageProvider.changeLanguage('hi'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        languageProvider.currentLanguageCode ==
+                                            'hi'
+                                        ? Colors.white.withOpacity(0.3)
+                                        : Colors.white.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border:
+                                        languageProvider.currentLanguageCode ==
+                                            'hi'
+                                        ? Border.all(
+                                            color: Colors.white,
+                                            width: 1,
+                                          )
+                                        : null,
+                                  ),
+                                  child: Text(
+                                    'हिंदी',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight:
+                                          languageProvider
+                                                  .currentLanguageCode ==
+                                              'hi'
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              GestureDetector(
+                                onTap: () =>
+                                    languageProvider.changeLanguage('pa'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        languageProvider.currentLanguageCode ==
+                                            'pa'
+                                        ? Colors.white.withOpacity(0.3)
+                                        : Colors.white.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border:
+                                        languageProvider.currentLanguageCode ==
+                                            'pa'
+                                        ? Border.all(
+                                            color: Colors.white,
+                                            width: 1,
+                                          )
+                                        : null,
+                                  ),
+                                  child: Text(
+                                    'ਪੰਜਾਬੀ',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight:
+                                          languageProvider
+                                                  .currentLanguageCode ==
+                                              'pa'
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -567,6 +531,14 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
       childAspectRatio: 1.2,
       children: [
         _buildShortcutCard(
+          icon: Icons.local_hospital,
+          title: 'Find Hospitals & Labs',
+          color: const Color(0xFF2E7D32),
+          onTap: () {
+            Navigator.of(context).pushNamed('/facility-search');
+          },
+        ),
+        _buildShortcutCard(
           icon: Icons.folder_open,
           title: AppLocalizations.of(context).myHealthRecords,
           color: Colors.blue,
@@ -601,6 +573,20 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
               MaterialPageRoute(
                 builder: (context) => const OfflineSymptomCheckerScreen(),
               ),
+            );
+          },
+        ),
+        _buildShortcutCard(
+          icon: Icons.qr_code_2,
+          title: 'Emergency QR',
+          color: Colors.red.shade700,
+          onTap: () {
+            Navigator.of(context).pushNamed(
+              '/emergency-access',
+              arguments: {
+                'patientId': 'demo-patient-123', // This would be dynamic
+                'patientName': _userName,
+              },
             );
           },
         ),

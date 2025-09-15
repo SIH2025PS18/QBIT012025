@@ -3,6 +3,7 @@ import 'dart:async';
 
 import '../models/doctor.dart';
 import '../services/agora_service.dart';
+import '../services/socket_service.dart';
 
 /// Real-time video call screen integrated with doctor service
 class RealtimeVideoCallScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class RealtimeVideoCallScreen extends StatefulWidget {
 class _RealtimeVideoCallScreenState extends State<RealtimeVideoCallScreen>
     with TickerProviderStateMixin {
   late AgoraService _agoraService;
+  late SocketService _socketService;
 
   // Call state
   bool _isConnecting = true;
@@ -54,6 +56,7 @@ class _RealtimeVideoCallScreenState extends State<RealtimeVideoCallScreen>
   void initState() {
     super.initState();
     _agoraService = AgoraService();
+    _socketService = SocketService();
 
     // Initialize connecting animation
     _connectingController = AnimationController(
@@ -69,6 +72,17 @@ class _RealtimeVideoCallScreenState extends State<RealtimeVideoCallScreen>
 
   @override
   void dispose() {
+    // Notify doctor about call end
+    if (_channelName != null) {
+      _socketService.emit('patient_end_call', {
+        'patientId': widget.patientId,
+        'patientName': widget.patientName,
+        'doctorId': widget.doctor.id,
+        'channelName': _channelName,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+    }
+
     _connectingController.dispose();
     _durationTimer?.cancel();
     _hideControlsTimer?.cancel();
@@ -85,8 +99,16 @@ class _RealtimeVideoCallScreenState extends State<RealtimeVideoCallScreen>
 
       _connectingController.repeat(reverse: true);
 
-      // Create channel name to match doctor dashboard format
-      _channelName = 'call_${widget.patientId}_doctor';
+      // Initialize socket service
+      await _socketService.initialize(
+        userId: widget.patientId,
+        userRole: 'patient',
+        userName: widget.patientName,
+      );
+
+      // Generate simple channel name for consistency
+      _channelName =
+          'call_${widget.patientId}_doctor_${DateTime.now().millisecondsSinceEpoch}';
 
       // For demo purposes, we'll use a basic setup
       // In production, you'd get the token from your backend
@@ -102,7 +124,7 @@ class _RealtimeVideoCallScreenState extends State<RealtimeVideoCallScreen>
 
       await _agoraService.joinChannel(
         token: _agoraToken ?? '', // Provide empty string if null
-        channelId: _channelName!,
+        channelName: _channelName!,
         uid: widget.patientId.hashCode, // Convert string to int
       );
 
@@ -110,7 +132,19 @@ class _RealtimeVideoCallScreenState extends State<RealtimeVideoCallScreen>
       await _agoraService.enableLocalVideo(true);
       await _agoraService.muteLocalAudio(false);
 
+      // Notify doctor via socket about the call
+      _socketService.emit('patient_start_call', {
+        'patientId': widget.patientId,
+        'patientName': widget.patientName,
+        'doctorId': widget.doctor.id,
+        'doctorName': widget.doctor.name,
+        'channelName': _channelName,
+        'symptoms': widget.symptoms,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+
       debugPrint('✅ Video call initiated - Channel: $_channelName');
+      debugPrint('📡 Doctor notified via socket');
 
       // Simulate successful connection
       _onConnectionEstablished();

@@ -105,20 +105,52 @@ class PatientQueueWidget extends StatelessWidget {
   }
 
   Widget _buildEmptyState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.people_outline, size: 64, color: Colors.grey),
-          SizedBox(height: 16),
-          Text(
+          const Icon(Icons.people_outline, size: 64, color: Colors.grey),
+          const SizedBox(height: 16),
+          const Text(
             'No patients in queue',
             style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
-          SizedBox(height: 8),
-          Text(
+          const SizedBox(height: 8),
+          const Text(
             'Patients will appear here when they join',
             style: TextStyle(color: Colors.grey, fontSize: 12),
+          ),
+          const SizedBox(height: 24),
+          Builder(
+            builder: (context) => Column(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Provider.of<DoctorProvider>(context, listen: false)
+                        .addTestPatient();
+                  },
+                  icon: const Icon(Icons.person_add),
+                  label: const Text('Add Test Patient'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Provider.of<DoctorProvider>(context, listen: false)
+                        .addDummyPatients();
+                  },
+                  icon: const Icon(Icons.group_add),
+                  label: const Text('Add Dummy Patients'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -281,6 +313,56 @@ class PatientQueueWidget extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (patient.medicalHistory.isNotEmpty ||
+                      patient.attachments.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        if (patient.medicalHistory.isNotEmpty) ...[
+                          const Icon(
+                            Icons.history,
+                            size: 14,
+                            color: Color(0xFF10B981),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${patient.medicalHistory.length} medical history items',
+                            style: const TextStyle(
+                              color: Color(0xFF10B981),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                        if (patient.medicalHistory.isNotEmpty &&
+                            patient.attachments.isNotEmpty) ...[
+                          const SizedBox(width: 12),
+                          Container(
+                            width: 2,
+                            height: 12,
+                            color: Colors.grey[600],
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        if (patient.attachments.isNotEmpty) ...[
+                          const Icon(
+                            Icons.attach_file,
+                            size: 14,
+                            color: Color(0xFFF59E0B),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${patient.attachments.length} attachments',
+                            style: const TextStyle(
+                              color: Color(0xFFF59E0B),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

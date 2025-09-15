@@ -190,15 +190,56 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
         emergencyContactPhone: _emergencyPhoneController.text.trim(),
       );
 
+      // Update profile in provider (which handles database save)
       await Provider.of<PatientProfileProvider>(
         context,
         listen: false,
       ).updateProfile(updatedProfile);
 
+      // Also save to local database/cache for offline access
+      await PatientProfileService.updateProfilePhotoUrl(
+        userId: updatedProfile.id,
+        photoUrl: updatedProfile.profilePhotoUrl,
+      );
+
       setState(() {
         _profile = updatedProfile;
         _isEditing = false;
       });
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Profile updated successfully'),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.white),
+                const SizedBox(width: 8),
+                Expanded(child: Text('Failed to update profile: $e')),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }

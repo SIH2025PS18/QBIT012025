@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../models/models.dart';
-import '../utils/channel_utils.dart';
 
-// Use only web implementation for Agora service
+// Use web-specific service for doctor dashboard
 import '../services/agora_service_web.dart';
 
 class VideoCallProvider with ChangeNotifier {
@@ -19,7 +18,7 @@ class VideoCallProvider with ChangeNotifier {
   IO.Socket? _socket;
   String? _authToken;
 
-  // Agora service for video calling
+  // Video call service for web platform
   final AgoraService _agoraService = AgoraService();
   List<int> _remoteUsers = [];
 
@@ -35,16 +34,17 @@ class VideoCallProvider with ChangeNotifier {
   bool get isAudioEnabled => _isAudioEnabled;
   bool get isSpeakerEnabled => _isSpeakerEnabled;
   String? get callId => _callId;
-  AgoraService get agoraService => _agoraService;
+  AgoraService get webrtcService => _agoraService;
+  AgoraService get videoCallService => _agoraService;
   List<int> get remoteUsers => _remoteUsers;
 
   // Initialize socket connection
   void initializeSocket(String doctorId, String authToken) async {
     _authToken = authToken;
 
-    // Initialize Agora service
+    // Initialize video call service
     await _agoraService.initialize();
-    _setupAgoraCallbacks();
+    _setupVideoCallCallbacks();
 
     _socket = IO.io(_socketUrl, <String, dynamic>{
       'transports': ['websocket'],
@@ -79,11 +79,38 @@ class VideoCallProvider with ChangeNotifier {
       print('Patient left the call');
       notifyListeners();
     });
+
+    // Listen for patient starting a call
+    _socket!.on('patient_start_call', (data) {
+      print('📞 Patient starting call: $data');
+      final patient = Patient(
+        id: data['patientId'] ?? '',
+        name: data['patientName'] ?? 'Unknown Patient',
+        profileImage: '',
+        age: 0,
+        gender: '',
+        phone: '',
+        email: '',
+        symptoms: data['symptoms'] ?? 'No symptoms provided',
+        appointmentTime: DateTime.now(),
+        status: 'calling',
+      );
+
+      // Auto-join the same channel that patient created
+      String channelName = data['channelName'] ?? '';
+      _autoJoinPatientCall(patient, channelName, data);
+    });
+
+    // Listen for patient ending a call
+    _socket!.on('patient_end_call', (data) {
+      print('📞 Patient ending call: $data');
+      _handleCallEnded();
+    });
   }
 
-  // Setup Agora callbacks
-  void _setupAgoraCallbacks() {
-    // Listen to Agora service changes
+  // Setup video call callbacks
+  void _setupVideoCallCallbacks() {
+    // Listen to video call service changes
     _agoraService.addListener(() {
       _remoteUsers = List.from(_agoraService.remoteUsers);
       notifyListeners();
@@ -108,7 +135,7 @@ class VideoCallProvider with ChangeNotifier {
     _isSpeakerEnabled = false;
     _remoteUsers.clear();
 
-    // Leave Agora channel
+    // Leave video call channel
     await _agoraService.leaveChannel();
     notifyListeners();
   }
@@ -121,12 +148,8 @@ class VideoCallProvider with ChangeNotifier {
       // Generate a call ID based on current timestamp and patient ID
       _callId = 'call_${DateTime.now().millisecondsSinceEpoch}_${patient.id}';
 
-      // Create channel name using consistent utility
-      String channelName = ChannelUtils.generateChannelId(
-        callId: _callId,
-        patientId: patient.id,
-        doctorId: 'doctor', // In real app, this would be the actual doctor ID
-      );
+      // Use the call ID directly as channel name (it already has proper format)
+      String channelName = _callId!;
 
       print('📱 Video Call Details:');
       print('   - Call ID: $_callId');
@@ -136,15 +159,15 @@ class VideoCallProvider with ChangeNotifier {
       _currentPatient = patient;
       _isInCall = true;
 
-      // Join Agora channel using the generated channel name
+      // Join video call channel using the generated channel name
       await _agoraService.joinChannel(
         channelId: channelName,
-        token: '', // Use empty token for testing
+        uid: 1,
       );
 
       // Explicitly enable video and audio after joining
       await _agoraService.enableLocalVideo(true);
-      await _agoraService.muteLocalAudio(false);
+      await _agoraService.muteLocalAudioStream(false);
 
       // Notify patient via socket if available
       _socket?.emit('start_call', {
@@ -194,8 +217,8 @@ class VideoCallProvider with ChangeNotifier {
   void toggleMute() async {
     _isMuted = !_isMuted;
 
-    // Use Agora to mute/unmute microphone
-    await _agoraService.muteLocalAudio(_isMuted);
+    // Use video call service to mute/unmute microphone
+    await _agoraService.muteLocalAudioStream(_isMuted);
 
     // Emit mute status to other participants
     _socket?.emit('toggle_audio', {'callId': _callId, 'isMuted': _isMuted});
@@ -207,8 +230,8 @@ class VideoCallProvider with ChangeNotifier {
   void toggleAudio() async {
     _isAudioEnabled = !_isAudioEnabled;
 
-    // Use Agora to enable/disable audio
-    await _agoraService.muteLocalAudio(!_isAudioEnabled);
+    // Use video call service to enable/disable audio
+    await _agoraService.muteLocalAudioStream(!_isAudioEnabled);
 
     // Emit audio status to other participants
     _socket?.emit('toggle_audio', {
@@ -236,7 +259,7 @@ class VideoCallProvider with ChangeNotifier {
   void toggleVideo() async {
     _isVideoEnabled = !_isVideoEnabled;
 
-    // Use Agora to enable/disable video
+    // Use video call service to enable/disable video
     await _agoraService.enableLocalVideo(_isVideoEnabled);
 
     // Emit video status to other participants
@@ -246,6 +269,47 @@ class VideoCallProvider with ChangeNotifier {
     });
 
     notifyListeners();
+  }
+
+  // Auto-join patient call when they start calling
+  Future<void> _autoJoinPatientCall(Patient patient, String channelName,
+      Map<String, dynamic> callData) async {
+    try {
+      print('🏃‍♂️ Auto-joining patient call: $channelName');
+
+      // Set current patient and call state
+      _currentPatient = patient;
+      _isInCall = true;
+      _callId = 'call_${DateTime.now().millisecondsSinceEpoch}_${patient.id}';
+
+      // Join the same video call channel as the patient
+      await _agoraService.joinChannel(
+        channelId: channelName,
+        uid: 1,
+      );
+
+      // Explicitly enable video and audio after joining
+      await _agoraService.enableLocalVideo(true);
+      await _agoraService.muteLocalAudioStream(false);
+
+      // Notify patient that doctor has joined
+      _socket?.emit('doctor_joined_call', {
+        'callId': _callId,
+        'patientId': patient.id,
+        'channelName': channelName,
+        'doctorName': 'Dr. SATYAM',
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+
+      print('✅ Doctor auto-joined patient call successfully');
+      notifyListeners();
+    } catch (e) {
+      print('❌ Error auto-joining patient call: $e');
+      _isInCall = false;
+      _currentPatient = null;
+      _callId = null;
+      notifyListeners();
+    }
   }
 
   // Toggle screen sharing

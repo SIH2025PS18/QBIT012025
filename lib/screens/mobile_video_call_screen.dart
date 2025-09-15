@@ -84,13 +84,13 @@ class _MobileVideoCallScreenState extends State<MobileVideoCallScreen>
       );
 
       await _agoraService.joinChannel(
-        channelId: channelId,
+        channelName: channelId,
         token: "", // Empty token for testing
       );
 
       // Listen for remote users
-      _agoraService.addListener(() {
-        if (_agoraService.remoteUsers.isNotEmpty && !_isCallConnected) {
+      _agoraService.remoteUsersStream.listen((remoteUsers) {
+        if (remoteUsers.isNotEmpty && !_isCallConnected) {
           setState(() {
             _isCallConnected = true;
             _callStartTime = DateTime.now();

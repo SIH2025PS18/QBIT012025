@@ -1,5 +1,4 @@
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-
+// Configuration for Agora video calling
 class AgoraConfig {
   // Get your App ID from Agora Console: https://console.agora.io/
   static const String appId = '98d3fa37dec44dc1950b071e3482cfae';
@@ -10,18 +9,15 @@ class AgoraConfig {
 
   // Channel settings
   static const int defaultUid = 0; // 0 means auto-assign UID
-  static const ChannelProfileType channelProfile =
-      ChannelProfileType.channelProfileCommunication;
+  static const String channelProfile = 'communication';
 
   // Video settings
-  static const VideoDimensions videoDimensions =
-      VideoDimensions(width: 640, height: 480);
+  static const int videoWidth = 640;
+  static const int videoHeight = 480;
   static const int videoFrameRate = 15;
   static const int videoBitrate = 400;
 
   // Audio settings
-  static const AudioProfileType audioProfile =
-      AudioProfileType.audioProfileDefault;
-  static const AudioScenarioType audioScenario =
-      AudioScenarioType.audioScenarioGameStreaming;
+  static const bool enableAudio = true;
+  static const bool enableVideo = true;
 }

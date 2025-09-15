@@ -1460,6 +1460,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dr.'**
   String get doctorTitle;
+
+  /// Find hospitals and labs shortcut text
+  ///
+  /// In en, this message translates to:
+  /// **'Find Hospitals & Labs'**
+  String get findHospitalsLabs;
+
+  /// Emergency QR access shortcut text
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency QR'**
+  String get emergencyQR;
+
+  /// Emergency access screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Access'**
+  String get emergencyAccess;
+
+  /// Success message for QR generation
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency QR code generated successfully!'**
+  String get emergencyQRGenerated;
+
+  /// Error message for QR generation
+  ///
+  /// In en, this message translates to:
+  /// **'Error generating QR code'**
+  String get errorGeneratingQR;
+
+  /// Revoke emergency access dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke Emergency Access'**
+  String get revokeEmergencyAccess;
+
+  /// Revoke emergency access confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to revoke emergency access? This will disable the QR code and emergency responders will no longer be able to access your medical information.'**
+  String get revokeEmergencyConfirm;
+
+  /// Revoke button text
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get revoke;
+
+  /// Success message for QR revocation
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency QR code revoked successfully'**
+  String get emergencyQRRevoked;
+
+  /// Error message for QR revocation
+  ///
+  /// In en, this message translates to:
+  /// **'Error revoking QR code'**
+  String get errorRevokingQR;
+
+  /// Regenerate QR code button
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate'**
+  String get regenerate;
+
+  /// Generate QR code button
+  ///
+  /// In en, this message translates to:
+  /// **'Generate QR'**
+  String get generateQR;
+
+  /// Message when no QR code is active
+  ///
+  /// In en, this message translates to:
+  /// **'No active emergency QR code'**
+  String get noActiveQR;
+
+  /// Instructions for generating new QR
+  ///
+  /// In en, this message translates to:
+  /// **'Generate a new emergency QR code to allow emergency responders to access your medical information.'**
+  String get generateNewQR;
+
+  /// Active QR code section title
+  ///
+  /// In en, this message translates to:
+  /// **'Active QR Code'**
+  String get activeQRCode;
+
+  /// QR expiration label
+  ///
+  /// In en, this message translates to:
+  /// **'Expires on'**
+  String get expiresOn;
+
+  /// Emergency information tab
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Information'**
+  String get emergencyInfo;
+
+  /// Medical conditions tab
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Conditions'**
+  String get medicalConditions;
+
+  /// Medications tab
+  ///
+  /// In en, this message translates to:
+  /// **'Medications'**
+  String get medications;
+
+  /// Emergency contacts tab
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Contacts'**
+  String get emergencyContacts;
+
+  /// Medicine search screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Search Medicines'**
+  String get searchMedicines;
+
+  /// Medicine search hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Enter medicine name...'**
+  String get searchMedicineHint;
+
+  /// Hospital details screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Hospital Details'**
+  String get hospitalDetails;
+
+  /// Facility search screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Facility Search'**
+  String get facilitySearch;
+
+  /// Search hospitals screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Search Hospitals & Labs'**
+  String get searchHospitals;
+
+  /// Nearby facilities section
+  ///
+  /// In en, this message translates to:
+  /// **'Nearby Facilities'**
+  String get nearbyFacilities;
+
+  /// Distance label
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get distance;
+
+  /// Open now status
+  ///
+  /// In en, this message translates to:
+  /// **'Open Now'**
+  String get openNow;
+
+  /// Closed status
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get closed;
+
+  /// Get directions button
+  ///
+  /// In en, this message translates to:
+  /// **'Get Directions'**
+  String get getDirections;
+
+  /// Call now button
+  ///
+  /// In en, this message translates to:
+  /// **'Call Now'**
+  String get callNow;
+
+  /// No facilities found message
+  ///
+  /// In en, this message translates to:
+  /// **'No facilities found'**
+  String get noFacilitiesFound;
+
+  /// Search radius label
+  ///
+  /// In en, this message translates to:
+  /// **'Search within'**
+  String get searchRadius;
+
+  /// Kilometers unit
+  ///
+  /// In en, this message translates to:
+  /// **'km'**
+  String get km;
+
+  /// Account settings section
+  ///
+  /// In en, this message translates to:
+  /// **'Account Settings'**
+  String get accountSettings;
+
+  /// Notification settings
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Settings'**
+  String get notificationSettings;
+
+  /// Privacy settings
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Settings'**
+  String get privacySettings;
+
+  /// Language settings
+  ///
+  /// In en, this message translates to:
+  /// **'Language Settings'**
+  String get languageSettings;
+
+  /// Help and support section
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpSupport;
+
+  /// About app section
+  ///
+  /// In en, this message translates to:
+  /// **'About App'**
+  String get aboutApp;
+
+  /// App version label
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// Contact support option
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Support'**
+  String get contactSupport;
+
+  /// FAQ option
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get faq;
+
+  /// Terms and conditions
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get termsConditions;
+
+  /// Privacy policy
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
 }
 
 class _AppLocalizationsDelegate

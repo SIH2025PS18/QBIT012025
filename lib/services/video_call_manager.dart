@@ -130,7 +130,7 @@ class VideoCallManager extends ChangeNotifier {
           consultation.roomId ?? 'consultation_${consultation.id}';
       final token = consultation.sessionToken ?? '';
 
-      await _agoraService.joinChannel(channelId: channelId, token: token);
+      await _agoraService.joinChannel(channelName: channelId, token: token);
 
       // Join socket room
       _socketService.joinConsultation(

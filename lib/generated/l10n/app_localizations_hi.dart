@@ -707,4 +707,141 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get doctorTitle => 'डॉ.';
+
+  @override
+  String get findHospitalsLabs => 'अस्पताल और लैब खोजें';
+
+  @override
+  String get emergencyQR => 'आपातकालीन QR';
+
+  @override
+  String get emergencyAccess => 'आपातकालीन पहुंच';
+
+  @override
+  String get emergencyQRGenerated => 'आपातकालीन QR कोड सफलतापूर्वक जेनरेट हुआ!';
+
+  @override
+  String get errorGeneratingQR => 'QR कोड जेनरेट करने में त्रुटि';
+
+  @override
+  String get revokeEmergencyAccess => 'आपातकालीन पहुंच रद्द करें';
+
+  @override
+  String get revokeEmergencyConfirm =>
+      'क्या आप वाकई आपातकालीन पहुंच रद्द करना चाहते हैं? इससे QR कोड निष्क्रिय हो जाएगा और आपातकालीन प्रतिक्रिया करने वाले आपकी चिकित्सा जानकारी तक पहुंचने में सक्षम नहीं होंगे।';
+
+  @override
+  String get revoke => 'रद्द करें';
+
+  @override
+  String get emergencyQRRevoked => 'आपातकालीन QR कोड सफलतापूर्वक रद्द किया गया';
+
+  @override
+  String get errorRevokingQR => 'QR कोड रद्द करने में त्रुटि';
+
+  @override
+  String get regenerate => 'पुनः जेनरेट करें';
+
+  @override
+  String get generateQR => 'QR जेनरेट करें';
+
+  @override
+  String get noActiveQR => 'कोई सक्रिय आपातकालीन QR कोड नहीं';
+
+  @override
+  String get generateNewQR =>
+      'आपातकालीन प्रतिक्रिया करने वालों को आपकी चिकित्सा जानकारी तक पहुंचने की अनुमति देने के लिए एक नया आपातकालीन QR कोड जेनरेट करें।';
+
+  @override
+  String get activeQRCode => 'सक्रिय QR कोड';
+
+  @override
+  String get expiresOn => 'समाप्ति तिथि';
+
+  @override
+  String get emergencyInfo => 'आपातकालीन जानकारी';
+
+  @override
+  String get medicalConditions => 'चिकित्सा स्थितियां';
+
+  @override
+  String get medications => 'दवाएं';
+
+  @override
+  String get emergencyContacts => 'आपातकालीन संपर्क';
+
+  @override
+  String get searchMedicines => 'दवाइयां खोजें';
+
+  @override
+  String get searchMedicineHint => 'दवा का नाम दर्ज करें...';
+
+  @override
+  String get hospitalDetails => 'अस्पताल विवरण';
+
+  @override
+  String get facilitySearch => 'सुविधा खोज';
+
+  @override
+  String get searchHospitals => 'अस्पताल और लैब खोजें';
+
+  @override
+  String get nearbyFacilities => 'नजदीकी सुविधाएं';
+
+  @override
+  String get distance => 'दूरी';
+
+  @override
+  String get openNow => 'अभी खुला';
+
+  @override
+  String get closed => 'बंद';
+
+  @override
+  String get getDirections => 'दिशा-निर्देश प्राप्त करें';
+
+  @override
+  String get callNow => 'अभी कॉल करें';
+
+  @override
+  String get noFacilitiesFound => 'कोई सुविधा नहीं मिली';
+
+  @override
+  String get searchRadius => 'के भीतर खोजें';
+
+  @override
+  String get km => 'किमी';
+
+  @override
+  String get accountSettings => 'खाता सेटिंग्स';
+
+  @override
+  String get notificationSettings => 'सूचना सेटिंग्स';
+
+  @override
+  String get privacySettings => 'गोपनीयता सेटिंग्स';
+
+  @override
+  String get languageSettings => 'भाषा सेटिंग्स';
+
+  @override
+  String get helpSupport => 'सहायता और समर्थन';
+
+  @override
+  String get aboutApp => 'ऐप के बारे में';
+
+  @override
+  String get version => 'संस्करण';
+
+  @override
+  String get contactSupport => 'सहायता से संपर्क करें';
+
+  @override
+  String get faq => 'अक्सर पूछे जाने वाले प्रश्न';
+
+  @override
+  String get termsConditions => 'नियम और शर्तें';
+
+  @override
+  String get privacyPolicy => 'गोपनीयता नीति';
 }

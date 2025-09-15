@@ -1,82 +1,37 @@
-import 'package:flutter/material.dart';
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:async';
-
+import 'dart:developer';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../config/agora_config.dart';
 
-/// Video layout options for multi-participant calls
-enum VideoLayout {
-  grid, // Grid layout for multiple participants
-  speaker, // Speaker view with thumbnails
-}
+class AgoraService {
+  // Use App ID from config
+  static const String appId = AgoraConfig.appId;
 
-/// User connection state
-enum UserConnectionState {
-  connecting,
-  connected,
-  reconnecting,
-  disconnected,
-  failed,
-}
-
-/// Network quality information
-class NetworkQuality {
-  final int uid;
-  final QualityType txQuality;
-  final QualityType rxQuality;
-
-  NetworkQuality({
-    required this.uid,
-    required this.txQuality,
-    required this.rxQuality,
-  });
-
-  bool get isGood =>
-      (txQuality == QualityType.qualityExcellent ||
-          txQuality == QualityType.qualityGood) &&
-      (rxQuality == QualityType.qualityExcellent ||
-          rxQuality == QualityType.qualityGood);
-
-  String get description {
-    if (txQuality == QualityType.qualityExcellent &&
-        rxQuality == QualityType.qualityExcellent) {
-      return 'Excellent';
-    } else if (isGood) {
-      return 'Good';
-    } else if (txQuality == QualityType.qualityPoor ||
-        rxQuality == QualityType.qualityPoor) {
-      return 'Poor';
-    } else {
-      return 'Fair';
-    }
-  }
-}
-
-/// Service for managing Agora video calls
-class AgoraService extends ChangeNotifier {
   RtcEngine? _engine;
   bool _isInitialized = false;
   bool _isJoined = false;
   bool _isMuted = false;
   bool _isVideoEnabled = true;
-  bool _isSpeakerOn = false;
-  String? _currentChannelId;
-  int? _currentUid;
-  int _reconnectAttempts = 0;
-  static const int _maxReconnectAttempts = 3;
-  Timer? _reconnectTimer;
-  bool _isReconnecting = false;
-
-  // Recording state
-  bool _isRecording = false;
-  String? _recordingId;
-
-  // Remote users with enhanced state tracking
+  bool _isSpeakerOn = true;
+  int? _localUserUid;
   List<int> _remoteUsers = [];
-  Map<int, UserConnectionState> _userStates = {};
-  Map<int, NetworkQuality> _networkQualities = {};
+
+  // Stream controllers for state changes
+  final StreamController<bool> _mutedController =
+      StreamController<bool>.broadcast();
+  final StreamController<bool> _videoEnabledController =
+      StreamController<bool>.broadcast();
+  final StreamController<bool> _speakerController =
+      StreamController<bool>.broadcast();
+  final StreamController<List<int>> _remoteUsersController =
+      StreamController<List<int>>.broadcast();
+  final StreamController<String> _connectionStateController =
+      StreamController<String>.broadcast();
+
+  // For compatibility with existing code that expects addListener
+  final List<VoidCallback> _listeners = [];
 
   // Getters
   bool get isInitialized => _isInitialized;
@@ -84,13 +39,32 @@ class AgoraService extends ChangeNotifier {
   bool get isMuted => _isMuted;
   bool get isVideoEnabled => _isVideoEnabled;
   bool get isSpeakerOn => _isSpeakerOn;
-  bool get isRecording => _isRecording;
-  bool get isReconnecting => _isReconnecting;
-  String? get recordingId => _recordingId;
-  List<int> get remoteUsers => List.unmodifiable(_remoteUsers);
-  Map<int, NetworkQuality> get networkQualities =>
-      Map.unmodifiable(_networkQualities);
-  RtcEngine? get engine => _engine;
+  int? get localUserUid => _localUserUid;
+  List<int> get remoteUsers => _remoteUsers;
+
+  // Streams
+  Stream<bool> get mutedStream => _mutedController.stream;
+  Stream<bool> get videoEnabledStream => _videoEnabledController.stream;
+  Stream<bool> get speakerStream => _speakerController.stream;
+  Stream<List<int>> get remoteUsersStream => _remoteUsersController.stream;
+  Stream<String> get connectionStateStream => _connectionStateController.stream;
+
+  /// Add listener for backward compatibility
+  void addListener(VoidCallback listener) {
+    _listeners.add(listener);
+  }
+
+  /// Remove listener for backward compatibility
+  void removeListener(VoidCallback listener) {
+    _listeners.remove(listener);
+  }
+
+  /// Notify all listeners (for backward compatibility)
+  void _notifyListeners() {
+    for (final listener in _listeners) {
+      listener();
+    }
+  }
 
   /// Initialize Agora RTC Engine
   Future<void> initialize() async {
@@ -100,172 +74,115 @@ class AgoraService extends ChangeNotifier {
       // Request permissions
       await _requestPermissions();
 
-      // Create and initialize engine
+      // Create RTC engine
       _engine = createAgoraRtcEngine();
+
+      // Initialize the engine
       await _engine!.initialize(
-        const RtcEngineContext(
-          appId: AgoraConfig.appId,
+        RtcEngineContext(
+          appId: appId,
           channelProfile: AgoraConfig.channelProfile,
         ),
       );
 
-      // Set up event handlers
-      _setupEventHandlers();
+      // Register event handlers
+      _registerEventHandlers();
 
-      // Configure video
+      // Configure video settings
       await _configureVideo();
 
-      // Configure audio
+      // Configure audio settings
       await _configureAudio();
 
       _isInitialized = true;
-      notifyListeners();
-
-      debugPrint('Agora RTC Engine initialized successfully');
+      log('Agora RTC Engine initialized successfully');
     } catch (e) {
-      debugPrint('Error initializing Agora RTC Engine: $e');
-      rethrow;
+      log('Failed to initialize Agora RTC Engine: $e');
+      throw Exception('Failed to initialize video service: $e');
     }
   }
 
-  /// Request camera and microphone permissions
+  /// Request necessary permissions
   Future<void> _requestPermissions() async {
-    // For web, permissions are handled by the browser when accessing camera/microphone
-    if (kIsWeb) {
-      debugPrint('🌐 Running on web - permissions will be handled by browser');
-      return;
+    Map<Permission, PermissionStatus> permissions = await [
+      Permission.camera,
+      Permission.microphone,
+    ].request();
+
+    bool allGranted = permissions.values.every(
+      (status) => status == PermissionStatus.granted,
+    );
+
+    if (!allGranted) {
+      throw Exception('Camera and microphone permissions are required');
     }
-
-    // For mobile platforms, use permission_handler
-    final statuses = await [Permission.microphone, Permission.camera].request();
-
-    if (statuses[Permission.camera] != PermissionStatus.granted) {
-      debugPrint('❌ Camera permission not granted');
-      throw Exception('Camera permission is required for video calls');
-    }
-
-    if (statuses[Permission.microphone] != PermissionStatus.granted) {
-      debugPrint('❌ Microphone permission not granted');
-      throw Exception('Microphone permission is required for video calls');
-    }
-
-    debugPrint('✅ Camera and microphone permissions granted');
   }
 
-  /// Set up event handlers for Agora events
-  void _setupEventHandlers() {
+  /// Register event handlers
+  void _registerEventHandlers() {
     _engine!.registerEventHandler(
       RtcEngineEventHandler(
-        // User joined channel
-        onUserJoined: (connection, uid, elapsed) {
-          debugPrint(
-            '🎉 Remote user joined channel: $uid (total users: ${_remoteUsers.length + 1})',
-          );
-          _remoteUsers.add(uid);
-          _userStates[uid] = UserConnectionState.connected;
-          notifyListeners();
-        },
-
-        // User left channel
-        onUserOffline: (connection, uid, reason) {
-          debugPrint(
-            '👋 Remote user left channel: $uid, reason: $reason (remaining users: ${_remoteUsers.length - 1})',
-          );
-          _remoteUsers.remove(uid);
-          _userStates.remove(uid);
-          _networkQualities.remove(uid);
-          notifyListeners();
-        },
-
-        // Local user joined channel
-        onJoinChannelSuccess: (connection, elapsed) {
-          debugPrint('Local user joined channel: ${connection.channelId}');
+        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+          log('Local user ${connection.localUid} joined channel');
+          _localUserUid = connection.localUid;
           _isJoined = true;
-          _currentChannelId = connection.channelId;
-          _currentUid = connection.localUid;
-          _reconnectAttempts = 0;
-          _isReconnecting = false;
-          _reconnectTimer?.cancel();
-          notifyListeners();
+          _connectionStateController.add('joined');
         },
-
-        // Local user left channel
-        onLeaveChannel: (connection, stats) {
-          debugPrint('Local user left channel');
-          _isJoined = false;
-          _currentChannelId = null;
-          _currentUid = null;
-          _remoteUsers.clear();
-          _userStates.clear();
-          _networkQualities.clear();
-          notifyListeners();
+        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+          log('Remote user $remoteUid joined channel');
+          _remoteUsers.add(remoteUid);
+          _remoteUsersController.add(_remoteUsers);
+          _notifyListeners();
         },
-
-        // Remote video state changed
-        onRemoteVideoStateChanged: (connection, uid, state, reason, elapsed) {
-          debugPrint(
-            'Remote video state changed: $uid, state: $state, reason: $reason',
-          );
-          _handleRemoteVideoStateChange(uid, state, reason);
-          notifyListeners();
-        },
-
-        // Remote audio state changed
-        onRemoteAudioStateChanged: (connection, uid, state, reason, elapsed) {
-          debugPrint(
-            'Remote audio state changed: $uid, state: $state, reason: $reason',
-          );
-          _handleRemoteAudioStateChange(uid, state, reason);
-          notifyListeners();
-        },
-
-        // Connection state changed
-        onConnectionStateChanged: (connection, state, reason) {
-          debugPrint('Connection state changed: $state, reason: $reason');
-          _handleConnectionStateChange(state, reason);
-        },
-
-        // Network quality indicators
-        onNetworkQuality: (connection, uid, txQuality, rxQuality) {
-          _networkQualities[uid] = NetworkQuality(
-            uid: uid,
-            txQuality: txQuality,
-            rxQuality: rxQuality,
-          );
-          notifyListeners();
-        },
-
-        // Audio volume indication
-        onAudioVolumeIndication:
-            (connection, speakers, speakerNumber, totalVolume) {
-              // Handle audio volume levels for UI feedback
+        onUserOffline:
+            (
+              RtcConnection connection,
+              int remoteUid,
+              UserOfflineReasonType reason,
+            ) {
+              log('Remote user $remoteUid left channel');
+              _remoteUsers.remove(remoteUid);
+              _remoteUsersController.add(_remoteUsers);
+              _notifyListeners();
             },
-
-        // Error occurred
-        onError: (err, msg) {
-          debugPrint('Agora Error: $err, message: $msg');
-          _handleError(err, msg);
+        onLeaveChannel: (RtcConnection connection, RtcStats stats) {
+          log('Local user left channel');
+          _isJoined = false;
+          _remoteUsers.clear();
+          _remoteUsersController.add(_remoteUsers);
+          _connectionStateController.add('left');
         },
-
-        // Connection interrupted
-        onConnectionInterrupted: (connection) {
-          debugPrint('Connection interrupted');
-          _handleConnectionInterrupted();
+        onError: (ErrorCodeType error, String msg) {
+          log('Agora Error: $error - $msg');
+          _connectionStateController.add('error: $msg');
         },
-
-        // Connection lost
-        onConnectionLost: (connection) {
-          debugPrint('Connection lost');
-          _handleConnectionLost();
-        },
-
-        // Rejoin channel success
-        onRejoinChannelSuccess: (connection, elapsed) {
-          debugPrint('Rejoined channel successfully');
-          _isReconnecting = false;
-          _reconnectAttempts = 0;
-          notifyListeners();
-        },
+        onConnectionStateChanged:
+            (
+              RtcConnection connection,
+              ConnectionStateType state,
+              ConnectionChangedReasonType reason,
+            ) {
+              log('Connection state changed: $state, reason: $reason');
+              _connectionStateController.add(state.toString());
+            },
+        onLocalVideoStateChanged:
+            (
+              VideoSourceType source,
+              LocalVideoStreamState state,
+              LocalVideoStreamReason reason,
+            ) {
+              log('Local video state changed: $state');
+            },
+        onRemoteVideoStateChanged:
+            (
+              RtcConnection connection,
+              int remoteUid,
+              RemoteVideoState state,
+              RemoteVideoStateReason reason,
+              int elapsed,
+            ) {
+              log('Remote video state changed for user $remoteUid: $state');
+            },
       ),
     );
   }
@@ -274,10 +191,12 @@ class AgoraService extends ChangeNotifier {
   Future<void> _configureVideo() async {
     await _engine!.enableVideo();
     await _engine!.setVideoEncoderConfiguration(
-      const VideoEncoderConfiguration(
+      VideoEncoderConfiguration(
         dimensions: AgoraConfig.videoDimensions,
         frameRate: AgoraConfig.videoFrameRate,
         bitrate: AgoraConfig.videoBitrate,
+        orientationMode: OrientationMode.orientationModeAdaptive,
+        degradationPreference: DegradationPreference.maintainQuality,
       ),
     );
   }
@@ -291,71 +210,74 @@ class AgoraService extends ChangeNotifier {
     );
   }
 
-  /// Join a video channel with retry logic
+  /// Join a channel
   Future<void> joinChannel({
-    required String channelId,
+    required String channelName,
     required String token,
-    int uid = AgoraConfig.defaultUid,
-    int maxRetries = 3,
+    int? uid,
   }) async {
     if (!_isInitialized) {
-      throw Exception('Agora engine not initialized');
+      throw Exception('Agora service not initialized');
     }
 
-    int attempts = 0;
-    while (attempts < maxRetries) {
-      try {
-        await _engine!.joinChannel(
-          token: token,
-          channelId: channelId,
-          uid: uid,
-          options: const ChannelMediaOptions(
-            clientRoleType: ClientRoleType.clientRoleBroadcaster,
-            channelProfile: AgoraConfig.channelProfile,
-            publishCameraTrack: true,
-            publishMicrophoneTrack: true,
-            autoSubscribeVideo: true,
-            autoSubscribeAudio: true,
-          ),
-        );
-        return; // Success, exit retry loop
-      } catch (e) {
-        attempts++;
-        debugPrint('Join channel attempt $attempts failed: $e');
+    try {
+      ChannelMediaOptions options = ChannelMediaOptions(
+        clientRoleType: ClientRoleType.clientRoleBroadcaster,
+        channelProfile: AgoraConfig.channelProfile,
+      );
 
-        if (attempts >= maxRetries) {
-          debugPrint('Max join attempts reached, throwing error');
-          rethrow;
-        }
+      await _engine!.joinChannel(
+        token: token,
+        channelId: channelName,
+        uid: uid ?? 0,
+        options: options,
+      );
 
-        // Wait before retry
-        await Future.delayed(Duration(seconds: attempts * 2));
-      }
+      log('Joining channel: $channelName');
+    } catch (e) {
+      log('Failed to join channel: $e');
+      throw Exception('Failed to join video call: $e');
     }
   }
 
-  /// Leave the current channel
+  /// Leave the channel
   Future<void> leaveChannel() async {
     if (_engine != null && _isJoined) {
       await _engine!.leaveChannel();
+      log('Left channel');
     }
   }
 
-  /// Toggle microphone mute/unmute
-  Future<void> toggleMute() async {
+  /// Toggle microphone mute
+  Future<void> muteLocalAudio(bool mute) async {
     if (_engine != null) {
-      _isMuted = !_isMuted;
-      await _engine!.muteLocalAudioStream(_isMuted);
-      notifyListeners();
+      await _engine!.muteLocalAudioStream(mute);
+      _isMuted = mute;
+      _mutedController.add(_isMuted);
+      _notifyListeners();
+      log('Audio ${mute ? 'muted' : 'unmuted'}');
     }
   }
 
-  /// Toggle camera on/off
-  Future<void> toggleCamera() async {
+  /// Toggle video enable/disable
+  Future<void> enableLocalVideo(bool enable) async {
     if (_engine != null) {
-      _isVideoEnabled = !_isVideoEnabled;
-      await _engine!.muteLocalVideoStream(!_isVideoEnabled);
-      notifyListeners();
+      await _engine!.enableLocalVideo(enable);
+      _isVideoEnabled = enable;
+      _videoEnabledController.add(_isVideoEnabled);
+      _notifyListeners();
+      log('Video ${enable ? 'enabled' : 'disabled'}');
+    }
+  }
+
+  /// Toggle speaker/earpiece
+  Future<void> setAudioRoute(bool speakerOn) async {
+    if (_engine != null) {
+      await _engine!.setEnableSpeakerphone(speakerOn);
+      _isSpeakerOn = speakerOn;
+      _speakerController.add(_isSpeakerOn);
+      _notifyListeners();
+      log('Audio route: ${speakerOn ? 'speaker' : 'earpiece'}');
     }
   }
 
@@ -363,53 +285,18 @@ class AgoraService extends ChangeNotifier {
   Future<void> switchCamera() async {
     if (_engine != null) {
       await _engine!.switchCamera();
+      log('Camera switched');
     }
   }
 
-  /// Toggle speaker on/off
-  Future<void> toggleSpeaker() async {
-    if (_engine != null) {
-      _isSpeakerOn = !_isSpeakerOn;
-      await _engine!.setEnableSpeakerphone(_isSpeakerOn);
-      notifyListeners();
-    }
-  }
-
-  /// Set audio route to speaker
-  Future<void> setAudioRoute(bool speakerOn) async {
-    if (_engine != null) {
-      _isSpeakerOn = speakerOn;
-      await _engine!.setEnableSpeakerphone(speakerOn);
-      notifyListeners();
-    }
-  }
-
-  /// Mute/unmute local audio
-  Future<void> muteLocalAudio(bool mute) async {
-    if (_engine != null) {
-      _isMuted = mute;
-      await _engine!.muteLocalAudioStream(mute);
-      notifyListeners();
-    }
-  }
-
-  /// Enable/disable local video
-  Future<void> enableLocalVideo(bool enable) async {
-    if (_engine != null) {
-      _isVideoEnabled = enable;
-      await _engine!.muteLocalVideoStream(!enable);
-      notifyListeners();
-    }
-  }
-
-  /// Get video canvas for local preview
+  /// Create local video view widget
   Widget createLocalVideoView() {
-    if (!_isInitialized || _engine == null) {
+    if (_engine == null) {
       return Container(
         color: Colors.black,
         child: const Center(
           child: Text(
-            'Camera Initializing...',
+            'Camera not available',
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -419,20 +306,16 @@ class AgoraService extends ChangeNotifier {
     return AgoraVideoView(
       controller: VideoViewController(
         rtcEngine: _engine!,
-        canvas: const VideoCanvas(
-          uid: 0,
-          renderMode: RenderModeType.renderModeHidden,
-          mirrorMode: VideoMirrorModeType.videoMirrorModeAuto,
-        ),
+        canvas: const VideoCanvas(uid: 0),
       ),
     );
   }
 
-  /// Get video canvas for remote user
+  /// Create remote video view widget
   Widget createRemoteVideoView(int uid) {
-    if (!_isInitialized || _engine == null) {
+    if (_engine == null) {
       return Container(
-        color: Colors.black,
+        color: Colors.grey[800],
         child: Center(
           child: Text('User $uid', style: const TextStyle(color: Colors.white)),
         ),
@@ -442,368 +325,97 @@ class AgoraService extends ChangeNotifier {
     return AgoraVideoView(
       controller: VideoViewController.remote(
         rtcEngine: _engine!,
-        canvas: VideoCanvas(
-          uid: uid,
-          renderMode: RenderModeType.renderModeHidden,
-        ),
-        connection: RtcConnection(channelId: _currentChannelId ?? ''),
+        canvas: VideoCanvas(uid: uid),
+        connection: RtcConnection(channelId: ''),
       ),
     );
-  }
-
-  /// Start echo test (for testing audio)
-  Future<void> startEchoTest() async {
-    if (_engine != null) {
-      // Agora echo test - check current API documentation for correct parameters
-      // This is optional functionality - remove if not needed
-      debugPrint(
-        'Echo test feature - check Agora documentation for current API',
-      );
-    }
-  }
-
-  /// Stop echo test
-  Future<void> stopEchoTest() async {
-    if (_engine != null) {
-      // Agora stop echo test - check current API documentation
-      debugPrint(
-        'Stop echo test feature - check Agora documentation for current API',
-      );
-    }
-  }
-
-  /// Enable/disable audio volume indication
-  Future<void> enableAudioVolumeIndication({
-    int interval = 200,
-    int smooth = 3,
-    bool reportVad = false,
-  }) async {
-    if (_engine != null) {
-      await _engine!.enableAudioVolumeIndication(
-        interval: interval,
-        smooth: smooth,
-        reportVad: reportVad,
-      );
-    }
-  }
-
-  /// Start call recording
-  Future<bool> startRecording({
-    required String recordingId,
-    String? storageConfig,
-  }) async {
-    if (_engine == null || !_isJoined) {
-      debugPrint(
-        'Cannot start recording: Engine not initialized or not joined channel',
-      );
-      return false;
-    }
-
-    try {
-      _recordingId = recordingId;
-      _isRecording = true;
-      notifyListeners();
-
-      // Note: Cloud recording requires Agora Cloud Recording service
-      // This is a placeholder for local recording or cloud recording setup
-      debugPrint('Recording started with ID: $recordingId');
-
-      return true;
-    } catch (e) {
-      debugPrint('Failed to start recording: $e');
-      _isRecording = false;
-      _recordingId = null;
-      notifyListeners();
-      return false;
-    }
-  }
-
-  /// Stop call recording
-  Future<bool> stopRecording() async {
-    if (_engine == null || !_isRecording) {
-      debugPrint('Cannot stop recording: Not currently recording');
-      return false;
-    }
-
-    try {
-      _isRecording = false;
-      final recordingId = _recordingId;
-      _recordingId = null;
-      notifyListeners();
-
-      debugPrint('Recording stopped with ID: $recordingId');
-
-      return true;
-    } catch (e) {
-      debugPrint('Failed to stop recording: $e');
-      return false;
-    }
-  }
-
-  /// Enable dual stream mode for better multi-participant support
-  Future<void> enableDualStreamMode() async {
-    if (_engine != null) {
-      try {
-        await _engine!.enableDualStreamMode(enabled: true);
-        debugPrint(
-          'Dual stream mode enabled for better multi-participant support',
-        );
-      } catch (e) {
-        debugPrint('Failed to enable dual stream mode: $e');
-      }
-    }
-  }
-
-  /// Set remote video stream type (high/low quality) for bandwidth optimization
-  Future<void> setRemoteVideoStreamType(
-    int uid,
-    VideoStreamType streamType,
-  ) async {
-    if (_engine != null) {
-      try {
-        await _engine!.setRemoteVideoStreamType(
-          uid: uid,
-          streamType: streamType,
-        );
-        debugPrint('Set video stream type for user $uid: $streamType');
-      } catch (e) {
-        debugPrint('Failed to set remote video stream type: $e');
-      }
-    }
   }
 
   /// Optimize for multi-participant calls
   Future<void> optimizeForMultiParticipant() async {
     if (_engine != null) {
-      try {
-        // Enable dual stream mode
-        await enableDualStreamMode();
+      // Enable dual stream mode for better performance
+      await _engine!.enableDualStreamMode(enabled: true);
 
-        // Configure for multiple participants
-        await _engine!.setParameters('{"che.audio.live_for_comm":true}');
-
-        // Set low latency mode
-        await _engine!.setParameters('{"rtc.enable_nasa2":true}');
-
-        debugPrint('Optimized for multi-participant calls');
-      } catch (e) {
-        debugPrint('Failed to optimize for multi-participant: $e');
-      }
+      // Set video encoder configuration for multi-party
+      await _engine!.setVideoEncoderConfiguration(
+        const VideoEncoderConfiguration(
+          dimensions: VideoDimensions(width: 320, height: 240),
+          frameRate: 15,
+          bitrate: 0,
+          orientationMode: OrientationMode.orientationModeAdaptive,
+          degradationPreference: DegradationPreference.maintainFramerate,
+        ),
+      );
     }
   }
 
-  /// Set video layout for multiple participants
-  Future<void> setVideoLayout(VideoLayout layout) async {
+  /// Set video layout (placeholder for future layout optimizations)
+  void setVideoLayout(String layout) {
+    log('Video layout set to: $layout');
+    // Implementation depends on specific layout requirements
+  }
+
+  /// Set remote video stream type
+  Future<void> setRemoteVideoStreamType(
+    int uid,
+    VideoStreamType streamType,
+  ) async {
     if (_engine != null) {
-      try {
-        // Configure video layout parameters
-        switch (layout) {
-          case VideoLayout.grid:
-            await _engine!.setParameters(
-              '{"che.video.lowBitRateStreamParameter":{"width":160,"height":120,"frameRate":15,"bitRate":65}}',
-            );
-            break;
-          case VideoLayout.speaker:
-            await _engine!.setParameters(
-              '{"che.video.lowBitRateStreamParameter":{"width":320,"height":240,"frameRate":15,"bitRate":140}}',
-            );
-            break;
-        }
-        debugPrint('Video layout set to: $layout');
-      } catch (e) {
-        debugPrint('Failed to set video layout: $e');
-      }
+      await _engine!.setRemoteVideoStreamType(uid: uid, streamType: streamType);
     }
   }
 
-  /// Clean up and dispose resources
-  @override
-  void dispose() {
-    _cleanup();
-    super.dispose();
+  /// Start call recording (placeholder)
+  Future<void> startRecording() async {
+    // Implementation depends on recording service integration
+    log('Recording started');
   }
 
-  /// Clean up Agora resources
-  Future<void> _cleanup() async {
-    _reconnectTimer?.cancel();
+  /// Stop call recording (placeholder)
+  Future<void> stopRecording() async {
+    // Implementation depends on recording service integration
+    log('Recording stopped');
+  }
 
+  /// Get network quality
+  Future<void> enableNetworkTest() async {
     if (_engine != null) {
-      if (_isJoined) {
-        await _engine!.leaveChannel();
-      }
+      // Network quality monitoring is handled through event handlers
+      log('Network quality monitoring enabled');
+    }
+  }
+
+  /// Dispose the service
+  Future<void> dispose() async {
+    await leaveChannel();
+
+    // Close stream controllers
+    await _mutedController.close();
+    await _videoEnabledController.close();
+    await _speakerController.close();
+    await _remoteUsersController.close();
+    await _connectionStateController.close();
+
+    // Release RTC engine
+    if (_engine != null) {
       await _engine!.release();
       _engine = null;
-      _isInitialized = false;
-      _isJoined = false;
-      _remoteUsers.clear();
-      _userStates.clear();
-      _networkQualities.clear();
-    }
-  }
-
-  // Error handling and reconnection methods
-  void _handleError(ErrorCodeType error, String message) {
-    switch (error) {
-      case ErrorCodeType.errTokenExpired:
-      case ErrorCodeType.errInvalidToken:
-        _handleTokenError();
-        break;
-      default:
-        debugPrint('Agora error: $error - $message');
-        _handleNetworkError();
-    }
-  }
-
-  void _handleConnectionStateChange(
-    ConnectionStateType state,
-    ConnectionChangedReasonType reason,
-  ) {
-    switch (state) {
-      case ConnectionStateType.connectionStateDisconnected:
-        if (reason ==
-            ConnectionChangedReasonType.connectionChangedInterrupted) {
-          _handleConnectionLost();
-        }
-        break;
-      case ConnectionStateType.connectionStateReconnecting:
-        _isReconnecting = true;
-        notifyListeners();
-        break;
-      case ConnectionStateType.connectionStateConnected:
-        _isReconnecting = false;
-        _reconnectAttempts = 0;
-        notifyListeners();
-        break;
-      case ConnectionStateType.connectionStateFailed:
-        _handleConnectionFailed();
-        break;
-      default:
-        break;
-    }
-  }
-
-  void _handleRemoteVideoStateChange(
-    int uid,
-    RemoteVideoState state,
-    RemoteVideoStateReason reason,
-  ) {
-    switch (state) {
-      case RemoteVideoState.remoteVideoStateStopped:
-        debugPrint('Remote video stopped for user $uid: $reason');
-        break;
-      case RemoteVideoState.remoteVideoStateStarting:
-        debugPrint('Remote video starting for user $uid');
-        break;
-      case RemoteVideoState.remoteVideoStateDecoding:
-        debugPrint('Remote video decoding for user $uid');
-        break;
-      case RemoteVideoState.remoteVideoStateFrozen:
-        debugPrint('Remote video frozen for user $uid: $reason');
-        break;
-      case RemoteVideoState.remoteVideoStateFailed:
-        debugPrint('Remote video failed for user $uid: $reason');
-        break;
-      default:
-        break;
-    }
-  }
-
-  void _handleRemoteAudioStateChange(
-    int uid,
-    RemoteAudioState state,
-    RemoteAudioStateReason reason,
-  ) {
-    switch (state) {
-      case RemoteAudioState.remoteAudioStateStopped:
-        debugPrint('Remote audio stopped for user $uid: $reason');
-        break;
-      case RemoteAudioState.remoteAudioStateStarting:
-        debugPrint('Remote audio starting for user $uid');
-        break;
-      case RemoteAudioState.remoteAudioStateDecoding:
-        debugPrint('Remote audio decoding for user $uid');
-        break;
-      case RemoteAudioState.remoteAudioStateFrozen:
-        debugPrint('Remote audio frozen for user $uid: $reason');
-        break;
-      case RemoteAudioState.remoteAudioStateFailed:
-        debugPrint('Remote audio failed for user $uid: $reason');
-        break;
-      default:
-        break;
-    }
-  }
-
-  void _handleNetworkError() {
-    debugPrint('Network error detected, attempting to reconnect...');
-    _attemptReconnection();
-  }
-
-  void _handleTokenError() {
-    debugPrint('Token error detected, need to refresh token');
-    // In a real app, you would request a new token from your server
-  }
-
-  void _handleConnectionInterrupted() {
-    debugPrint('Connection interrupted, will attempt to reconnect');
-    _isReconnecting = true;
-    notifyListeners();
-  }
-
-  void _handleConnectionLost() {
-    debugPrint('Connection lost, attempting to reconnect...');
-    _attemptReconnection();
-  }
-
-  void _handleConnectionFailed() {
-    debugPrint('Connection failed completely');
-    _isReconnecting = false;
-    notifyListeners();
-  }
-
-  void _attemptReconnection() {
-    if (_reconnectAttempts >= _maxReconnectAttempts) {
-      debugPrint('Max reconnection attempts reached');
-      _isReconnecting = false;
-      notifyListeners();
-      return;
     }
 
-    _reconnectAttempts++;
-    _isReconnecting = true;
-    notifyListeners();
-
-    final delay = Duration(seconds: _reconnectAttempts * 2);
-    _reconnectTimer = Timer(delay, () async {
-      if (_currentChannelId != null) {
-        try {
-          debugPrint('Reconnection attempt $_reconnectAttempts');
-          await leaveChannel();
-          await Future.delayed(const Duration(seconds: 1));
-          await joinChannel(
-            channelId: _currentChannelId!,
-            token: '', // You would get a fresh token here
-          );
-        } catch (e) {
-          debugPrint('Reconnection attempt $_reconnectAttempts failed: $e');
-          if (_reconnectAttempts < _maxReconnectAttempts) {
-            _attemptReconnection();
-          } else {
-            _isReconnecting = false;
-            notifyListeners();
-          }
-        }
-      }
-    });
+    _isInitialized = false;
+    log('Agora service disposed');
   }
 
-  /// Get connection quality for a user
-  NetworkQuality? getNetworkQuality(int uid) {
-    return _networkQualities[uid];
-  }
+  /// Generate token (placeholder - should be implemented server-side)
+  static Future<String> generateToken({
+    required String channelName,
+    required int uid,
+  }) async {
+    // In production, this should call your token server
+    // For testing, you can use a temporary token from Agora Console
 
-  /// Get connection state for a user
-  UserConnectionState? getUserConnectionState(int uid) {
-    return _userStates[uid];
+    // Return empty string for testing (works with Agora's test mode)
+    return '';
   }
 }

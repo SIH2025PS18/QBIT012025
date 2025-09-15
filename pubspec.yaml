@@ -25,6 +25,9 @@ dependencies:
   # Permissions
   permission_handler: ^12.0.1
 
+  # Location Services
+  geolocator: ^13.0.1
+
   # UI and form handling
   fluttertoast: ^8.2.8
 
@@ -63,6 +66,10 @@ dependencies:
   printing: ^5.12.2
   pdf: ^3.11.1
   dio: ^5.9.0
+
+  # QR Code Generation and Scanning
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^3.5.6
 
 dev_dependencies:
   flutter_test:

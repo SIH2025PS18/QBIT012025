@@ -350,5 +350,5 @@ enum MedicineCategory {
   @JsonValue('supplement')
   supplement,
   @JsonValue('medical_device')
-  medicalDevice,
+  medicalDevice, vitamins, diabetes, cardiovascular,
 }

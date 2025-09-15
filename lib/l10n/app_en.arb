@@ -1170,5 +1170,235 @@
   "settings": "Settings",
   "@settings": {
     "description": "Settings menu item"
+  },
+
+  "findHospitalsLabs": "Find Hospitals & Labs",
+  "@findHospitalsLabs": {
+    "description": "Find hospitals and labs shortcut text"
+  },
+
+  "emergencyQR": "Emergency QR",
+  "@emergencyQR": {
+    "description": "Emergency QR access shortcut text"
+  },
+
+  "emergencyAccess": "Emergency Access",
+  "@emergencyAccess": {
+    "description": "Emergency access screen title"
+  },
+
+  "emergencyQRGenerated": "Emergency QR code generated successfully!",
+  "@emergencyQRGenerated": {
+    "description": "Success message for QR generation"
+  },
+
+  "errorGeneratingQR": "Error generating QR code",
+  "@errorGeneratingQR": {
+    "description": "Error message for QR generation"
+  },
+
+  "revokeEmergencyAccess": "Revoke Emergency Access",
+  "@revokeEmergencyAccess": {
+    "description": "Revoke emergency access dialog title"
+  },
+
+  "revokeEmergencyConfirm": "Are you sure you want to revoke emergency access? This will disable the QR code and emergency responders will no longer be able to access your medical information.",
+  "@revokeEmergencyConfirm": {
+    "description": "Revoke emergency access confirmation message"
+  },
+
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+
+  "revoke": "Revoke",
+  "@revoke": {
+    "description": "Revoke button text"
+  },
+
+  "emergencyQRRevoked": "Emergency QR code revoked successfully",
+  "@emergencyQRRevoked": {
+    "description": "Success message for QR revocation"
+  },
+
+  "errorRevokingQR": "Error revoking QR code",
+  "@errorRevokingQR": {
+    "description": "Error message for QR revocation"
+  },
+
+  "regenerate": "Regenerate",
+  "@regenerate": {
+    "description": "Regenerate QR code button"
+  },
+
+  "generateQR": "Generate QR",
+  "@generateQR": {
+    "description": "Generate QR code button"
+  },
+
+  "noActiveQR": "No active emergency QR code",
+  "@noActiveQR": {
+    "description": "Message when no QR code is active"
+  },
+
+  "generateNewQR": "Generate a new emergency QR code to allow emergency responders to access your medical information.",
+  "@generateNewQR": {
+    "description": "Instructions for generating new QR"
+  },
+
+  "activeQRCode": "Active QR Code",
+  "@activeQRCode": {
+    "description": "Active QR code section title"
+  },
+
+  "expiresOn": "Expires on",
+  "@expiresOn": {
+    "description": "QR expiration label"
+  },
+
+  "emergencyInfo": "Emergency Information",
+  "@emergencyInfo": {
+    "description": "Emergency information tab"
+  },
+
+  "medicalConditions": "Medical Conditions",
+  "@medicalConditions": {
+    "description": "Medical conditions tab"
+  },
+
+  "medications": "Medications",
+  "@medications": {
+    "description": "Medications tab"
+  },
+
+  "emergencyContacts": "Emergency Contacts",
+  "@emergencyContacts": {
+    "description": "Emergency contacts tab"
+  },
+
+  "searchMedicines": "Search Medicines",
+  "@searchMedicines": {
+    "description": "Medicine search screen title"
+  },
+
+  "searchMedicineHint": "Enter medicine name...",
+  "@searchMedicineHint": {
+    "description": "Medicine search hint text"
+  },
+
+  "hospitalDetails": "Hospital Details",
+  "@hospitalDetails": {
+    "description": "Hospital details screen title"
+  },
+
+  "facilitySearch": "Facility Search",
+  "@facilitySearch": {
+    "description": "Facility search screen title"
+  },
+
+  "searchHospitals": "Search Hospitals & Labs",
+  "@searchHospitals": {
+    "description": "Search hospitals screen title"
+  },
+
+  "nearbyFacilities": "Nearby Facilities",
+  "@nearbyFacilities": {
+    "description": "Nearby facilities section"
+  },
+
+  "distance": "Distance",
+  "@distance": {
+    "description": "Distance label"
+  },
+
+  "openNow": "Open Now",
+  "@openNow": {
+    "description": "Open now status"
+  },
+
+  "closed": "Closed",
+  "@closed": {
+    "description": "Closed status"
+  },
+
+  "getDirections": "Get Directions",
+  "@getDirections": {
+    "description": "Get directions button"
+  },
+
+  "callNow": "Call Now",
+  "@callNow": {
+    "description": "Call now button"
+  },
+
+  "noFacilitiesFound": "No facilities found",
+  "@noFacilitiesFound": {
+    "description": "No facilities found message"
+  },
+
+  "searchRadius": "Search within",
+  "@searchRadius": {
+    "description": "Search radius label"
+  },
+
+  "km": "km",
+  "@km": {
+    "description": "Kilometers unit"
+  },
+
+  "accountSettings": "Account Settings",
+  "@accountSettings": {
+    "description": "Account settings section"
+  },
+
+  "notificationSettings": "Notification Settings",
+  "@notificationSettings": {
+    "description": "Notification settings"
+  },
+
+  "privacySettings": "Privacy Settings",
+  "@privacySettings": {
+    "description": "Privacy settings"
+  },
+
+  "languageSettings": "Language Settings",
+  "@languageSettings": {
+    "description": "Language settings"
+  },
+
+  "helpSupport": "Help & Support",
+  "@helpSupport": {
+    "description": "Help and support section"
+  },
+
+  "aboutApp": "About App",
+  "@aboutApp": {
+    "description": "About app section"
+  },
+
+  "version": "Version",
+  "@version": {
+    "description": "App version label"
+  },
+
+  "contactSupport": "Contact Support",
+  "@contactSupport": {
+    "description": "Contact support option"
+  },
+
+  "faq": "FAQ",
+  "@faq": {
+    "description": "FAQ option"
+  },
+
+  "termsConditions": "Terms & Conditions",
+  "@termsConditions": {
+    "description": "Terms and conditions"
+  },
+
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {
+    "description": "Privacy policy"
   }
 }

@@ -3,7 +3,7 @@ import 'dart:html' as html;
 import 'dart:async';
 import 'dart:ui_web' as ui_web;
 
-/// Real WebRTC implementation of AgoraService for web platform
+/// Simplified WebRTC implementation for web platform
 class AgoraService extends ChangeNotifier {
   static final AgoraService _instance = AgoraService._internal();
   factory AgoraService() => _instance;
@@ -15,353 +15,271 @@ class AgoraService extends ChangeNotifier {
   bool _isAudioEnabled = true;
   bool _isMuted = false;
   List<int> _remoteUsers = [];
-
   html.MediaStream? _localStream;
-  Map<int, html.VideoElement> _remoteVideoElements = {};
-  html.VideoElement? _localVideoElement;
-
-  // WebRTC connection variables
-  late html.RtcPeerConnection _peerConnection;
   String? _currentChannelId;
 
+  // Getters
   bool get isJoined => _isJoined;
   bool get isInitialized => _isInitialized;
   bool get isVideoEnabled => _isVideoEnabled;
   bool get isAudioEnabled => _isAudioEnabled;
   bool get isMuted => _isMuted;
   List<int> get remoteUsers => _remoteUsers;
+  String? get currentChannelId => _currentChannelId;
+  html.MediaStream? get localStream => _localStream;
 
-  Future<void> initialize([String? appId]) async {
-    print('WebRTC: Initializing with app ID: $appId');
+  /// Initialize the Agora service
+  Future<void> initialize({String? appId}) async {
     try {
-      await _setupWebRTC();
+      if (_isInitialized) return;
+
+      debugPrint('Initializing AgoraService for web...');
       _isInitialized = true;
-      print('WebRTC: Initialization successful');
+      notifyListeners();
+
+      debugPrint('AgoraService initialized successfully');
     } catch (e) {
-      print('WebRTC: Initialization failed: $e');
-    }
-    notifyListeners();
-  }
-
-  Future<void> _setupWebRTC() async {
-    // Initialize peer connection with STUN servers
-    _peerConnection = html.RtcPeerConnection({
-      'iceServers': [
-        {'urls': 'stun:stun.l.google.com:19302'},
-        {'urls': 'stun:stun1.l.google.com:19302'},
-      ]
-    });
-
-    // Set up peer connection event handlers
-    _peerConnection.onIceCandidate.listen((event) {
-      if (event.candidate != null) {
-        print('WebRTC: ICE candidate generated');
-        // In a real implementation, you would send this to the other peer
-      }
-    });
-
-    _peerConnection.onTrack.listen((event) {
-      print('WebRTC: Remote track received');
-      final mediaStream = event.streams?.first;
-      if (mediaStream != null) {
-        _handleRemoteStream(mediaStream);
-      }
-    });
-  }
-
-  Future<void> _requestPermissions() async {
-    try {
-      print('WebRTC: Requesting camera and microphone permissions...');
-      _localStream = await html.window.navigator.mediaDevices?.getUserMedia({
-        'video': {'width': 640, 'height': 480},
-        'audio': true,
-      });
-
-      if (_localStream != null) {
-        print('WebRTC: Media permissions granted');
-        // Add local stream to peer connection
-        _localStream!.getTracks().forEach((track) {
-          _peerConnection.addTrack(track, _localStream!);
-        });
-      }
-    } catch (e) {
-      print('WebRTC: Failed to get media permissions: $e');
-      throw Exception('Camera/microphone access denied');
+      debugPrint('Error initializing AgoraService: $e');
+      _isInitialized = false;
+      rethrow;
     }
   }
 
+  /// Join a channel
   Future<void> joinChannel({
     required String channelId,
-    required String token,
-    int uid = 0,
+    required int uid,
+    String? token,
   }) async {
-    print('WebRTC: Joining channel $channelId with UID $uid');
-
     try {
-      await _requestPermissions();
+      if (!_isInitialized) {
+        await initialize();
+      }
+
+      debugPrint('Joining channel: $channelId with uid: $uid');
       _currentChannelId = channelId;
 
-      // Create offer for peer connection
-      final offer = await _peerConnection.createOffer();
-      await _peerConnection.setLocalDescription({
-        'type': offer.type,
-        'sdp': offer.sdp,
-      });
+      // Initialize media devices
+      await _initializeMediaDevices();
 
       _isJoined = true;
-      print('WebRTC: Successfully joined channel $channelId');
+      notifyListeners();
 
-      // Simulate a remote user joining after 2 seconds
-      Timer(Duration(seconds: 2), () {
+      debugPrint('Successfully joined channel: $channelId');
+
+      // Simulate remote user joining after 3 seconds for demo
+      Timer(const Duration(seconds: 3), () {
         if (_isJoined) {
-          _simulateRemoteUser();
+          addRemoteUser(12345);
         }
       });
     } catch (e) {
-      print('WebRTC: Failed to join channel: $e');
-      throw Exception('Failed to join video call: $e');
-    }
-
-    notifyListeners();
-  }
-
-  void _simulateRemoteUser() {
-    // For demonstration, add a simulated remote user
-    // In real implementation, this would come from signaling server
-    final remoteUid = 12345;
-    if (!_remoteUsers.contains(remoteUid)) {
-      _remoteUsers.add(remoteUid);
-      print('WebRTC: Remote user $remoteUid joined');
-      notifyListeners();
+      debugPrint('Error joining channel: $e');
+      rethrow;
     }
   }
 
-  void _handleRemoteStream(html.MediaStream stream) {
-    print('WebRTC: Handling remote stream');
-    final remoteUid = 12345; // In real app, this would come from signaling
+  /// Initialize media devices (camera and microphone)
+  Future<void> _initializeMediaDevices() async {
+    try {
+      debugPrint('Initializing media devices...');
 
-    // Create video element for remote stream
-    final videoElement = html.VideoElement()
-      ..srcObject = stream
-      ..autoplay = true
-      ..muted = false
-      ..style.width = '100%'
-      ..style.height = '100%'
-      ..style.objectFit = 'cover';
+      final constraints = {
+        'video': _isVideoEnabled ? {'width': 640, 'height': 480} : false,
+        'audio': _isAudioEnabled,
+      };
 
-    _remoteVideoElements[remoteUid] = videoElement;
+      _localStream =
+          await html.window.navigator.mediaDevices!.getUserMedia(constraints);
 
-    // Register with platform view
-    final viewType = 'remote-video-$remoteUid';
-    ui_web.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
-      return videoElement;
-    });
-
-    if (!_remoteUsers.contains(remoteUid)) {
-      _remoteUsers.add(remoteUid);
-      notifyListeners();
+      debugPrint('Media devices initialized successfully');
+    } catch (e) {
+      debugPrint('Error initializing media devices: $e');
+      rethrow;
     }
   }
 
+  /// Leave the current channel
   Future<void> leaveChannel() async {
-    print('WebRTC: Leaving channel $_currentChannelId');
+    try {
+      debugPrint('Leaving channel...');
 
-    // Stop local stream
-    _localStream?.getTracks().forEach((track) => track.stop());
-    _localStream = null;
-    _localVideoElement = null;
+      // Stop local stream
+      if (_localStream != null) {
+        _localStream!.getTracks().forEach((track) => track.stop());
+        _localStream = null;
+      }
 
-    // Close peer connection
-    _peerConnection.close();
+      _isJoined = false;
+      _currentChannelId = null;
+      _remoteUsers.clear();
 
-    // Clear remote users and video elements
-    _remoteUsers.clear();
-    _remoteVideoElements.clear();
-
-    _isJoined = false;
-    _currentChannelId = null;
-
-    print('WebRTC: Successfully left channel');
-    notifyListeners();
+      notifyListeners();
+      debugPrint('Left channel successfully');
+    } catch (e) {
+      debugPrint('Error leaving channel: $e');
+      rethrow;
+    }
   }
 
-  void toggleVideo() {
-    print('WebRTC: Toggling video');
-    _isVideoEnabled = !_isVideoEnabled;
-
-    // Enable/disable video track
-    _localStream?.getVideoTracks().forEach((track) {
-      track.enabled = _isVideoEnabled;
-    });
-
-    notifyListeners();
-  }
-
-  void toggleAudio() {
-    print('WebRTC: Toggling audio');
-    _isAudioEnabled = !_isAudioEnabled;
-
-    // Enable/disable audio track
-    _localStream?.getAudioTracks().forEach((track) {
-      track.enabled = _isAudioEnabled;
-    });
-
-    notifyListeners();
-  }
-
-  void toggleMute() {
-    print('WebRTC: Toggling mute');
-    _isMuted = !_isMuted;
-
-    // Mute/unmute audio track
-    _localStream?.getAudioTracks().forEach((track) {
-      track.enabled = !_isMuted && _isAudioEnabled;
-    });
-
-    notifyListeners();
-  }
-
-  Future<void> muteLocalAudio(bool muted) async {
-    print('WebRTC: Muting local audio: $muted');
-    _isMuted = muted;
-
-    _localStream?.getAudioTracks().forEach((track) {
-      track.enabled = !_isMuted && _isAudioEnabled;
-    });
-
-    notifyListeners();
-  }
-
+  /// Enable/disable local video
   Future<void> enableLocalVideo(bool enabled) async {
-    print('WebRTC: Enabling local video: $enabled');
-    _isVideoEnabled = enabled;
+    try {
+      _isVideoEnabled = enabled;
 
-    _localStream?.getVideoTracks().forEach((track) {
-      track.enabled = _isVideoEnabled;
-    });
+      if (_localStream != null) {
+        final videoTracks = _localStream!.getVideoTracks();
+        for (final track in videoTracks) {
+          track.enabled = enabled;
+        }
+      }
 
-    notifyListeners();
+      notifyListeners();
+      debugPrint('Local video ${enabled ? 'enabled' : 'disabled'}');
+    } catch (e) {
+      debugPrint('Error toggling local video: $e');
+    }
   }
 
+  /// Enable/disable local audio
+  Future<void> enableLocalAudio(bool enabled) async {
+    try {
+      _isAudioEnabled = enabled;
+      _isMuted = !enabled;
+
+      if (_localStream != null) {
+        final audioTracks = _localStream!.getAudioTracks();
+        for (final track in audioTracks) {
+          track.enabled = enabled;
+        }
+      }
+
+      notifyListeners();
+      debugPrint('Local audio ${enabled ? 'enabled' : 'disabled'}');
+    } catch (e) {
+      debugPrint('Error toggling local audio: $e');
+    }
+  }
+
+  /// Mute/unmute local audio
+  Future<void> muteLocalAudioStream(bool muted) async {
+    await enableLocalAudio(!muted);
+  }
+
+  /// Create a video view widget for local stream
   Widget createLocalVideoView() {
-    if (_localStream == null || !_isVideoEnabled) {
+    if (_localStream == null) {
       return Container(
-        decoration: BoxDecoration(
-          color: Colors.grey.shade800,
-          borderRadius: BorderRadius.circular(8),
-        ),
+        color: Colors.black,
         child: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.videocam_off,
-                size: 48,
-                color: Colors.white,
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Local Video Off',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
+          child: Icon(Icons.videocam_off, color: Colors.white, size: 50),
         ),
       );
     }
 
-    // Create or reuse local video element
-    if (_localVideoElement == null) {
-      _localVideoElement = html.VideoElement()
+    final viewId = 'local-video-${DateTime.now().millisecondsSinceEpoch}';
+
+    // Register the video element
+    ui_web.platformViewRegistry.registerViewFactory(viewId, (int id) {
+      final videoElement = html.VideoElement()
         ..srcObject = _localStream
         ..autoplay = true
-        ..muted = true // Mute local video to prevent feedback
+        ..muted = true
         ..style.width = '100%'
         ..style.height = '100%'
         ..style.objectFit = 'cover';
 
-      // Register with platform view
-      final viewType = 'local-video-element';
-      ui_web.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
-        return _localVideoElement!;
-      });
-    }
+      return videoElement;
+    });
 
+    return HtmlElementView(viewType: viewId);
+  }
+
+  /// Create a video view widget for remote stream
+  Widget createRemoteVideoView({int? uid}) {
+    // For web demo, return a placeholder since we don't have actual remote streams
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.black,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: HtmlElementView(
-          viewType: 'local-video-element',
+      color: const Color(0xFF2A2D37),
+      child: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: Color(0xFF6366F1),
+              child: Icon(Icons.person, size: 50, color: Colors.white),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Remote User',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget createRemoteVideoView(int uid) {
-    final videoElement = _remoteVideoElements[uid];
-
-    if (videoElement == null) {
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue.shade300, Colors.blue.shade600],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.person,
-                size: 48,
-                color: Colors.white,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Patient\nUID: $uid\n(Connecting...)',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+  /// Simulate adding a remote user (for demo purposes)
+  void addRemoteUser(int uid) {
+    if (!_remoteUsers.contains(uid)) {
+      _remoteUsers.add(uid);
+      notifyListeners();
+      debugPrint('Remote user added: $uid');
     }
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.black,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: HtmlElementView(
-          viewType: 'remote-video-$uid',
-        ),
-      ),
-    );
   }
 
+  /// Simulate removing a remote user (for demo purposes)
+  void removeRemoteUser(int uid) {
+    _remoteUsers.remove(uid);
+    notifyListeners();
+    debugPrint('Remote user removed: $uid');
+  }
+
+  /// Dispose resources
   @override
   void dispose() {
-    print('WebRTC: Disposing');
     leaveChannel();
     super.dispose();
+  }
+
+  /// Get available video devices
+  Future<List<html.MediaDeviceInfo>> getVideoDevices() async {
+    try {
+      final devices =
+          await html.window.navigator.mediaDevices!.enumerateDevices();
+      return devices
+          .where((device) => device.kind == 'videoinput')
+          .cast<html.MediaDeviceInfo>()
+          .toList();
+    } catch (e) {
+      debugPrint('Error getting video devices: $e');
+      return [];
+    }
+  }
+
+  /// Get available audio devices
+  Future<List<html.MediaDeviceInfo>> getAudioDevices() async {
+    try {
+      final devices =
+          await html.window.navigator.mediaDevices!.enumerateDevices();
+      return devices
+          .where((device) => device.kind == 'audioinput')
+          .cast<html.MediaDeviceInfo>()
+          .toList();
+    } catch (e) {
+      debugPrint('Error getting audio devices: $e');
+      return [];
+    }
+  }
+
+  /// Switch camera (for mobile, not applicable on web)
+  Future<void> switchCamera() async {
+    debugPrint('Camera switching not implemented for web platform');
+  }
+
+  /// Enable/disable speaker (for mobile, not applicable on web)
+  Future<void> setEnableSpeakerphone(bool enabled) async {
+    debugPrint('Speaker control not implemented for web platform');
   }
 }

@@ -126,6 +126,7 @@ class _DoctorSelectionScreenState extends State<DoctorSelectionScreen> {
       final result = await _doctorService.joinDoctorQueue(
         doctor.id,
         widget.patientId,
+        symptoms: _symptomsController.text.trim(),
       );
 
       if (mounted) Navigator.pop(context); // Close loading dialog

@@ -1,5 +1,32 @@
 {
   "dependencies": {
-    "node-fetch": "^3.3.2"
-  }
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "name": "telemed",
+  "version": "1.0.0",
+  "description": "A new Flutter project.",
+  "main": "add_doctor.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SIH2025PS18/telemed18.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SIH2025PS18/telemed18/issues"
+  },
+  "homepage": "https://github.com/SIH2025PS18/telemed18#readme"
 }

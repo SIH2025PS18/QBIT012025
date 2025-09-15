@@ -704,4 +704,142 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get doctorTitle => 'Dr.';
+
+  @override
+  String get findHospitalsLabs => 'Find Hospitals & Labs';
+
+  @override
+  String get emergencyQR => 'Emergency QR';
+
+  @override
+  String get emergencyAccess => 'Emergency Access';
+
+  @override
+  String get emergencyQRGenerated =>
+      'Emergency QR code generated successfully!';
+
+  @override
+  String get errorGeneratingQR => 'Error generating QR code';
+
+  @override
+  String get revokeEmergencyAccess => 'Revoke Emergency Access';
+
+  @override
+  String get revokeEmergencyConfirm =>
+      'Are you sure you want to revoke emergency access? This will disable the QR code and emergency responders will no longer be able to access your medical information.';
+
+  @override
+  String get revoke => 'Revoke';
+
+  @override
+  String get emergencyQRRevoked => 'Emergency QR code revoked successfully';
+
+  @override
+  String get errorRevokingQR => 'Error revoking QR code';
+
+  @override
+  String get regenerate => 'Regenerate';
+
+  @override
+  String get generateQR => 'Generate QR';
+
+  @override
+  String get noActiveQR => 'No active emergency QR code';
+
+  @override
+  String get generateNewQR =>
+      'Generate a new emergency QR code to allow emergency responders to access your medical information.';
+
+  @override
+  String get activeQRCode => 'Active QR Code';
+
+  @override
+  String get expiresOn => 'Expires on';
+
+  @override
+  String get emergencyInfo => 'Emergency Information';
+
+  @override
+  String get medicalConditions => 'Medical Conditions';
+
+  @override
+  String get medications => 'Medications';
+
+  @override
+  String get emergencyContacts => 'Emergency Contacts';
+
+  @override
+  String get searchMedicines => 'Search Medicines';
+
+  @override
+  String get searchMedicineHint => 'Enter medicine name...';
+
+  @override
+  String get hospitalDetails => 'Hospital Details';
+
+  @override
+  String get facilitySearch => 'Facility Search';
+
+  @override
+  String get searchHospitals => 'Search Hospitals & Labs';
+
+  @override
+  String get nearbyFacilities => 'Nearby Facilities';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get openNow => 'Open Now';
+
+  @override
+  String get closed => 'Closed';
+
+  @override
+  String get getDirections => 'Get Directions';
+
+  @override
+  String get callNow => 'Call Now';
+
+  @override
+  String get noFacilitiesFound => 'No facilities found';
+
+  @override
+  String get searchRadius => 'Search within';
+
+  @override
+  String get km => 'km';
+
+  @override
+  String get accountSettings => 'Account Settings';
+
+  @override
+  String get notificationSettings => 'Notification Settings';
+
+  @override
+  String get privacySettings => 'Privacy Settings';
+
+  @override
+  String get languageSettings => 'Language Settings';
+
+  @override
+  String get helpSupport => 'Help & Support';
+
+  @override
+  String get aboutApp => 'About App';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get contactSupport => 'Contact Support';
+
+  @override
+  String get faq => 'FAQ';
+
+  @override
+  String get termsConditions => 'Terms & Conditions';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
 }

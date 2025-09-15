@@ -163,8 +163,9 @@ class DoctorService extends ChangeNotifier {
   /// Join doctor queue
   Future<Map<String, dynamic>> joinDoctorQueue(
     String doctorId,
-    String patientId,
-  ) async {
+    String patientId, {
+    String? symptoms,
+  }) async {
     try {
       final authService = AuthService();
       if (!authService.isAuthenticated) {
@@ -179,10 +180,13 @@ class DoctorService extends ChangeNotifier {
 
       final position = newQueue.indexOf(patientId) + 1;
 
-      // Simulate socket update
+      // Simulate socket update - send more patient data
       _socket.emit('join_queue', {
         'doctorId': doctorId,
         'patientId': patientId,
+        'patientName': authService.currentUser?.name ?? 'Unknown Patient',
+        'symptoms': symptoms ?? 'No symptoms provided',
+        'timestamp': DateTime.now().toIso8601String(),
       });
 
       notifyListeners();
