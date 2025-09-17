@@ -24,6 +24,8 @@ const queueRoutes = require("./routes/queue");
 const chatRoutes = require("./routes/chat");
 const callRoutes = require("./routes/calls");
 const adminRoutes = require("./routes/admin");
+const familyRoutes = require("./routes/family");
+const smartPharmacyRoutes = require("./routes/smart_pharmacy");
 
 const app = express();
 const server = http.createServer(app);
@@ -54,6 +56,8 @@ app.use("/api/queue", queueRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/calls", callRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/family", familyRoutes);
+app.use("/api/smart-pharmacy", smartPharmacyRoutes);
 
 // API info endpoint
 app.get("/api", (req, res) => {
@@ -73,6 +77,8 @@ app.get("/api", (req, res) => {
       chat: "/api/chat",
       calls: "/api/calls",
       admin: "/api/admin",
+      family: "/api/family",
+      "smart-pharmacy": "/api/smart-pharmacy",
       health: "/api/health",
     },
     documentation: "Complete telemedicine platform API",

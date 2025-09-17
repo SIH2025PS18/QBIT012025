@@ -10,6 +10,8 @@ import 'services/facility_service.dart';
 import 'providers/language_provider.dart';
 import 'providers/patient_profile_provider.dart';
 import 'providers/emergency_data_provider.dart';
+import 'providers/family_profile_provider.dart';
+import 'providers/smart_pharmacy_provider.dart';
 import 'screens/splash_screen.dart';
 import 'screens/auth_wrapper.dart';
 import 'screens/symptom_chat_screen.dart';
@@ -73,6 +75,16 @@ class TelemedApp extends StatelessWidget {
         // Emergency data provider
         ChangeNotifierProvider<EmergencyDataProvider>(
           create: (_) => EmergencyDataProvider(),
+        ),
+
+        // Family profile provider
+        ChangeNotifierProvider<FamilyProfileProvider>(
+          create: (_) => FamilyProfileProvider(),
+        ),
+
+        // Smart pharmacy provider
+        ChangeNotifierProvider<SmartPharmacyProvider>(
+          create: (_) => SmartPharmacyProvider(),
         ),
 
         // Video consultation service

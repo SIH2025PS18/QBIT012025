@@ -11,6 +11,8 @@ import 'medicine_checker_screen.dart';
 import 'settings_screen.dart';
 import 'patient_profile_screen.dart';
 import 'doctor_selection_screen.dart';
+import 'smart_pharmacy/pharmacy_locator_screen.dart';
+import 'family_dashboard_screen.dart';
 import '../services/phone_auth_service.dart';
 import '../services/auth_service.dart';
 
@@ -560,6 +562,30 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const MedicineCheckerScreen(),
+              ),
+            );
+          },
+        ),
+        _buildShortcutCard(
+          icon: Icons.local_pharmacy,
+          title: 'Smart Pharmacy',
+          color: Colors.teal,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const PharmacyLocatorScreen(),
+              ),
+            );
+          },
+        ),
+        _buildShortcutCard(
+          icon: Icons.family_restroom,
+          title: 'Family Members',
+          color: Colors.indigo,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const FamilyDashboardScreen(),
               ),
             );
           },
