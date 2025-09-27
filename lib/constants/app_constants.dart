@@ -5,7 +5,7 @@ class AppConstants {
   static const String appVersion = '1.0.0';
 
   // API Endpoints
-  static const String baseUrl = 'https://your-api-endpoint.com';
+  static const String baseUrl = 'https://telemed18.onrender.com/api';
 
   // Storage Keys
   static const String userTokenKey = 'user_token';

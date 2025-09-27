@@ -2,9 +2,8 @@
 class ApiConfig {
   // Base API URL - can be configured via environment variables
   static String get baseUrl {
-    // FORCE LOCAL DEVELOPMENT - Override for testing
-    // TODO: Change this for production builds
-    return 'https://telemed18.onrender.com || https://telemed18.onrender.com/api';
+    // Production backend URL
+    return 'https://telemed18.onrender.com/api';
   }
 
   // WebSocket URL for real-time features
