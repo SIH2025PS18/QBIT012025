@@ -29,7 +29,7 @@ class _CommunityHealthDashboardState extends State<CommunityHealthDashboard> {
       // Load health statistics
       final statsResponse = await http.get(
         Uri.parse(
-          'http://192.168.1.7:5002/api/community-health/statistics?timeRange=$selectedTimeRange',
+          'https://telemed18.onrender.com/api/community-health/statistics?timeRange=$selectedTimeRange',
         ),
       );
 
@@ -39,7 +39,7 @@ class _CommunityHealthDashboardState extends State<CommunityHealthDashboard> {
 
       // Load active alerts
       final alertsResponse = await http.get(
-        Uri.parse('http://192.168.1.7:5002/api/community-health/alerts'),
+        Uri.parse('https://telemed18.onrender.com/api/community-health/alerts'),
       );
 
       if (alertsResponse.statusCode == 200) {
@@ -592,7 +592,9 @@ class _CommunityHealthDashboardState extends State<CommunityHealthDashboard> {
 
     try {
       await http.post(
-        Uri.parse('http://192.168.1.7:5002/api/community-health/symptoms'),
+        Uri.parse(
+          'https://telemed18.onrender.com/api/community-health/symptoms',
+        ),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(reportData),
       );

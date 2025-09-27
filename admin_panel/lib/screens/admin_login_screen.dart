@@ -33,7 +33,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.7:5002/api/auth/login'),
+        Uri.parse('https://telemed18.onrender.com/api/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'loginId':
@@ -74,7 +74,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     try {
       // First ensure admin user exists
       await http.post(
-        Uri.parse('http://192.168.1.7:5002/api/auth/reset-admin'),
+        Uri.parse('https://telemed18.onrender.com/api/auth/reset-admin'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -83,7 +83,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
       // Login with real admin credentials: admin@telemed.com / password
       final response = await http.post(
-        Uri.parse('http://192.168.1.7:5002/api/auth/login'),
+        Uri.parse('https://telemed18.onrender.com/api/auth/login'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

@@ -32,8 +32,8 @@ class DoctorProvider with ChangeNotifier {
 
   // Backend API URL
   static const String _baseUrl =
-      'https://telemed18.onrender.com || http://192.168.1.7:5002/api';
-  static const String _socketUrl = 'http://192.168.1.7:5002';
+      'https://telemed18.onrender.com || https://telemed18.onrender.com/api';
+  static const String _socketUrl = 'https://telemed18.onrender.com';
 
   Doctor? get currentDoctor => _currentDoctor;
   List<Patient> get patientQueue => _patientQueue;

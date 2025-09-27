@@ -39,7 +39,7 @@ class _VideoCallRequestScreenState extends State<VideoCallRequestScreen> {
 
       // Initialize socket connection
       await _socketService.initialize(
-        serverUrl: 'http://192.168.1.7:5002', // Local backend URL
+        serverUrl: 'https://telemed18.onrender.com', // Local backend URL
         userId: widget.patientId,
         userRole: 'patient',
         userName: widget.patientName,

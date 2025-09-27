@@ -48,7 +48,7 @@ class PharmacyNotificationService {
 
   Future<void> _connectToServer() async {
     try {
-      _socket = IO.io('http://192.168.1.7:5002', {
+      _socket = IO.io('https://telemed18.onrender.com', {
         'transports': ['websocket'],
         'autoConnect': false,
       });

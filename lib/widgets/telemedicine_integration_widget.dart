@@ -43,7 +43,7 @@ class _TeleMedicineIntegrationWidgetState
     // Initialize socket connection
     try {
       await _socketService.initialize(
-        serverUrl: 'http://192.168.1.7:5002', // Local backend
+        serverUrl: 'https://telemed18.onrender.com', // Local backend
         userId: widget.patientId,
         userRole: 'patient',
         userName: widget.patientName,

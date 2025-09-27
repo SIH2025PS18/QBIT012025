@@ -14,7 +14,7 @@ async function testProfileUpdate() {
             userType: 'patient'
         };
         
-        const loginResponse = await axios.post('http://192.168.1.7:5002/api/auth/login', loginData);
+        const loginResponse = await axios.post('https://telemed18.onrender.com/api/auth/login', loginData);
         
         if (!loginResponse.data.data?.token) {
             console.log('❌ Login failed - no token received');
@@ -47,7 +47,7 @@ async function testProfileUpdate() {
         console.log('Data:', JSON.stringify(profileData, null, 2));
         
         const updateResponse = await axios.put(
-            'http://192.168.1.7:5002/api/patients/profile',
+            'https://telemed18.onrender.com/api/patients/profile',
             profileData,
             {
                 headers: {

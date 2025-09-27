@@ -52,7 +52,7 @@ async function testPhonePasswordLogin() {
 
       try {
         const response = await axios.post(
-          'http://192.168.1.7:5002/api/auth/login',
+          'https://telemed18.onrender.com/api/auth/login',
           {
             loginId: test.loginId,
             password: test.password,
@@ -95,7 +95,7 @@ async function testPhonePasswordLogin() {
 
     try {
       const response = await axios.post(
-        'http://192.168.1.7:5002/api/auth/login',
+        'https://telemed18.onrender.com/api/auth/login',
         {
           loginId: testPatient.phone,
           password: 'wrongpassword',

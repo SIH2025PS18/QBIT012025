@@ -335,8 +335,8 @@ python api.py
 ```dart
 // lib/config/api_config.dart
 class ApiConfig {
-  static String get baseUrl => 'https://telemed18.onrender.com || http://192.168.1.7:5002/api';
-  static String get socketUrl => 'http://192.168.1.7:5002';
+  static String get baseUrl => 'https://telemed18.onrender.com || https://telemed18.onrender.com/api';
+  static String get socketUrl => 'https://telemed18.onrender.com';
 }
 ```
 

@@ -3,12 +3,12 @@ class EnvConfig {
   // Base URLs
   static const String baseUrl = String.fromEnvironment(
     'BACKEND_URL',
-    defaultValue: 'http://192.168.1.7:5002',
+    defaultValue: 'https://telemed18.onrender.com',
   );
 
   static const String socketUrl = String.fromEnvironment(
     'SOCKET_URL',
-    defaultValue: 'http://192.168.1.7:5002',
+    defaultValue: 'https://telemed18.onrender.com',
   );
 
   // Environment

@@ -9,7 +9,8 @@ import 'websocket_service.dart';
 import 'auth_service.dart';
 
 class AdminService {
-  static const String baseUrl = 'https://telemed18.onrender.com || http://192.168.1.7:5002/api';
+  static const String baseUrl =
+      'https://telemed18.onrender.com || https://telemed18.onrender.com/api';
   final WebSocketService _webSocketService = WebSocketService();
   final AuthService _authService = AuthService();
 

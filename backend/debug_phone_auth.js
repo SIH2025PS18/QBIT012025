@@ -18,7 +18,7 @@ async function debugPhoneAuthResponse() {
         console.log('📤 Request Data:');
         console.log(JSON.stringify(loginData, null, 2));
         
-        const response = await axios.post('http://192.168.1.7:5002/api/auth/login', loginData);
+        const response = await axios.post('https://telemed18.onrender.com/api/auth/login', loginData);
         
         console.log('\n📥 Response Details:');
         console.log(`Status: ${response.status}`);

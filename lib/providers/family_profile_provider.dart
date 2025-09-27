@@ -69,7 +69,7 @@ class FamilyProfileProvider extends ChangeNotifier {
     ),
   ];
   static const String _baseUrl =
-      'https://telemed18.onrender.com || http://192.168.1.7:5002/api';
+      'https://telemed18.onrender.com || https://telemed18.onrender.com/api';
 
   final AuthService _authService = AuthService();
   late final OfflineDatabase _database;

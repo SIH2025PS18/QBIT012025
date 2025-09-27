@@ -2,7 +2,7 @@ const io = require('socket.io-client');
 
 console.log('🧪 Simple socket test...');
 
-const socket = io('http://192.168.1.7:5002', {
+const socket = io('https://telemed18.onrender.com', {
   query: {
     userRole: 'patient',
     userName: 'Simple Test Patient'
