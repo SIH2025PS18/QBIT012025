@@ -108,7 +108,7 @@ abstract class AppLocalizations {
   /// Application title
   ///
   /// In en, this message translates to:
-  /// **'TeleMed'**
+  /// **'Sehat Sarthi'**
   String get appTitle;
 
   /// Welcome greeting text
@@ -1730,6 +1730,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Privacy Policy'**
   String get privacyPolicy;
+
+  /// Family members navigation option
+  ///
+  /// In en, this message translates to:
+  /// **'Family Members'**
+  String get familyMembers;
+
+  /// Smart pharmacy navigation option
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Pharmacy'**
+  String get smartPharmacy;
 }
 
 class _AppLocalizationsDelegate

@@ -51,8 +51,8 @@ class SocketService extends ChangeNotifier {
       _userRole = userRole;
       _userName = userName ?? userId;
 
-      // Use unified backend URL
-      final url = serverUrl ?? 'https://telemed18.onrender.com';
+      // Use local backend URL for development
+      final url = serverUrl ?? 'http://192.168.1.7:5002';
 
       // Create socket connection with auth token
       final prefs = await SharedPreferences.getInstance();
@@ -66,6 +66,7 @@ class SocketService extends ChangeNotifier {
         'reconnectionAttempts': 5,
         'timeout': 20000,
         'auth': {'token': token},
+        'query': {'userRole': userRole, 'userName': userName, 'userId': userId},
       });
 
       // Set up event listeners

@@ -4,6 +4,8 @@ import 'package:crypto/crypto.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/material.dart';
 import '../models/emergency_medical_data.dart';
+import '../models/patient_profile.dart';
+import '../repositories/offline_patient_profile_repository.dart';
 
 class EmergencyQRService {
   static const String _baseUrl = 'https://sehat-sarthi.com/emergency';
@@ -317,6 +319,186 @@ class EmergencyQRService {
     // Implementation would fetch from local storage
     // For now, return empty list
     return [];
+  }
+
+  // Retrieve medical data when QR code is scanned
+  Future<EmergencyMedicalData?> retrieveMedicalDataFromToken(
+    String tokenId,
+  ) async {
+    try {
+      // First, validate the token exists and is active
+      final tokenData = await _getTokenFromStorage(tokenId);
+      if (tokenData == null || !isTokenValid(tokenData)) {
+        print('Invalid or expired QR token: $tokenId');
+        return null;
+      }
+
+      // Get patient profile using the patient ID from the token
+      final patientProfile = await _getPatientProfile(tokenData.patientId);
+      if (patientProfile == null) {
+        print('Patient profile not found for token: $tokenId');
+        return null;
+      }
+
+      // Convert patient profile to emergency medical data
+      final emergencyData = _convertProfileToEmergencyData(patientProfile);
+
+      print(
+        'Successfully retrieved emergency medical data for token: $tokenId',
+      );
+      return emergencyData;
+    } catch (e) {
+      print('Error retrieving medical data from token: $e');
+      return null;
+    }
+  }
+
+  // Convert patient profile to emergency medical data
+  EmergencyMedicalData _convertProfileToEmergencyData(PatientProfile profile) {
+    return EmergencyMedicalData(
+      patientId: profile.id,
+      bloodType: profile.bloodGroup.isNotEmpty ? profile.bloodGroup : 'Unknown',
+      allergies: profile.allergies,
+      chronicConditions: _extractChronicConditions(profile.medicalHistory),
+      emergencyContact: EmergencyContact(
+        name: profile.emergencyContact.isNotEmpty
+            ? profile.emergencyContact
+            : 'Not specified',
+        phoneNumber: profile.emergencyContactPhone.isNotEmpty
+            ? profile.emergencyContactPhone
+            : 'Not specified',
+        relationship: 'Emergency Contact',
+      ),
+      criticalMedications: profile.medications,
+      medicalAlerts: _generateMedicalAlerts(profile),
+      lastUpdated: profile.updatedAt,
+    );
+  }
+
+  // Extract chronic conditions from medical history
+  List<String> _extractChronicConditions(Map<String, dynamic> medicalHistory) {
+    final conditions = <String>[];
+
+    // Check for common chronic conditions in medical history
+    if (medicalHistory.containsKey('chronicConditions')) {
+      final chronicList = medicalHistory['chronicConditions'];
+      if (chronicList is List) {
+        conditions.addAll(chronicList.cast<String>());
+      }
+    }
+
+    // Check for conditions mentioned in notes
+    if (medicalHistory.containsKey('notes')) {
+      final notes = medicalHistory['notes']?.toString().toLowerCase() ?? '';
+      final commonConditions = [
+        'diabetes',
+        'hypertension',
+        'asthma',
+        'heart disease',
+        'epilepsy',
+      ];
+
+      for (final condition in commonConditions) {
+        if (notes.contains(condition) && !conditions.contains(condition)) {
+          conditions.add(condition);
+        }
+      }
+    }
+
+    return conditions;
+  }
+
+  // Generate medical alerts from profile data
+  String? _generateMedicalAlerts(PatientProfile profile) {
+    final alerts = <String>[];
+
+    // Add allergy alerts
+    if (profile.allergies.isNotEmpty) {
+      alerts.add('ALLERGIES: ${profile.allergies.join(', ')}');
+    }
+
+    // Add medication alerts
+    if (profile.medications.isNotEmpty) {
+      alerts.add('MEDICATIONS: ${profile.medications.join(', ')}');
+    }
+
+    // Add age-related alerts
+    final age = DateTime.now().difference(profile.dateOfBirth).inDays ~/ 365;
+    if (age < 18) {
+      alerts.add('MINOR PATIENT (Age: $age)');
+    } else if (age > 65) {
+      alerts.add('ELDERLY PATIENT (Age: $age)');
+    }
+
+    return alerts.isNotEmpty ? alerts.join(' | ') : null;
+  }
+
+  // Get patient profile from repository
+  Future<PatientProfile?> _getPatientProfile(String patientId) async {
+    try {
+      final repository = OfflinePatientProfileRepository();
+      return await repository.getCurrentProfile();
+    } catch (e) {
+      print('Error fetching patient profile: $e');
+      return null;
+    }
+  }
+
+  // Get token data from local storage
+  Future<EmergencyQRToken?> _getTokenFromStorage(String tokenId) async {
+    // This would fetch from local database
+    // For now, create a mock implementation
+    try {
+      // In a real implementation, this would query the local database
+      // for a token with the given tokenId
+      return null; // Will be implemented with actual storage
+    } catch (e) {
+      print('Error fetching token from storage: $e');
+      return null;
+    }
+  }
+
+  // Parse QR code data and extract token
+  String? parseQRCodeForToken(String qrCodeData) {
+    try {
+      final decodedData = jsonDecode(qrCodeData);
+
+      // Validate QR code format
+      if (decodedData['type'] != 'sehat_sarthi_emergency') {
+        print('Invalid QR code type');
+        return null;
+      }
+
+      final token = decodedData['token'] as String?;
+      if (token == null || token.isEmpty) {
+        print('No token found in QR code');
+        return null;
+      }
+
+      return token;
+    } catch (e) {
+      print('Error parsing QR code data: $e');
+      return null;
+    }
+  }
+
+  // Complete workflow: Scan QR and get medical data
+  Future<EmergencyMedicalData?> scanQRAndGetMedicalData(
+    String qrCodeData,
+  ) async {
+    try {
+      // Parse QR code to extract token
+      final token = parseQRCodeForToken(qrCodeData);
+      if (token == null) {
+        return null;
+      }
+
+      // Retrieve medical data using the token
+      return await retrieveMedicalDataFromToken(token);
+    } catch (e) {
+      print('Error in QR scan workflow: $e');
+      return null;
+    }
   }
 
   // Private helper methods

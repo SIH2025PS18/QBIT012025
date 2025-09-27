@@ -188,18 +188,56 @@ class _DoctorSelectionScreenState extends State<DoctorSelectionScreen> {
     }
   }
 
-  void _startVideoConsultation(Doctor doctor) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RealtimeVideoCallScreen(
-          doctor: doctor,
-          patientId: widget.patientId,
-          patientName: widget.patientName,
-          symptoms: _symptomsController.text.trim(),
+  void _startVideoConsultation(Doctor doctor) async {
+    // First join the doctor's queue
+    try {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final doctorService = context.read<DoctorService>();
+      final result = await doctorService.joinDoctorQueue(
+        doctor.id,
+        widget.patientId,
+        symptoms: _symptomsController.text.trim(),
+      );
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+
+      if (result['success'] == true) {
+        // Successfully joined queue, now start video call
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RealtimeVideoCallScreen(
+              doctor: doctor,
+              patientId: widget.patientId,
+              patientName: widget.patientName,
+              symptoms: _symptomsController.text.trim(),
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to join queue: ${result['error']}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) Navigator.pop(context); // Close loading dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error starting consultation: $e'),
+          backgroundColor: Colors.red,
         ),
-      ),
-    );
+      );
+    }
   }
 
   void _showDoctorDetails(Doctor doctor) {
@@ -222,7 +260,7 @@ class _DoctorSelectionScreenState extends State<DoctorSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(

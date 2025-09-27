@@ -13,85 +13,310 @@ class DigitalHealthLockerScreen extends StatefulWidget {
       _DigitalHealthLockerScreenState();
 }
 
-class _DigitalHealthLockerScreenState extends State<DigitalHealthLockerScreen> {
+class _DigitalHealthLockerScreenState extends State<DigitalHealthLockerScreen>
+    with SingleTickerProviderStateMixin {
   bool _isOnline = false;
-  int _selectedIndex = 0;
+  late TabController _tabController;
+  String _selectedFamilyMember = 'self';
 
-  // Mock data for demonstration
-  final List<Map<String, dynamic>> _pastConsultations = [
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  // Family members with Hindi/Punjabi names
+  final List<Map<String, dynamic>> _familyMembers = [
     {
-      'id': '1',
-      'doctorName': 'Dr. Singh',
-      'specialization': 'General Medicine',
-      'date': '2023-10-15',
-      'summary': 'Routine checkup, blood pressure monitoring',
-      'prescription': 'Paracetamol 500mg - 1 tablet twice daily for 5 days',
+      'id': 'self',
+      'name': 'Shaurya Singh',
+      'relation': 'Self',
+      'age': 28,
+      'gender': 'Male',
     },
     {
-      'id': '2',
-      'doctorName': 'Dr. Kaur',
-      'specialization': 'Pediatrics',
-      'date': '2023-09-22',
-      'summary': 'Child vaccination and growth monitoring',
-      'prescription': 'Multivitamin syrup - 5ml once daily for 30 days',
+      'id': 'mother',
+      'name': 'Sunita Devi',
+      'relation': 'Mother',
+      'age': 52,
+      'gender': 'Female',
     },
     {
-      'id': '3',
-      'doctorName': 'Dr. Patel',
-      'specialization': 'Cardiology',
-      'date': '2023-08-10',
-      'summary': 'Heart checkup, ECG and blood tests',
-      'prescription':
-          'Aspirin 75mg - 1 tablet daily, Atenolol 50mg - 1 tablet daily',
+      'id': 'father',
+      'name': 'Rajesh Singh',
+      'relation': 'Father',
+      'age': 55,
+      'gender': 'Male',
+    },
+    {
+      'id': 'wife',
+      'name': 'Priya Kaur',
+      'relation': 'Wife',
+      'age': 26,
+      'gender': 'Female',
+    },
+    {
+      'id': 'son',
+      'name': 'Arjun Singh',
+      'relation': 'Son',
+      'age': 5,
+      'gender': 'Male',
+    },
+    {
+      'id': 'daughter',
+      'name': 'Simran Kaur',
+      'relation': 'Daughter',
+      'age': 3,
+      'gender': 'Female',
     },
   ];
 
-  final List<Map<String, dynamic>> _prescriptions = [
-    {
-      'id': '1',
-      'doctorName': 'Dr. Singh',
-      'date': '2023-10-15',
-      'medications': [
-        'Paracetamol 500mg - 1 tablet twice daily for 5 days',
-        'Vitamin C - 1 tablet once daily for 10 days',
-      ],
-      'notes': 'Take with food. Complete the full course.',
-    },
-    {
-      'id': '2',
-      'doctorName': 'Dr. Kaur',
-      'date': '2023-09-22',
-      'medications': ['Multivitamin syrup - 5ml once daily for 30 days'],
-      'notes': 'Shake well before use. Store in refrigerator.',
-    },
-  ];
+  // Mock data for demonstration - organized by family member
+  Map<String, List<Map<String, dynamic>>> _familyConsultations = {
+    'self': [
+      {
+        'id': '1',
+        'doctorName': 'Dr. Gurmeet Singh',
+        'specialization': 'General Medicine',
+        'date': '2024-01-15',
+        'summary': 'Routine checkup, blood pressure monitoring',
+        'prescription': 'Paracetamol 500mg - 1 tablet twice daily for 5 days',
+        'hospital': 'Nabha Civil Hospital',
+        'isOfflineAvailable': true,
+      },
+      {
+        'id': '2',
+        'doctorName': 'Dr. Harpreet Kaur',
+        'specialization': 'Cardiology',
+        'date': '2024-01-10',
+        'summary': 'Heart checkup, ECG and blood tests',
+        'prescription':
+            'Aspirin 75mg - 1 tablet daily, Atenolol 50mg - 1 tablet daily',
+        'hospital': 'Rajindra Hospital, Patiala',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'mother': [
+      {
+        'id': '3',
+        'doctorName': 'Dr. Amarjeet Singh',
+        'specialization': 'Gynecology',
+        'date': '2024-01-12',
+        'summary': 'Regular health checkup, diabetes monitoring',
+        'prescription': 'Metformin 500mg - 1 tablet twice daily',
+        'hospital': 'Nabha Civil Hospital',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'father': [
+      {
+        'id': '4',
+        'doctorName': 'Dr. Jasbir Singh',
+        'specialization': 'General Medicine',
+        'date': '2024-01-08',
+        'summary': 'Blood pressure check, joint pain consultation',
+        'prescription': 'Ibuprofen 400mg - 1 tablet after meals',
+        'hospital': 'Government Medical College, Patiala',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'wife': [
+      {
+        'id': '5',
+        'doctorName': 'Dr. Simran Kaur',
+        'specialization': 'Gynecology',
+        'date': '2024-01-05',
+        'summary': 'Prenatal checkup, vitamins prescribed',
+        'prescription': 'Folic acid 5mg - 1 tablet daily, Iron tablets',
+        'hospital': 'Nabha Civil Hospital',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'son': [
+      {
+        'id': '6',
+        'doctorName': 'Dr. Manpreet Kaur',
+        'specialization': 'Pediatrics',
+        'date': '2024-01-03',
+        'summary': 'Child vaccination and growth monitoring',
+        'prescription': 'Multivitamin syrup - 5ml once daily for 30 days',
+        'hospital': 'Nabha Civil Hospital',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'daughter': [
+      {
+        'id': '7',
+        'doctorName': 'Dr. Manpreet Kaur',
+        'specialization': 'Pediatrics',
+        'date': '2024-01-01',
+        'summary': 'Fever treatment, cold and cough',
+        'prescription': 'Paracetamol syrup - 2.5ml twice daily for 3 days',
+        'hospital': 'Nabha Civil Hospital',
+        'isOfflineAvailable': true,
+      },
+    ],
+  };
 
-  final List<Map<String, dynamic>> _labReports = [
-    {
-      'id': '1',
-      'title': 'Complete Blood Count',
-      'date': '2023-10-15',
-      'hospital': 'Nabha Civil Hospital',
-      'status': 'Normal',
-    },
-    {
-      'id': '2',
-      'title': 'Lipid Profile',
-      'date': '2023-08-10',
-      'hospital': 'Nabha Civil Hospital',
-      'status': 'Requires follow-up',
-    },
-  ];
+  Map<String, List<Map<String, dynamic>>> _familyPrescriptions = {
+    'self': [
+      {
+        'id': '1',
+        'doctorName': 'Dr. Gurmeet Singh',
+        'date': '2024-01-15',
+        'medications': [
+          'Paracetamol 500mg - 1 tablet twice daily for 5 days',
+          'Vitamin C - 1 tablet once daily for 10 days',
+        ],
+        'notes': 'Take with food. Complete the full course.',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'mother': [
+      {
+        'id': '2',
+        'doctorName': 'Dr. Amarjeet Singh',
+        'date': '2024-01-12',
+        'medications': ['Metformin 500mg - 1 tablet twice daily'],
+        'notes': 'Take before meals. Monitor blood sugar levels.',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'father': [
+      {
+        'id': '3',
+        'doctorName': 'Dr. Jasbir Singh',
+        'date': '2024-01-08',
+        'medications': ['Ibuprofen 400mg - 1 tablet after meals'],
+        'notes': 'Take only after food. Avoid empty stomach.',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'wife': [
+      {
+        'id': '4',
+        'doctorName': 'Dr. Simran Kaur',
+        'date': '2024-01-05',
+        'medications': [
+          'Folic acid 5mg - 1 tablet daily',
+          'Iron tablets - 1 tablet daily',
+        ],
+        'notes': 'Take with vitamin C for better absorption.',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'son': [
+      {
+        'id': '5',
+        'doctorName': 'Dr. Manpreet Kaur',
+        'date': '2024-01-03',
+        'medications': ['Multivitamin syrup - 5ml once daily for 30 days'],
+        'notes': 'Shake well before use. Store in refrigerator.',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'daughter': [
+      {
+        'id': '6',
+        'doctorName': 'Dr. Manpreet Kaur',
+        'date': '2024-01-01',
+        'medications': ['Paracetamol syrup - 2.5ml twice daily for 3 days'],
+        'notes': 'Give every 6 hours. Do not exceed 4 doses per day.',
+        'isOfflineAvailable': true,
+      },
+    ],
+  };
+
+  Map<String, List<Map<String, dynamic>>> _familyLabReports = {
+    'self': [
+      {
+        'id': '1',
+        'title': 'Complete Blood Count',
+        'date': '2024-01-15',
+        'hospital': 'Nabha Civil Hospital',
+        'status': 'Normal',
+        'isOfflineAvailable': true,
+      },
+      {
+        'id': '2',
+        'title': 'Lipid Profile',
+        'date': '2024-01-10',
+        'hospital': 'Rajindra Hospital, Patiala',
+        'status': 'Requires follow-up',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'mother': [
+      {
+        'id': '3',
+        'title': 'HbA1c Test',
+        'date': '2024-01-12',
+        'hospital': 'Nabha Civil Hospital',
+        'status': 'Normal',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'father': [
+      {
+        'id': '4',
+        'title': 'Bone Density Scan',
+        'date': '2024-01-08',
+        'hospital': 'Government Medical College, Patiala',
+        'status': 'Mild osteoporosis',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'wife': [
+      {
+        'id': '5',
+        'title': 'Prenatal Blood Work',
+        'date': '2024-01-05',
+        'hospital': 'Nabha Civil Hospital',
+        'status': 'Normal',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'son': [
+      {
+        'id': '6',
+        'title': 'Growth Chart',
+        'date': '2024-01-03',
+        'hospital': 'Nabha Civil Hospital',
+        'status': 'Normal development',
+        'isOfflineAvailable': true,
+      },
+    ],
+    'daughter': [
+      {
+        'id': '7',
+        'title': 'Blood Test',
+        'date': '2024-01-01',
+        'hospital': 'Nabha Civil Hospital',
+        'status': 'Normal',
+        'isOfflineAvailable': true,
+      },
+    ],
+  };
 
   @override
   Widget build(BuildContext context) {
+    final selectedMember = _familyMembers.firstWhere(
+      (member) => member['id'] == _selectedFamilyMember,
+    );
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Digital Health Locker',
+          'Digital Health Records',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -134,15 +359,169 @@ class _DigitalHealthLockerScreenState extends State<DigitalHealthLockerScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // Family member selector
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.family_restroom,
+                        color: Colors.blue[600],
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Select Family Member',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: _familyMembers.map((member) {
+                        final isSelected =
+                            member['id'] == _selectedFamilyMember;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedFamilyMember = member['id'];
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Colors.blue[600]
+                                  : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(20),
+                              border: isSelected
+                                  ? Border.all(color: Colors.blue[600]!)
+                                  : null,
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  member['name'],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  member['relation'],
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: isSelected
+                                        ? Colors.white70
+                                        : Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Selected member info
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Colors.blue[100],
+                    child: Text(
+                      selectedMember['name'].split(' ').map((n) => n[0]).join(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[700],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          selectedMember['name'],
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          '${selectedMember['relation']} • ${selectedMember['age']} years • ${selectedMember['gender']}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.offline_bolt,
+                          size: 14,
+                          color: Colors.green[700],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Offline Records',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.green[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // Tab bar
             Container(
               color: Colors.white,
               child: TabBar(
-                onTap: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
+                controller: _tabController,
                 tabs: const [
                   Tab(text: 'Consultations'),
                   Tab(text: 'Prescriptions'),
@@ -157,7 +536,7 @@ class _DigitalHealthLockerScreenState extends State<DigitalHealthLockerScreen> {
             // Content
             Expanded(
               child: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
+                controller: _tabController,
                 children: [
                   _buildConsultationsTab(),
                   _buildPrescriptionsTab(),
@@ -172,29 +551,51 @@ class _DigitalHealthLockerScreenState extends State<DigitalHealthLockerScreen> {
   }
 
   Widget _buildConsultationsTab() {
+    final consultations = _familyConsultations[_selectedFamilyMember] ?? [];
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Past Consultations',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+          Row(
+            children: [
+              const Text(
+                'Past Consultations',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blue[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${consultations.length} Records',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.blue[700],
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
 
-          if (_pastConsultations.isEmpty) ...[
+          if (consultations.isEmpty) ...[
             _buildEmptyState(
               icon: Icons.video_call,
               title: 'No consultations yet',
-              subtitle: 'Your past video consultations will appear here',
+              subtitle: 'Past video consultations will appear here',
             ),
           ] else ...[
-            ..._pastConsultations.map((consultation) {
+            ...consultations.map((consultation) {
               return _buildConsultationCard(consultation);
             }).toList(),
           ],
@@ -204,29 +605,51 @@ class _DigitalHealthLockerScreenState extends State<DigitalHealthLockerScreen> {
   }
 
   Widget _buildPrescriptionsTab() {
+    final prescriptions = _familyPrescriptions[_selectedFamilyMember] ?? [];
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Digital Prescriptions',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+          Row(
+            children: [
+              const Text(
+                'Digital Prescriptions',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${prescriptions.length} Prescriptions',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.green[700],
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
 
-          if (_prescriptions.isEmpty) ...[
+          if (prescriptions.isEmpty) ...[
             _buildEmptyState(
-              icon: Icons.description,
+              icon: Icons.receipt_long,
               title: 'No prescriptions yet',
-              subtitle: 'Your digital prescriptions will appear here',
+              subtitle: 'Digital prescriptions will appear here',
             ),
           ] else ...[
-            ..._prescriptions.map((prescription) {
+            ...prescriptions.map((prescription) {
               return _buildPrescriptionCard(prescription);
             }).toList(),
           ],
@@ -236,29 +659,51 @@ class _DigitalHealthLockerScreenState extends State<DigitalHealthLockerScreen> {
   }
 
   Widget _buildLabReportsTab() {
+    final labReports = _familyLabReports[_selectedFamilyMember] ?? [];
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Lab Reports',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+          Row(
+            children: [
+              const Text(
+                'Lab Reports',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.purple[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${labReports.length} Reports',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.purple[700],
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
 
-          if (_labReports.isEmpty) ...[
+          if (labReports.isEmpty) ...[
             _buildEmptyState(
               icon: Icons.assignment,
               title: 'No lab reports yet',
-              subtitle: 'Your lab reports will appear here',
+              subtitle: 'Test results and reports will appear here',
             ),
           ] else ...[
-            ..._labReports.map((report) {
+            ...labReports.map((report) {
               return _buildLabReportCard(report);
             }).toList(),
           ],

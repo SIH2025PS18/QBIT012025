@@ -104,7 +104,7 @@ class OfflineHealthRecordRepository implements HealthRecordRepository {
         tableNameColumn: 'health_records',
         recordId: recordId,
         operation: 'create',
-        data: jsonEncode(_mapLocalToSupabaseData(localRecord)),
+        data: jsonEncode(_mapLocalToData(localRecord)),
         isCompleted: false,
         retryCount: 0,
         createdAt: DateTime.now(),
@@ -161,7 +161,7 @@ class OfflineHealthRecordRepository implements HealthRecordRepository {
         tableNameColumn: 'health_records',
         recordId: record.id,
         operation: 'update',
-        data: jsonEncode(_mapLocalToSupabaseData(localRecord)),
+        data: jsonEncode(_mapLocalToData(localRecord)),
         isCompleted: false,
         retryCount: 0,
         createdAt: DateTime.now(),
@@ -265,7 +265,7 @@ class OfflineHealthRecordRepository implements HealthRecordRepository {
   }
 
   /// Map local health record to MongoDB backend data format
-  Map<String, dynamic> _mapLocalToSupabaseData(LocalHealthRecord local) {
+  Map<String, dynamic> _mapLocalToData(LocalHealthRecord local) {
     return {
       'id': local.id,
       'patientId': local.patientId,

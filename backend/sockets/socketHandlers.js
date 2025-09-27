@@ -43,6 +43,17 @@ const socketHandlers = (io) => {
     try {
       const token = socket.handshake.auth.token || socket.handshake.query.token;
 
+      // Allow guest patient connections for testing
+      if (!token && socket.handshake.query.userRole === 'patient') {
+        console.log("🧪 Allowing guest patient connection for testing");
+        socket.user = {
+          _id: `guest_patient_${Date.now()}`,
+          name: socket.handshake.query.userName || 'Guest Patient',
+          userType: 'patient'
+        };
+        return next();
+      }
+
       if (!token) {
         return next(new Error("Authentication error: No token provided"));
       }
@@ -393,6 +404,98 @@ const socketHandlers = (io) => {
       } catch (error) {
         console.error("Error getting queue status:", error);
         socket.emit("queue_error", { message: "Failed to get queue status" });
+      }
+    });
+
+    // Handle patient joining doctor queue
+    socket.on("join_queue", (data) => {
+      console.log("📋 Patient joining queue:", data);
+      
+      const { doctorId, patientId, patientName, symptoms, timestamp } = data;
+      
+      // Find the doctor's socket and send the queue event
+      for (let [socketId, userData] of connectedUsers) {
+        if (userData.userType === 'doctor' && userData.userId === doctorId) {
+          const doctorSocket = io.sockets.sockets.get(socketId);
+          if (doctorSocket) {
+            doctorSocket.emit('join_queue', {
+              patientId,
+              patientName,
+              symptoms,
+              timestamp
+            });
+            console.log(`✅ Forwarded join_queue event to doctor ${doctorId}`);
+          }
+          break;
+        }
+      }
+    });
+
+    // Handle patient leaving doctor queue  
+    socket.on("leave_queue", (data) => {
+      console.log("📋 Patient leaving queue:", data);
+      
+      const { doctorId, patientId } = data;
+      
+      // Find the doctor's socket and send the leave queue event
+      for (let [socketId, userData] of connectedUsers) {
+        if (userData.userType === 'doctor' && userData.userId === doctorId) {
+          const doctorSocket = io.sockets.sockets.get(socketId);
+          if (doctorSocket) {
+            doctorSocket.emit('leave_queue', {
+              patientId
+            });
+            console.log(`✅ Forwarded leave_queue event to doctor ${doctorId}`);
+          }
+          break;
+        }
+      }
+    });
+
+    // Handle patient starting video call
+    socket.on("patient_start_call", (data) => {
+      console.log("📞 Patient starting video call:", data);
+      
+      const { doctorId, patientId, patientName, channelName, symptoms, timestamp } = data;
+      
+      // Find the doctor's socket and send the video call event
+      for (let [socketId, userData] of connectedUsers) {
+        if (userData.userType === 'doctor' && userData.userId === doctorId) {
+          const doctorSocket = io.sockets.sockets.get(socketId);
+          if (doctorSocket) {
+            doctorSocket.emit('patient_start_call', {
+              patientId,
+              patientName,
+              channelName,
+              symptoms,
+              timestamp
+            });
+            console.log(`✅ Forwarded patient_start_call event to doctor ${doctorId}`);
+          }
+          break;
+        }
+      }
+    });
+
+    // Handle patient ending video call
+    socket.on("patient_end_call", (data) => {
+      console.log("📞 Patient ending video call:", data);
+      
+      const { doctorId, patientId, channelName } = data;
+      
+      // Find the doctor's socket and send the end call event
+      for (let [socketId, userData] of connectedUsers) {
+        if (userData.userType === 'doctor' && userData.userId === doctorId) {
+          const doctorSocket = io.sockets.sockets.get(socketId);
+          if (doctorSocket) {
+            doctorSocket.emit('patient_end_call', {
+              patientId,
+              channelName
+            });
+            console.log(`✅ Forwarded patient_end_call event to doctor ${doctorId}`);
+          }
+          break;
+        }
       }
     });
 

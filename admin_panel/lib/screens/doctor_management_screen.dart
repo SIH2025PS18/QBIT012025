@@ -625,7 +625,7 @@ class _DoctorManagementScreenState extends State<DoctorManagementScreen> {
                     ),
                     const SizedBox(height: 4),
                     const SelectableText(
-                      'http://localhost:8082',
+                      'http://192.168.1.7:8082',
                       style: TextStyle(
                         color: Colors.blue,
                         fontSize: 14,

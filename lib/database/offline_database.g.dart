@@ -6223,6 +6223,4022 @@ class VitalSignsCompanion extends UpdateCompanion<VitalSign> {
   }
 }
 
+class $FamilyMembersTable extends FamilyMembers
+    with TableInfo<$FamilyMembersTable, FamilyMember> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FamilyMembersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _familyGroupIdMeta = const VerificationMeta(
+    'familyGroupId',
+  );
+  @override
+  late final GeneratedColumn<String> familyGroupId = GeneratedColumn<String>(
+    'family_group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _primaryUserIdMeta = const VerificationMeta(
+    'primaryUserId',
+  );
+  @override
+  late final GeneratedColumn<String> primaryUserId = GeneratedColumn<String>(
+    'primary_user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _relationshipMeta = const VerificationMeta(
+    'relationship',
+  );
+  @override
+  late final GeneratedColumn<String> relationship = GeneratedColumn<String>(
+    'relationship',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateOfBirthMeta = const VerificationMeta(
+    'dateOfBirth',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateOfBirth = GeneratedColumn<DateTime>(
+    'date_of_birth',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _genderMeta = const VerificationMeta('gender');
+  @override
+  late final GeneratedColumn<String> gender = GeneratedColumn<String>(
+    'gender',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bloodGroupMeta = const VerificationMeta(
+    'bloodGroup',
+  );
+  @override
+  late final GeneratedColumn<String> bloodGroup = GeneratedColumn<String>(
+    'blood_group',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _phoneNumberMeta = const VerificationMeta(
+    'phoneNumber',
+  );
+  @override
+  late final GeneratedColumn<String> phoneNumber = GeneratedColumn<String>(
+    'phone_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _allergiesMeta = const VerificationMeta(
+    'allergies',
+  );
+  @override
+  late final GeneratedColumn<String> allergies = GeneratedColumn<String>(
+    'allergies',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _medicalConditionsMeta = const VerificationMeta(
+    'medicalConditions',
+  );
+  @override
+  late final GeneratedColumn<String> medicalConditions =
+      GeneratedColumn<String>(
+        'medical_conditions',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _medicationsMeta = const VerificationMeta(
+    'medications',
+  );
+  @override
+  late final GeneratedColumn<String> medications = GeneratedColumn<String>(
+    'medications',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _emergencyContactMeta = const VerificationMeta(
+    'emergencyContact',
+  );
+  @override
+  late final GeneratedColumn<String> emergencyContact = GeneratedColumn<String>(
+    'emergency_contact',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _hasOwnAccountMeta = const VerificationMeta(
+    'hasOwnAccount',
+  );
+  @override
+  late final GeneratedColumn<bool> hasOwnAccount = GeneratedColumn<bool>(
+    'has_own_account',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_own_account" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _linkedAccountIdMeta = const VerificationMeta(
+    'linkedAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> linkedAccountId = GeneratedColumn<String>(
+    'linked_account_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _allowIndependentAccessMeta =
+      const VerificationMeta('allowIndependentAccess');
+  @override
+  late final GeneratedColumn<bool> allowIndependentAccess =
+      GeneratedColumn<bool>(
+        'allow_independent_access',
+        aliasedName,
+        false,
+        type: DriftSqlType.bool,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("allow_independent_access" IN (0, 1))',
+        ),
+        defaultValue: const Constant(false),
+      );
+  static const VerificationMeta _caregiverPermissionsMeta =
+      const VerificationMeta('caregiverPermissions');
+  @override
+  late final GeneratedColumn<String> caregiverPermissions =
+      GeneratedColumn<String>(
+        'caregiver_permissions',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _profileImageUrlMeta = const VerificationMeta(
+    'profileImageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> profileImageUrl = GeneratedColumn<String>(
+    'profile_image_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedMeta = const VerificationMeta(
+    'lastModified',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastModified = GeneratedColumn<DateTime>(
+    'last_modified',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    familyGroupId,
+    primaryUserId,
+    name,
+    relationship,
+    dateOfBirth,
+    gender,
+    bloodGroup,
+    phoneNumber,
+    email,
+    allergies,
+    medicalConditions,
+    medications,
+    emergencyContact,
+    isActive,
+    hasOwnAccount,
+    linkedAccountId,
+    allowIndependentAccess,
+    caregiverPermissions,
+    profileImageUrl,
+    isSynced,
+    createdAt,
+    lastModified,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'family_members';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FamilyMember> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('family_group_id')) {
+      context.handle(
+        _familyGroupIdMeta,
+        familyGroupId.isAcceptableOrUnknown(
+          data['family_group_id']!,
+          _familyGroupIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_familyGroupIdMeta);
+    }
+    if (data.containsKey('primary_user_id')) {
+      context.handle(
+        _primaryUserIdMeta,
+        primaryUserId.isAcceptableOrUnknown(
+          data['primary_user_id']!,
+          _primaryUserIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_primaryUserIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('relationship')) {
+      context.handle(
+        _relationshipMeta,
+        relationship.isAcceptableOrUnknown(
+          data['relationship']!,
+          _relationshipMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_relationshipMeta);
+    }
+    if (data.containsKey('date_of_birth')) {
+      context.handle(
+        _dateOfBirthMeta,
+        dateOfBirth.isAcceptableOrUnknown(
+          data['date_of_birth']!,
+          _dateOfBirthMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateOfBirthMeta);
+    }
+    if (data.containsKey('gender')) {
+      context.handle(
+        _genderMeta,
+        gender.isAcceptableOrUnknown(data['gender']!, _genderMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_genderMeta);
+    }
+    if (data.containsKey('blood_group')) {
+      context.handle(
+        _bloodGroupMeta,
+        bloodGroup.isAcceptableOrUnknown(data['blood_group']!, _bloodGroupMeta),
+      );
+    }
+    if (data.containsKey('phone_number')) {
+      context.handle(
+        _phoneNumberMeta,
+        phoneNumber.isAcceptableOrUnknown(
+          data['phone_number']!,
+          _phoneNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    }
+    if (data.containsKey('allergies')) {
+      context.handle(
+        _allergiesMeta,
+        allergies.isAcceptableOrUnknown(data['allergies']!, _allergiesMeta),
+      );
+    }
+    if (data.containsKey('medical_conditions')) {
+      context.handle(
+        _medicalConditionsMeta,
+        medicalConditions.isAcceptableOrUnknown(
+          data['medical_conditions']!,
+          _medicalConditionsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('medications')) {
+      context.handle(
+        _medicationsMeta,
+        medications.isAcceptableOrUnknown(
+          data['medications']!,
+          _medicationsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('emergency_contact')) {
+      context.handle(
+        _emergencyContactMeta,
+        emergencyContact.isAcceptableOrUnknown(
+          data['emergency_contact']!,
+          _emergencyContactMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('has_own_account')) {
+      context.handle(
+        _hasOwnAccountMeta,
+        hasOwnAccount.isAcceptableOrUnknown(
+          data['has_own_account']!,
+          _hasOwnAccountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('linked_account_id')) {
+      context.handle(
+        _linkedAccountIdMeta,
+        linkedAccountId.isAcceptableOrUnknown(
+          data['linked_account_id']!,
+          _linkedAccountIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('allow_independent_access')) {
+      context.handle(
+        _allowIndependentAccessMeta,
+        allowIndependentAccess.isAcceptableOrUnknown(
+          data['allow_independent_access']!,
+          _allowIndependentAccessMeta,
+        ),
+      );
+    }
+    if (data.containsKey('caregiver_permissions')) {
+      context.handle(
+        _caregiverPermissionsMeta,
+        caregiverPermissions.isAcceptableOrUnknown(
+          data['caregiver_permissions']!,
+          _caregiverPermissionsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('profile_image_url')) {
+      context.handle(
+        _profileImageUrlMeta,
+        profileImageUrl.isAcceptableOrUnknown(
+          data['profile_image_url']!,
+          _profileImageUrlMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('last_modified')) {
+      context.handle(
+        _lastModifiedMeta,
+        lastModified.isAcceptableOrUnknown(
+          data['last_modified']!,
+          _lastModifiedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FamilyMember map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FamilyMember(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      familyGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_group_id'],
+      )!,
+      primaryUserId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}primary_user_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      relationship: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}relationship'],
+      )!,
+      dateOfBirth: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_of_birth'],
+      )!,
+      gender: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}gender'],
+      )!,
+      bloodGroup: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}blood_group'],
+      ),
+      phoneNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone_number'],
+      ),
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      ),
+      allergies: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}allergies'],
+      ),
+      medicalConditions: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}medical_conditions'],
+      ),
+      medications: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}medications'],
+      ),
+      emergencyContact: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}emergency_contact'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      hasOwnAccount: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_own_account'],
+      )!,
+      linkedAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}linked_account_id'],
+      ),
+      allowIndependentAccess: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}allow_independent_access'],
+      )!,
+      caregiverPermissions: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}caregiver_permissions'],
+      ),
+      profileImageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_image_url'],
+      ),
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      lastModified: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_modified'],
+      )!,
+    );
+  }
+
+  @override
+  $FamilyMembersTable createAlias(String alias) {
+    return $FamilyMembersTable(attachedDatabase, alias);
+  }
+}
+
+class FamilyMember extends DataClass implements Insertable<FamilyMember> {
+  final String id;
+  final String familyGroupId;
+  final String primaryUserId;
+  final String name;
+  final String relationship;
+  final DateTime dateOfBirth;
+  final String gender;
+  final String? bloodGroup;
+  final String? phoneNumber;
+  final String? email;
+  final String? allergies;
+  final String? medicalConditions;
+  final String? medications;
+  final String? emergencyContact;
+  final bool isActive;
+  final bool hasOwnAccount;
+  final String? linkedAccountId;
+  final bool allowIndependentAccess;
+  final String? caregiverPermissions;
+  final String? profileImageUrl;
+  final bool isSynced;
+  final DateTime createdAt;
+  final DateTime lastModified;
+  const FamilyMember({
+    required this.id,
+    required this.familyGroupId,
+    required this.primaryUserId,
+    required this.name,
+    required this.relationship,
+    required this.dateOfBirth,
+    required this.gender,
+    this.bloodGroup,
+    this.phoneNumber,
+    this.email,
+    this.allergies,
+    this.medicalConditions,
+    this.medications,
+    this.emergencyContact,
+    required this.isActive,
+    required this.hasOwnAccount,
+    this.linkedAccountId,
+    required this.allowIndependentAccess,
+    this.caregiverPermissions,
+    this.profileImageUrl,
+    required this.isSynced,
+    required this.createdAt,
+    required this.lastModified,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['family_group_id'] = Variable<String>(familyGroupId);
+    map['primary_user_id'] = Variable<String>(primaryUserId);
+    map['name'] = Variable<String>(name);
+    map['relationship'] = Variable<String>(relationship);
+    map['date_of_birth'] = Variable<DateTime>(dateOfBirth);
+    map['gender'] = Variable<String>(gender);
+    if (!nullToAbsent || bloodGroup != null) {
+      map['blood_group'] = Variable<String>(bloodGroup);
+    }
+    if (!nullToAbsent || phoneNumber != null) {
+      map['phone_number'] = Variable<String>(phoneNumber);
+    }
+    if (!nullToAbsent || email != null) {
+      map['email'] = Variable<String>(email);
+    }
+    if (!nullToAbsent || allergies != null) {
+      map['allergies'] = Variable<String>(allergies);
+    }
+    if (!nullToAbsent || medicalConditions != null) {
+      map['medical_conditions'] = Variable<String>(medicalConditions);
+    }
+    if (!nullToAbsent || medications != null) {
+      map['medications'] = Variable<String>(medications);
+    }
+    if (!nullToAbsent || emergencyContact != null) {
+      map['emergency_contact'] = Variable<String>(emergencyContact);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['has_own_account'] = Variable<bool>(hasOwnAccount);
+    if (!nullToAbsent || linkedAccountId != null) {
+      map['linked_account_id'] = Variable<String>(linkedAccountId);
+    }
+    map['allow_independent_access'] = Variable<bool>(allowIndependentAccess);
+    if (!nullToAbsent || caregiverPermissions != null) {
+      map['caregiver_permissions'] = Variable<String>(caregiverPermissions);
+    }
+    if (!nullToAbsent || profileImageUrl != null) {
+      map['profile_image_url'] = Variable<String>(profileImageUrl);
+    }
+    map['is_synced'] = Variable<bool>(isSynced);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_modified'] = Variable<DateTime>(lastModified);
+    return map;
+  }
+
+  FamilyMembersCompanion toCompanion(bool nullToAbsent) {
+    return FamilyMembersCompanion(
+      id: Value(id),
+      familyGroupId: Value(familyGroupId),
+      primaryUserId: Value(primaryUserId),
+      name: Value(name),
+      relationship: Value(relationship),
+      dateOfBirth: Value(dateOfBirth),
+      gender: Value(gender),
+      bloodGroup: bloodGroup == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bloodGroup),
+      phoneNumber: phoneNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phoneNumber),
+      email: email == null && nullToAbsent
+          ? const Value.absent()
+          : Value(email),
+      allergies: allergies == null && nullToAbsent
+          ? const Value.absent()
+          : Value(allergies),
+      medicalConditions: medicalConditions == null && nullToAbsent
+          ? const Value.absent()
+          : Value(medicalConditions),
+      medications: medications == null && nullToAbsent
+          ? const Value.absent()
+          : Value(medications),
+      emergencyContact: emergencyContact == null && nullToAbsent
+          ? const Value.absent()
+          : Value(emergencyContact),
+      isActive: Value(isActive),
+      hasOwnAccount: Value(hasOwnAccount),
+      linkedAccountId: linkedAccountId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedAccountId),
+      allowIndependentAccess: Value(allowIndependentAccess),
+      caregiverPermissions: caregiverPermissions == null && nullToAbsent
+          ? const Value.absent()
+          : Value(caregiverPermissions),
+      profileImageUrl: profileImageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(profileImageUrl),
+      isSynced: Value(isSynced),
+      createdAt: Value(createdAt),
+      lastModified: Value(lastModified),
+    );
+  }
+
+  factory FamilyMember.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FamilyMember(
+      id: serializer.fromJson<String>(json['id']),
+      familyGroupId: serializer.fromJson<String>(json['familyGroupId']),
+      primaryUserId: serializer.fromJson<String>(json['primaryUserId']),
+      name: serializer.fromJson<String>(json['name']),
+      relationship: serializer.fromJson<String>(json['relationship']),
+      dateOfBirth: serializer.fromJson<DateTime>(json['dateOfBirth']),
+      gender: serializer.fromJson<String>(json['gender']),
+      bloodGroup: serializer.fromJson<String?>(json['bloodGroup']),
+      phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
+      email: serializer.fromJson<String?>(json['email']),
+      allergies: serializer.fromJson<String?>(json['allergies']),
+      medicalConditions: serializer.fromJson<String?>(
+        json['medicalConditions'],
+      ),
+      medications: serializer.fromJson<String?>(json['medications']),
+      emergencyContact: serializer.fromJson<String?>(json['emergencyContact']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      hasOwnAccount: serializer.fromJson<bool>(json['hasOwnAccount']),
+      linkedAccountId: serializer.fromJson<String?>(json['linkedAccountId']),
+      allowIndependentAccess: serializer.fromJson<bool>(
+        json['allowIndependentAccess'],
+      ),
+      caregiverPermissions: serializer.fromJson<String?>(
+        json['caregiverPermissions'],
+      ),
+      profileImageUrl: serializer.fromJson<String?>(json['profileImageUrl']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastModified: serializer.fromJson<DateTime>(json['lastModified']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'familyGroupId': serializer.toJson<String>(familyGroupId),
+      'primaryUserId': serializer.toJson<String>(primaryUserId),
+      'name': serializer.toJson<String>(name),
+      'relationship': serializer.toJson<String>(relationship),
+      'dateOfBirth': serializer.toJson<DateTime>(dateOfBirth),
+      'gender': serializer.toJson<String>(gender),
+      'bloodGroup': serializer.toJson<String?>(bloodGroup),
+      'phoneNumber': serializer.toJson<String?>(phoneNumber),
+      'email': serializer.toJson<String?>(email),
+      'allergies': serializer.toJson<String?>(allergies),
+      'medicalConditions': serializer.toJson<String?>(medicalConditions),
+      'medications': serializer.toJson<String?>(medications),
+      'emergencyContact': serializer.toJson<String?>(emergencyContact),
+      'isActive': serializer.toJson<bool>(isActive),
+      'hasOwnAccount': serializer.toJson<bool>(hasOwnAccount),
+      'linkedAccountId': serializer.toJson<String?>(linkedAccountId),
+      'allowIndependentAccess': serializer.toJson<bool>(allowIndependentAccess),
+      'caregiverPermissions': serializer.toJson<String?>(caregiverPermissions),
+      'profileImageUrl': serializer.toJson<String?>(profileImageUrl),
+      'isSynced': serializer.toJson<bool>(isSynced),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastModified': serializer.toJson<DateTime>(lastModified),
+    };
+  }
+
+  FamilyMember copyWith({
+    String? id,
+    String? familyGroupId,
+    String? primaryUserId,
+    String? name,
+    String? relationship,
+    DateTime? dateOfBirth,
+    String? gender,
+    Value<String?> bloodGroup = const Value.absent(),
+    Value<String?> phoneNumber = const Value.absent(),
+    Value<String?> email = const Value.absent(),
+    Value<String?> allergies = const Value.absent(),
+    Value<String?> medicalConditions = const Value.absent(),
+    Value<String?> medications = const Value.absent(),
+    Value<String?> emergencyContact = const Value.absent(),
+    bool? isActive,
+    bool? hasOwnAccount,
+    Value<String?> linkedAccountId = const Value.absent(),
+    bool? allowIndependentAccess,
+    Value<String?> caregiverPermissions = const Value.absent(),
+    Value<String?> profileImageUrl = const Value.absent(),
+    bool? isSynced,
+    DateTime? createdAt,
+    DateTime? lastModified,
+  }) => FamilyMember(
+    id: id ?? this.id,
+    familyGroupId: familyGroupId ?? this.familyGroupId,
+    primaryUserId: primaryUserId ?? this.primaryUserId,
+    name: name ?? this.name,
+    relationship: relationship ?? this.relationship,
+    dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+    gender: gender ?? this.gender,
+    bloodGroup: bloodGroup.present ? bloodGroup.value : this.bloodGroup,
+    phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
+    email: email.present ? email.value : this.email,
+    allergies: allergies.present ? allergies.value : this.allergies,
+    medicalConditions: medicalConditions.present
+        ? medicalConditions.value
+        : this.medicalConditions,
+    medications: medications.present ? medications.value : this.medications,
+    emergencyContact: emergencyContact.present
+        ? emergencyContact.value
+        : this.emergencyContact,
+    isActive: isActive ?? this.isActive,
+    hasOwnAccount: hasOwnAccount ?? this.hasOwnAccount,
+    linkedAccountId: linkedAccountId.present
+        ? linkedAccountId.value
+        : this.linkedAccountId,
+    allowIndependentAccess:
+        allowIndependentAccess ?? this.allowIndependentAccess,
+    caregiverPermissions: caregiverPermissions.present
+        ? caregiverPermissions.value
+        : this.caregiverPermissions,
+    profileImageUrl: profileImageUrl.present
+        ? profileImageUrl.value
+        : this.profileImageUrl,
+    isSynced: isSynced ?? this.isSynced,
+    createdAt: createdAt ?? this.createdAt,
+    lastModified: lastModified ?? this.lastModified,
+  );
+  FamilyMember copyWithCompanion(FamilyMembersCompanion data) {
+    return FamilyMember(
+      id: data.id.present ? data.id.value : this.id,
+      familyGroupId: data.familyGroupId.present
+          ? data.familyGroupId.value
+          : this.familyGroupId,
+      primaryUserId: data.primaryUserId.present
+          ? data.primaryUserId.value
+          : this.primaryUserId,
+      name: data.name.present ? data.name.value : this.name,
+      relationship: data.relationship.present
+          ? data.relationship.value
+          : this.relationship,
+      dateOfBirth: data.dateOfBirth.present
+          ? data.dateOfBirth.value
+          : this.dateOfBirth,
+      gender: data.gender.present ? data.gender.value : this.gender,
+      bloodGroup: data.bloodGroup.present
+          ? data.bloodGroup.value
+          : this.bloodGroup,
+      phoneNumber: data.phoneNumber.present
+          ? data.phoneNumber.value
+          : this.phoneNumber,
+      email: data.email.present ? data.email.value : this.email,
+      allergies: data.allergies.present ? data.allergies.value : this.allergies,
+      medicalConditions: data.medicalConditions.present
+          ? data.medicalConditions.value
+          : this.medicalConditions,
+      medications: data.medications.present
+          ? data.medications.value
+          : this.medications,
+      emergencyContact: data.emergencyContact.present
+          ? data.emergencyContact.value
+          : this.emergencyContact,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      hasOwnAccount: data.hasOwnAccount.present
+          ? data.hasOwnAccount.value
+          : this.hasOwnAccount,
+      linkedAccountId: data.linkedAccountId.present
+          ? data.linkedAccountId.value
+          : this.linkedAccountId,
+      allowIndependentAccess: data.allowIndependentAccess.present
+          ? data.allowIndependentAccess.value
+          : this.allowIndependentAccess,
+      caregiverPermissions: data.caregiverPermissions.present
+          ? data.caregiverPermissions.value
+          : this.caregiverPermissions,
+      profileImageUrl: data.profileImageUrl.present
+          ? data.profileImageUrl.value
+          : this.profileImageUrl,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastModified: data.lastModified.present
+          ? data.lastModified.value
+          : this.lastModified,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyMember(')
+          ..write('id: $id, ')
+          ..write('familyGroupId: $familyGroupId, ')
+          ..write('primaryUserId: $primaryUserId, ')
+          ..write('name: $name, ')
+          ..write('relationship: $relationship, ')
+          ..write('dateOfBirth: $dateOfBirth, ')
+          ..write('gender: $gender, ')
+          ..write('bloodGroup: $bloodGroup, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('email: $email, ')
+          ..write('allergies: $allergies, ')
+          ..write('medicalConditions: $medicalConditions, ')
+          ..write('medications: $medications, ')
+          ..write('emergencyContact: $emergencyContact, ')
+          ..write('isActive: $isActive, ')
+          ..write('hasOwnAccount: $hasOwnAccount, ')
+          ..write('linkedAccountId: $linkedAccountId, ')
+          ..write('allowIndependentAccess: $allowIndependentAccess, ')
+          ..write('caregiverPermissions: $caregiverPermissions, ')
+          ..write('profileImageUrl: $profileImageUrl, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastModified: $lastModified')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    familyGroupId,
+    primaryUserId,
+    name,
+    relationship,
+    dateOfBirth,
+    gender,
+    bloodGroup,
+    phoneNumber,
+    email,
+    allergies,
+    medicalConditions,
+    medications,
+    emergencyContact,
+    isActive,
+    hasOwnAccount,
+    linkedAccountId,
+    allowIndependentAccess,
+    caregiverPermissions,
+    profileImageUrl,
+    isSynced,
+    createdAt,
+    lastModified,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FamilyMember &&
+          other.id == this.id &&
+          other.familyGroupId == this.familyGroupId &&
+          other.primaryUserId == this.primaryUserId &&
+          other.name == this.name &&
+          other.relationship == this.relationship &&
+          other.dateOfBirth == this.dateOfBirth &&
+          other.gender == this.gender &&
+          other.bloodGroup == this.bloodGroup &&
+          other.phoneNumber == this.phoneNumber &&
+          other.email == this.email &&
+          other.allergies == this.allergies &&
+          other.medicalConditions == this.medicalConditions &&
+          other.medications == this.medications &&
+          other.emergencyContact == this.emergencyContact &&
+          other.isActive == this.isActive &&
+          other.hasOwnAccount == this.hasOwnAccount &&
+          other.linkedAccountId == this.linkedAccountId &&
+          other.allowIndependentAccess == this.allowIndependentAccess &&
+          other.caregiverPermissions == this.caregiverPermissions &&
+          other.profileImageUrl == this.profileImageUrl &&
+          other.isSynced == this.isSynced &&
+          other.createdAt == this.createdAt &&
+          other.lastModified == this.lastModified);
+}
+
+class FamilyMembersCompanion extends UpdateCompanion<FamilyMember> {
+  final Value<String> id;
+  final Value<String> familyGroupId;
+  final Value<String> primaryUserId;
+  final Value<String> name;
+  final Value<String> relationship;
+  final Value<DateTime> dateOfBirth;
+  final Value<String> gender;
+  final Value<String?> bloodGroup;
+  final Value<String?> phoneNumber;
+  final Value<String?> email;
+  final Value<String?> allergies;
+  final Value<String?> medicalConditions;
+  final Value<String?> medications;
+  final Value<String?> emergencyContact;
+  final Value<bool> isActive;
+  final Value<bool> hasOwnAccount;
+  final Value<String?> linkedAccountId;
+  final Value<bool> allowIndependentAccess;
+  final Value<String?> caregiverPermissions;
+  final Value<String?> profileImageUrl;
+  final Value<bool> isSynced;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> lastModified;
+  final Value<int> rowid;
+  const FamilyMembersCompanion({
+    this.id = const Value.absent(),
+    this.familyGroupId = const Value.absent(),
+    this.primaryUserId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.relationship = const Value.absent(),
+    this.dateOfBirth = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.bloodGroup = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.email = const Value.absent(),
+    this.allergies = const Value.absent(),
+    this.medicalConditions = const Value.absent(),
+    this.medications = const Value.absent(),
+    this.emergencyContact = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.hasOwnAccount = const Value.absent(),
+    this.linkedAccountId = const Value.absent(),
+    this.allowIndependentAccess = const Value.absent(),
+    this.caregiverPermissions = const Value.absent(),
+    this.profileImageUrl = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.lastModified = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FamilyMembersCompanion.insert({
+    required String id,
+    required String familyGroupId,
+    required String primaryUserId,
+    required String name,
+    required String relationship,
+    required DateTime dateOfBirth,
+    required String gender,
+    this.bloodGroup = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.email = const Value.absent(),
+    this.allergies = const Value.absent(),
+    this.medicalConditions = const Value.absent(),
+    this.medications = const Value.absent(),
+    this.emergencyContact = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.hasOwnAccount = const Value.absent(),
+    this.linkedAccountId = const Value.absent(),
+    this.allowIndependentAccess = const Value.absent(),
+    this.caregiverPermissions = const Value.absent(),
+    this.profileImageUrl = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime lastModified,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       familyGroupId = Value(familyGroupId),
+       primaryUserId = Value(primaryUserId),
+       name = Value(name),
+       relationship = Value(relationship),
+       dateOfBirth = Value(dateOfBirth),
+       gender = Value(gender),
+       createdAt = Value(createdAt),
+       lastModified = Value(lastModified);
+  static Insertable<FamilyMember> custom({
+    Expression<String>? id,
+    Expression<String>? familyGroupId,
+    Expression<String>? primaryUserId,
+    Expression<String>? name,
+    Expression<String>? relationship,
+    Expression<DateTime>? dateOfBirth,
+    Expression<String>? gender,
+    Expression<String>? bloodGroup,
+    Expression<String>? phoneNumber,
+    Expression<String>? email,
+    Expression<String>? allergies,
+    Expression<String>? medicalConditions,
+    Expression<String>? medications,
+    Expression<String>? emergencyContact,
+    Expression<bool>? isActive,
+    Expression<bool>? hasOwnAccount,
+    Expression<String>? linkedAccountId,
+    Expression<bool>? allowIndependentAccess,
+    Expression<String>? caregiverPermissions,
+    Expression<String>? profileImageUrl,
+    Expression<bool>? isSynced,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastModified,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (familyGroupId != null) 'family_group_id': familyGroupId,
+      if (primaryUserId != null) 'primary_user_id': primaryUserId,
+      if (name != null) 'name': name,
+      if (relationship != null) 'relationship': relationship,
+      if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
+      if (gender != null) 'gender': gender,
+      if (bloodGroup != null) 'blood_group': bloodGroup,
+      if (phoneNumber != null) 'phone_number': phoneNumber,
+      if (email != null) 'email': email,
+      if (allergies != null) 'allergies': allergies,
+      if (medicalConditions != null) 'medical_conditions': medicalConditions,
+      if (medications != null) 'medications': medications,
+      if (emergencyContact != null) 'emergency_contact': emergencyContact,
+      if (isActive != null) 'is_active': isActive,
+      if (hasOwnAccount != null) 'has_own_account': hasOwnAccount,
+      if (linkedAccountId != null) 'linked_account_id': linkedAccountId,
+      if (allowIndependentAccess != null)
+        'allow_independent_access': allowIndependentAccess,
+      if (caregiverPermissions != null)
+        'caregiver_permissions': caregiverPermissions,
+      if (profileImageUrl != null) 'profile_image_url': profileImageUrl,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (createdAt != null) 'created_at': createdAt,
+      if (lastModified != null) 'last_modified': lastModified,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FamilyMembersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? familyGroupId,
+    Value<String>? primaryUserId,
+    Value<String>? name,
+    Value<String>? relationship,
+    Value<DateTime>? dateOfBirth,
+    Value<String>? gender,
+    Value<String?>? bloodGroup,
+    Value<String?>? phoneNumber,
+    Value<String?>? email,
+    Value<String?>? allergies,
+    Value<String?>? medicalConditions,
+    Value<String?>? medications,
+    Value<String?>? emergencyContact,
+    Value<bool>? isActive,
+    Value<bool>? hasOwnAccount,
+    Value<String?>? linkedAccountId,
+    Value<bool>? allowIndependentAccess,
+    Value<String?>? caregiverPermissions,
+    Value<String?>? profileImageUrl,
+    Value<bool>? isSynced,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? lastModified,
+    Value<int>? rowid,
+  }) {
+    return FamilyMembersCompanion(
+      id: id ?? this.id,
+      familyGroupId: familyGroupId ?? this.familyGroupId,
+      primaryUserId: primaryUserId ?? this.primaryUserId,
+      name: name ?? this.name,
+      relationship: relationship ?? this.relationship,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      gender: gender ?? this.gender,
+      bloodGroup: bloodGroup ?? this.bloodGroup,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      email: email ?? this.email,
+      allergies: allergies ?? this.allergies,
+      medicalConditions: medicalConditions ?? this.medicalConditions,
+      medications: medications ?? this.medications,
+      emergencyContact: emergencyContact ?? this.emergencyContact,
+      isActive: isActive ?? this.isActive,
+      hasOwnAccount: hasOwnAccount ?? this.hasOwnAccount,
+      linkedAccountId: linkedAccountId ?? this.linkedAccountId,
+      allowIndependentAccess:
+          allowIndependentAccess ?? this.allowIndependentAccess,
+      caregiverPermissions: caregiverPermissions ?? this.caregiverPermissions,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      isSynced: isSynced ?? this.isSynced,
+      createdAt: createdAt ?? this.createdAt,
+      lastModified: lastModified ?? this.lastModified,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (familyGroupId.present) {
+      map['family_group_id'] = Variable<String>(familyGroupId.value);
+    }
+    if (primaryUserId.present) {
+      map['primary_user_id'] = Variable<String>(primaryUserId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (relationship.present) {
+      map['relationship'] = Variable<String>(relationship.value);
+    }
+    if (dateOfBirth.present) {
+      map['date_of_birth'] = Variable<DateTime>(dateOfBirth.value);
+    }
+    if (gender.present) {
+      map['gender'] = Variable<String>(gender.value);
+    }
+    if (bloodGroup.present) {
+      map['blood_group'] = Variable<String>(bloodGroup.value);
+    }
+    if (phoneNumber.present) {
+      map['phone_number'] = Variable<String>(phoneNumber.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (allergies.present) {
+      map['allergies'] = Variable<String>(allergies.value);
+    }
+    if (medicalConditions.present) {
+      map['medical_conditions'] = Variable<String>(medicalConditions.value);
+    }
+    if (medications.present) {
+      map['medications'] = Variable<String>(medications.value);
+    }
+    if (emergencyContact.present) {
+      map['emergency_contact'] = Variable<String>(emergencyContact.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (hasOwnAccount.present) {
+      map['has_own_account'] = Variable<bool>(hasOwnAccount.value);
+    }
+    if (linkedAccountId.present) {
+      map['linked_account_id'] = Variable<String>(linkedAccountId.value);
+    }
+    if (allowIndependentAccess.present) {
+      map['allow_independent_access'] = Variable<bool>(
+        allowIndependentAccess.value,
+      );
+    }
+    if (caregiverPermissions.present) {
+      map['caregiver_permissions'] = Variable<String>(
+        caregiverPermissions.value,
+      );
+    }
+    if (profileImageUrl.present) {
+      map['profile_image_url'] = Variable<String>(profileImageUrl.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (lastModified.present) {
+      map['last_modified'] = Variable<DateTime>(lastModified.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyMembersCompanion(')
+          ..write('id: $id, ')
+          ..write('familyGroupId: $familyGroupId, ')
+          ..write('primaryUserId: $primaryUserId, ')
+          ..write('name: $name, ')
+          ..write('relationship: $relationship, ')
+          ..write('dateOfBirth: $dateOfBirth, ')
+          ..write('gender: $gender, ')
+          ..write('bloodGroup: $bloodGroup, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('email: $email, ')
+          ..write('allergies: $allergies, ')
+          ..write('medicalConditions: $medicalConditions, ')
+          ..write('medications: $medications, ')
+          ..write('emergencyContact: $emergencyContact, ')
+          ..write('isActive: $isActive, ')
+          ..write('hasOwnAccount: $hasOwnAccount, ')
+          ..write('linkedAccountId: $linkedAccountId, ')
+          ..write('allowIndependentAccess: $allowIndependentAccess, ')
+          ..write('caregiverPermissions: $caregiverPermissions, ')
+          ..write('profileImageUrl: $profileImageUrl, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastModified: $lastModified, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FamilyGroupsTable extends FamilyGroups
+    with TableInfo<$FamilyGroupsTable, FamilyGroup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FamilyGroupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _primaryMemberIdMeta = const VerificationMeta(
+    'primaryMemberId',
+  );
+  @override
+  late final GeneratedColumn<String> primaryMemberId = GeneratedColumn<String>(
+    'primary_member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _familyNameMeta = const VerificationMeta(
+    'familyName',
+  );
+  @override
+  late final GeneratedColumn<String> familyName = GeneratedColumn<String>(
+    'family_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _addressMeta = const VerificationMeta(
+    'address',
+  );
+  @override
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+    'address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _villageMeta = const VerificationMeta(
+    'village',
+  );
+  @override
+  late final GeneratedColumn<String> village = GeneratedColumn<String>(
+    'village',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pincodeMeta = const VerificationMeta(
+    'pincode',
+  );
+  @override
+  late final GeneratedColumn<String> pincode = GeneratedColumn<String>(
+    'pincode',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _emergencyContactMeta = const VerificationMeta(
+    'emergencyContact',
+  );
+  @override
+  late final GeneratedColumn<String> emergencyContact = GeneratedColumn<String>(
+    'emergency_contact',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _emergencyPhoneMeta = const VerificationMeta(
+    'emergencyPhone',
+  );
+  @override
+  late final GeneratedColumn<String> emergencyPhone = GeneratedColumn<String>(
+    'emergency_phone',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _healthInsuranceMeta = const VerificationMeta(
+    'healthInsurance',
+  );
+  @override
+  late final GeneratedColumn<String> healthInsurance = GeneratedColumn<String>(
+    'health_insurance',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedMeta = const VerificationMeta(
+    'lastModified',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastModified = GeneratedColumn<DateTime>(
+    'last_modified',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    primaryMemberId,
+    familyName,
+    address,
+    village,
+    pincode,
+    emergencyContact,
+    emergencyPhone,
+    healthInsurance,
+    isActive,
+    isSynced,
+    createdAt,
+    lastModified,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'family_groups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FamilyGroup> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('primary_member_id')) {
+      context.handle(
+        _primaryMemberIdMeta,
+        primaryMemberId.isAcceptableOrUnknown(
+          data['primary_member_id']!,
+          _primaryMemberIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_primaryMemberIdMeta);
+    }
+    if (data.containsKey('family_name')) {
+      context.handle(
+        _familyNameMeta,
+        familyName.isAcceptableOrUnknown(data['family_name']!, _familyNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_familyNameMeta);
+    }
+    if (data.containsKey('address')) {
+      context.handle(
+        _addressMeta,
+        address.isAcceptableOrUnknown(data['address']!, _addressMeta),
+      );
+    }
+    if (data.containsKey('village')) {
+      context.handle(
+        _villageMeta,
+        village.isAcceptableOrUnknown(data['village']!, _villageMeta),
+      );
+    }
+    if (data.containsKey('pincode')) {
+      context.handle(
+        _pincodeMeta,
+        pincode.isAcceptableOrUnknown(data['pincode']!, _pincodeMeta),
+      );
+    }
+    if (data.containsKey('emergency_contact')) {
+      context.handle(
+        _emergencyContactMeta,
+        emergencyContact.isAcceptableOrUnknown(
+          data['emergency_contact']!,
+          _emergencyContactMeta,
+        ),
+      );
+    }
+    if (data.containsKey('emergency_phone')) {
+      context.handle(
+        _emergencyPhoneMeta,
+        emergencyPhone.isAcceptableOrUnknown(
+          data['emergency_phone']!,
+          _emergencyPhoneMeta,
+        ),
+      );
+    }
+    if (data.containsKey('health_insurance')) {
+      context.handle(
+        _healthInsuranceMeta,
+        healthInsurance.isAcceptableOrUnknown(
+          data['health_insurance']!,
+          _healthInsuranceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('last_modified')) {
+      context.handle(
+        _lastModifiedMeta,
+        lastModified.isAcceptableOrUnknown(
+          data['last_modified']!,
+          _lastModifiedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FamilyGroup map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FamilyGroup(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      primaryMemberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}primary_member_id'],
+      )!,
+      familyName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_name'],
+      )!,
+      address: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address'],
+      ),
+      village: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}village'],
+      ),
+      pincode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pincode'],
+      ),
+      emergencyContact: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}emergency_contact'],
+      ),
+      emergencyPhone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}emergency_phone'],
+      ),
+      healthInsurance: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}health_insurance'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      lastModified: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_modified'],
+      )!,
+    );
+  }
+
+  @override
+  $FamilyGroupsTable createAlias(String alias) {
+    return $FamilyGroupsTable(attachedDatabase, alias);
+  }
+}
+
+class FamilyGroup extends DataClass implements Insertable<FamilyGroup> {
+  final String id;
+  final String primaryMemberId;
+  final String familyName;
+  final String? address;
+  final String? village;
+  final String? pincode;
+  final String? emergencyContact;
+  final String? emergencyPhone;
+  final String? healthInsurance;
+  final bool isActive;
+  final bool isSynced;
+  final DateTime createdAt;
+  final DateTime lastModified;
+  const FamilyGroup({
+    required this.id,
+    required this.primaryMemberId,
+    required this.familyName,
+    this.address,
+    this.village,
+    this.pincode,
+    this.emergencyContact,
+    this.emergencyPhone,
+    this.healthInsurance,
+    required this.isActive,
+    required this.isSynced,
+    required this.createdAt,
+    required this.lastModified,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['primary_member_id'] = Variable<String>(primaryMemberId);
+    map['family_name'] = Variable<String>(familyName);
+    if (!nullToAbsent || address != null) {
+      map['address'] = Variable<String>(address);
+    }
+    if (!nullToAbsent || village != null) {
+      map['village'] = Variable<String>(village);
+    }
+    if (!nullToAbsent || pincode != null) {
+      map['pincode'] = Variable<String>(pincode);
+    }
+    if (!nullToAbsent || emergencyContact != null) {
+      map['emergency_contact'] = Variable<String>(emergencyContact);
+    }
+    if (!nullToAbsent || emergencyPhone != null) {
+      map['emergency_phone'] = Variable<String>(emergencyPhone);
+    }
+    if (!nullToAbsent || healthInsurance != null) {
+      map['health_insurance'] = Variable<String>(healthInsurance);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['is_synced'] = Variable<bool>(isSynced);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_modified'] = Variable<DateTime>(lastModified);
+    return map;
+  }
+
+  FamilyGroupsCompanion toCompanion(bool nullToAbsent) {
+    return FamilyGroupsCompanion(
+      id: Value(id),
+      primaryMemberId: Value(primaryMemberId),
+      familyName: Value(familyName),
+      address: address == null && nullToAbsent
+          ? const Value.absent()
+          : Value(address),
+      village: village == null && nullToAbsent
+          ? const Value.absent()
+          : Value(village),
+      pincode: pincode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pincode),
+      emergencyContact: emergencyContact == null && nullToAbsent
+          ? const Value.absent()
+          : Value(emergencyContact),
+      emergencyPhone: emergencyPhone == null && nullToAbsent
+          ? const Value.absent()
+          : Value(emergencyPhone),
+      healthInsurance: healthInsurance == null && nullToAbsent
+          ? const Value.absent()
+          : Value(healthInsurance),
+      isActive: Value(isActive),
+      isSynced: Value(isSynced),
+      createdAt: Value(createdAt),
+      lastModified: Value(lastModified),
+    );
+  }
+
+  factory FamilyGroup.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FamilyGroup(
+      id: serializer.fromJson<String>(json['id']),
+      primaryMemberId: serializer.fromJson<String>(json['primaryMemberId']),
+      familyName: serializer.fromJson<String>(json['familyName']),
+      address: serializer.fromJson<String?>(json['address']),
+      village: serializer.fromJson<String?>(json['village']),
+      pincode: serializer.fromJson<String?>(json['pincode']),
+      emergencyContact: serializer.fromJson<String?>(json['emergencyContact']),
+      emergencyPhone: serializer.fromJson<String?>(json['emergencyPhone']),
+      healthInsurance: serializer.fromJson<String?>(json['healthInsurance']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastModified: serializer.fromJson<DateTime>(json['lastModified']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'primaryMemberId': serializer.toJson<String>(primaryMemberId),
+      'familyName': serializer.toJson<String>(familyName),
+      'address': serializer.toJson<String?>(address),
+      'village': serializer.toJson<String?>(village),
+      'pincode': serializer.toJson<String?>(pincode),
+      'emergencyContact': serializer.toJson<String?>(emergencyContact),
+      'emergencyPhone': serializer.toJson<String?>(emergencyPhone),
+      'healthInsurance': serializer.toJson<String?>(healthInsurance),
+      'isActive': serializer.toJson<bool>(isActive),
+      'isSynced': serializer.toJson<bool>(isSynced),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastModified': serializer.toJson<DateTime>(lastModified),
+    };
+  }
+
+  FamilyGroup copyWith({
+    String? id,
+    String? primaryMemberId,
+    String? familyName,
+    Value<String?> address = const Value.absent(),
+    Value<String?> village = const Value.absent(),
+    Value<String?> pincode = const Value.absent(),
+    Value<String?> emergencyContact = const Value.absent(),
+    Value<String?> emergencyPhone = const Value.absent(),
+    Value<String?> healthInsurance = const Value.absent(),
+    bool? isActive,
+    bool? isSynced,
+    DateTime? createdAt,
+    DateTime? lastModified,
+  }) => FamilyGroup(
+    id: id ?? this.id,
+    primaryMemberId: primaryMemberId ?? this.primaryMemberId,
+    familyName: familyName ?? this.familyName,
+    address: address.present ? address.value : this.address,
+    village: village.present ? village.value : this.village,
+    pincode: pincode.present ? pincode.value : this.pincode,
+    emergencyContact: emergencyContact.present
+        ? emergencyContact.value
+        : this.emergencyContact,
+    emergencyPhone: emergencyPhone.present
+        ? emergencyPhone.value
+        : this.emergencyPhone,
+    healthInsurance: healthInsurance.present
+        ? healthInsurance.value
+        : this.healthInsurance,
+    isActive: isActive ?? this.isActive,
+    isSynced: isSynced ?? this.isSynced,
+    createdAt: createdAt ?? this.createdAt,
+    lastModified: lastModified ?? this.lastModified,
+  );
+  FamilyGroup copyWithCompanion(FamilyGroupsCompanion data) {
+    return FamilyGroup(
+      id: data.id.present ? data.id.value : this.id,
+      primaryMemberId: data.primaryMemberId.present
+          ? data.primaryMemberId.value
+          : this.primaryMemberId,
+      familyName: data.familyName.present
+          ? data.familyName.value
+          : this.familyName,
+      address: data.address.present ? data.address.value : this.address,
+      village: data.village.present ? data.village.value : this.village,
+      pincode: data.pincode.present ? data.pincode.value : this.pincode,
+      emergencyContact: data.emergencyContact.present
+          ? data.emergencyContact.value
+          : this.emergencyContact,
+      emergencyPhone: data.emergencyPhone.present
+          ? data.emergencyPhone.value
+          : this.emergencyPhone,
+      healthInsurance: data.healthInsurance.present
+          ? data.healthInsurance.value
+          : this.healthInsurance,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastModified: data.lastModified.present
+          ? data.lastModified.value
+          : this.lastModified,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyGroup(')
+          ..write('id: $id, ')
+          ..write('primaryMemberId: $primaryMemberId, ')
+          ..write('familyName: $familyName, ')
+          ..write('address: $address, ')
+          ..write('village: $village, ')
+          ..write('pincode: $pincode, ')
+          ..write('emergencyContact: $emergencyContact, ')
+          ..write('emergencyPhone: $emergencyPhone, ')
+          ..write('healthInsurance: $healthInsurance, ')
+          ..write('isActive: $isActive, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastModified: $lastModified')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    primaryMemberId,
+    familyName,
+    address,
+    village,
+    pincode,
+    emergencyContact,
+    emergencyPhone,
+    healthInsurance,
+    isActive,
+    isSynced,
+    createdAt,
+    lastModified,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FamilyGroup &&
+          other.id == this.id &&
+          other.primaryMemberId == this.primaryMemberId &&
+          other.familyName == this.familyName &&
+          other.address == this.address &&
+          other.village == this.village &&
+          other.pincode == this.pincode &&
+          other.emergencyContact == this.emergencyContact &&
+          other.emergencyPhone == this.emergencyPhone &&
+          other.healthInsurance == this.healthInsurance &&
+          other.isActive == this.isActive &&
+          other.isSynced == this.isSynced &&
+          other.createdAt == this.createdAt &&
+          other.lastModified == this.lastModified);
+}
+
+class FamilyGroupsCompanion extends UpdateCompanion<FamilyGroup> {
+  final Value<String> id;
+  final Value<String> primaryMemberId;
+  final Value<String> familyName;
+  final Value<String?> address;
+  final Value<String?> village;
+  final Value<String?> pincode;
+  final Value<String?> emergencyContact;
+  final Value<String?> emergencyPhone;
+  final Value<String?> healthInsurance;
+  final Value<bool> isActive;
+  final Value<bool> isSynced;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> lastModified;
+  final Value<int> rowid;
+  const FamilyGroupsCompanion({
+    this.id = const Value.absent(),
+    this.primaryMemberId = const Value.absent(),
+    this.familyName = const Value.absent(),
+    this.address = const Value.absent(),
+    this.village = const Value.absent(),
+    this.pincode = const Value.absent(),
+    this.emergencyContact = const Value.absent(),
+    this.emergencyPhone = const Value.absent(),
+    this.healthInsurance = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.lastModified = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FamilyGroupsCompanion.insert({
+    required String id,
+    required String primaryMemberId,
+    required String familyName,
+    this.address = const Value.absent(),
+    this.village = const Value.absent(),
+    this.pincode = const Value.absent(),
+    this.emergencyContact = const Value.absent(),
+    this.emergencyPhone = const Value.absent(),
+    this.healthInsurance = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime lastModified,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       primaryMemberId = Value(primaryMemberId),
+       familyName = Value(familyName),
+       createdAt = Value(createdAt),
+       lastModified = Value(lastModified);
+  static Insertable<FamilyGroup> custom({
+    Expression<String>? id,
+    Expression<String>? primaryMemberId,
+    Expression<String>? familyName,
+    Expression<String>? address,
+    Expression<String>? village,
+    Expression<String>? pincode,
+    Expression<String>? emergencyContact,
+    Expression<String>? emergencyPhone,
+    Expression<String>? healthInsurance,
+    Expression<bool>? isActive,
+    Expression<bool>? isSynced,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastModified,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (primaryMemberId != null) 'primary_member_id': primaryMemberId,
+      if (familyName != null) 'family_name': familyName,
+      if (address != null) 'address': address,
+      if (village != null) 'village': village,
+      if (pincode != null) 'pincode': pincode,
+      if (emergencyContact != null) 'emergency_contact': emergencyContact,
+      if (emergencyPhone != null) 'emergency_phone': emergencyPhone,
+      if (healthInsurance != null) 'health_insurance': healthInsurance,
+      if (isActive != null) 'is_active': isActive,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (createdAt != null) 'created_at': createdAt,
+      if (lastModified != null) 'last_modified': lastModified,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FamilyGroupsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? primaryMemberId,
+    Value<String>? familyName,
+    Value<String?>? address,
+    Value<String?>? village,
+    Value<String?>? pincode,
+    Value<String?>? emergencyContact,
+    Value<String?>? emergencyPhone,
+    Value<String?>? healthInsurance,
+    Value<bool>? isActive,
+    Value<bool>? isSynced,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? lastModified,
+    Value<int>? rowid,
+  }) {
+    return FamilyGroupsCompanion(
+      id: id ?? this.id,
+      primaryMemberId: primaryMemberId ?? this.primaryMemberId,
+      familyName: familyName ?? this.familyName,
+      address: address ?? this.address,
+      village: village ?? this.village,
+      pincode: pincode ?? this.pincode,
+      emergencyContact: emergencyContact ?? this.emergencyContact,
+      emergencyPhone: emergencyPhone ?? this.emergencyPhone,
+      healthInsurance: healthInsurance ?? this.healthInsurance,
+      isActive: isActive ?? this.isActive,
+      isSynced: isSynced ?? this.isSynced,
+      createdAt: createdAt ?? this.createdAt,
+      lastModified: lastModified ?? this.lastModified,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (primaryMemberId.present) {
+      map['primary_member_id'] = Variable<String>(primaryMemberId.value);
+    }
+    if (familyName.present) {
+      map['family_name'] = Variable<String>(familyName.value);
+    }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
+    if (village.present) {
+      map['village'] = Variable<String>(village.value);
+    }
+    if (pincode.present) {
+      map['pincode'] = Variable<String>(pincode.value);
+    }
+    if (emergencyContact.present) {
+      map['emergency_contact'] = Variable<String>(emergencyContact.value);
+    }
+    if (emergencyPhone.present) {
+      map['emergency_phone'] = Variable<String>(emergencyPhone.value);
+    }
+    if (healthInsurance.present) {
+      map['health_insurance'] = Variable<String>(healthInsurance.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (lastModified.present) {
+      map['last_modified'] = Variable<DateTime>(lastModified.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyGroupsCompanion(')
+          ..write('id: $id, ')
+          ..write('primaryMemberId: $primaryMemberId, ')
+          ..write('familyName: $familyName, ')
+          ..write('address: $address, ')
+          ..write('village: $village, ')
+          ..write('pincode: $pincode, ')
+          ..write('emergencyContact: $emergencyContact, ')
+          ..write('emergencyPhone: $emergencyPhone, ')
+          ..write('healthInsurance: $healthInsurance, ')
+          ..write('isActive: $isActive, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastModified: $lastModified, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FamilyHealthRecordsTable extends FamilyHealthRecords
+    with TableInfo<$FamilyHealthRecordsTable, FamilyHealthRecord> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FamilyHealthRecordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _familyMemberIdMeta = const VerificationMeta(
+    'familyMemberId',
+  );
+  @override
+  late final GeneratedColumn<String> familyMemberId = GeneratedColumn<String>(
+    'family_member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _familyGroupIdMeta = const VerificationMeta(
+    'familyGroupId',
+  );
+  @override
+  late final GeneratedColumn<String> familyGroupId = GeneratedColumn<String>(
+    'family_group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recordTypeMeta = const VerificationMeta(
+    'recordType',
+  );
+  @override
+  late final GeneratedColumn<String> recordType = GeneratedColumn<String>(
+    'record_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _conditionMeta = const VerificationMeta(
+    'condition',
+  );
+  @override
+  late final GeneratedColumn<String> condition = GeneratedColumn<String>(
+    'condition',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _symptomsMeta = const VerificationMeta(
+    'symptoms',
+  );
+  @override
+  late final GeneratedColumn<String> symptoms = GeneratedColumn<String>(
+    'symptoms',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _severityMeta = const VerificationMeta(
+    'severity',
+  );
+  @override
+  late final GeneratedColumn<String> severity = GeneratedColumn<String>(
+    'severity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('normal'),
+  );
+  static const VerificationMeta _treatmentMeta = const VerificationMeta(
+    'treatment',
+  );
+  @override
+  late final GeneratedColumn<String> treatment = GeneratedColumn<String>(
+    'treatment',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _medicationsMeta = const VerificationMeta(
+    'medications',
+  );
+  @override
+  late final GeneratedColumn<String> medications = GeneratedColumn<String>(
+    'medications',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _doctorNameMeta = const VerificationMeta(
+    'doctorName',
+  );
+  @override
+  late final GeneratedColumn<String> doctorName = GeneratedColumn<String>(
+    'doctor_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _hospitalNameMeta = const VerificationMeta(
+    'hospitalName',
+  );
+  @override
+  late final GeneratedColumn<String> hospitalName = GeneratedColumn<String>(
+    'hospital_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reportUrlMeta = const VerificationMeta(
+    'reportUrl',
+  );
+  @override
+  late final GeneratedColumn<String> reportUrl = GeneratedColumn<String>(
+    'report_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _attachmentsMeta = const VerificationMeta(
+    'attachments',
+  );
+  @override
+  late final GeneratedColumn<String> attachments = GeneratedColumn<String>(
+    'attachments',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recordDateMeta = const VerificationMeta(
+    'recordDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> recordDate = GeneratedColumn<DateTime>(
+    'record_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _followUpDateMeta = const VerificationMeta(
+    'followUpDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> followUpDate = GeneratedColumn<DateTime>(
+    'follow_up_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isEmergencyMeta = const VerificationMeta(
+    'isEmergency',
+  );
+  @override
+  late final GeneratedColumn<bool> isEmergency = GeneratedColumn<bool>(
+    'is_emergency',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_emergency" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isResolvedMeta = const VerificationMeta(
+    'isResolved',
+  );
+  @override
+  late final GeneratedColumn<bool> isResolved = GeneratedColumn<bool>(
+    'is_resolved',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_resolved" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedMeta = const VerificationMeta(
+    'lastModified',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastModified = GeneratedColumn<DateTime>(
+    'last_modified',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    familyMemberId,
+    familyGroupId,
+    recordType,
+    title,
+    description,
+    condition,
+    symptoms,
+    severity,
+    treatment,
+    medications,
+    doctorName,
+    hospitalName,
+    reportUrl,
+    attachments,
+    recordDate,
+    followUpDate,
+    isEmergency,
+    isResolved,
+    notes,
+    isSynced,
+    createdAt,
+    lastModified,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'family_health_records';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FamilyHealthRecord> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('family_member_id')) {
+      context.handle(
+        _familyMemberIdMeta,
+        familyMemberId.isAcceptableOrUnknown(
+          data['family_member_id']!,
+          _familyMemberIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_familyMemberIdMeta);
+    }
+    if (data.containsKey('family_group_id')) {
+      context.handle(
+        _familyGroupIdMeta,
+        familyGroupId.isAcceptableOrUnknown(
+          data['family_group_id']!,
+          _familyGroupIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_familyGroupIdMeta);
+    }
+    if (data.containsKey('record_type')) {
+      context.handle(
+        _recordTypeMeta,
+        recordType.isAcceptableOrUnknown(data['record_type']!, _recordTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordTypeMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('condition')) {
+      context.handle(
+        _conditionMeta,
+        condition.isAcceptableOrUnknown(data['condition']!, _conditionMeta),
+      );
+    }
+    if (data.containsKey('symptoms')) {
+      context.handle(
+        _symptomsMeta,
+        symptoms.isAcceptableOrUnknown(data['symptoms']!, _symptomsMeta),
+      );
+    }
+    if (data.containsKey('severity')) {
+      context.handle(
+        _severityMeta,
+        severity.isAcceptableOrUnknown(data['severity']!, _severityMeta),
+      );
+    }
+    if (data.containsKey('treatment')) {
+      context.handle(
+        _treatmentMeta,
+        treatment.isAcceptableOrUnknown(data['treatment']!, _treatmentMeta),
+      );
+    }
+    if (data.containsKey('medications')) {
+      context.handle(
+        _medicationsMeta,
+        medications.isAcceptableOrUnknown(
+          data['medications']!,
+          _medicationsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('doctor_name')) {
+      context.handle(
+        _doctorNameMeta,
+        doctorName.isAcceptableOrUnknown(data['doctor_name']!, _doctorNameMeta),
+      );
+    }
+    if (data.containsKey('hospital_name')) {
+      context.handle(
+        _hospitalNameMeta,
+        hospitalName.isAcceptableOrUnknown(
+          data['hospital_name']!,
+          _hospitalNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('report_url')) {
+      context.handle(
+        _reportUrlMeta,
+        reportUrl.isAcceptableOrUnknown(data['report_url']!, _reportUrlMeta),
+      );
+    }
+    if (data.containsKey('attachments')) {
+      context.handle(
+        _attachmentsMeta,
+        attachments.isAcceptableOrUnknown(
+          data['attachments']!,
+          _attachmentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('record_date')) {
+      context.handle(
+        _recordDateMeta,
+        recordDate.isAcceptableOrUnknown(data['record_date']!, _recordDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordDateMeta);
+    }
+    if (data.containsKey('follow_up_date')) {
+      context.handle(
+        _followUpDateMeta,
+        followUpDate.isAcceptableOrUnknown(
+          data['follow_up_date']!,
+          _followUpDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_emergency')) {
+      context.handle(
+        _isEmergencyMeta,
+        isEmergency.isAcceptableOrUnknown(
+          data['is_emergency']!,
+          _isEmergencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_resolved')) {
+      context.handle(
+        _isResolvedMeta,
+        isResolved.isAcceptableOrUnknown(data['is_resolved']!, _isResolvedMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('last_modified')) {
+      context.handle(
+        _lastModifiedMeta,
+        lastModified.isAcceptableOrUnknown(
+          data['last_modified']!,
+          _lastModifiedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FamilyHealthRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FamilyHealthRecord(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      familyMemberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_member_id'],
+      )!,
+      familyGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_group_id'],
+      )!,
+      recordType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}record_type'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      condition: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}condition'],
+      ),
+      symptoms: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}symptoms'],
+      ),
+      severity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}severity'],
+      )!,
+      treatment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}treatment'],
+      ),
+      medications: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}medications'],
+      ),
+      doctorName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}doctor_name'],
+      ),
+      hospitalName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hospital_name'],
+      ),
+      reportUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}report_url'],
+      ),
+      attachments: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}attachments'],
+      ),
+      recordDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}record_date'],
+      )!,
+      followUpDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}follow_up_date'],
+      ),
+      isEmergency: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_emergency'],
+      )!,
+      isResolved: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_resolved'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      lastModified: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_modified'],
+      )!,
+    );
+  }
+
+  @override
+  $FamilyHealthRecordsTable createAlias(String alias) {
+    return $FamilyHealthRecordsTable(attachedDatabase, alias);
+  }
+}
+
+class FamilyHealthRecord extends DataClass
+    implements Insertable<FamilyHealthRecord> {
+  final String id;
+  final String familyMemberId;
+  final String familyGroupId;
+  final String recordType;
+  final String title;
+  final String? description;
+  final String? condition;
+  final String? symptoms;
+  final String severity;
+  final String? treatment;
+  final String? medications;
+  final String? doctorName;
+  final String? hospitalName;
+  final String? reportUrl;
+  final String? attachments;
+  final DateTime recordDate;
+  final DateTime? followUpDate;
+  final bool isEmergency;
+  final bool isResolved;
+  final String? notes;
+  final bool isSynced;
+  final DateTime createdAt;
+  final DateTime lastModified;
+  const FamilyHealthRecord({
+    required this.id,
+    required this.familyMemberId,
+    required this.familyGroupId,
+    required this.recordType,
+    required this.title,
+    this.description,
+    this.condition,
+    this.symptoms,
+    required this.severity,
+    this.treatment,
+    this.medications,
+    this.doctorName,
+    this.hospitalName,
+    this.reportUrl,
+    this.attachments,
+    required this.recordDate,
+    this.followUpDate,
+    required this.isEmergency,
+    required this.isResolved,
+    this.notes,
+    required this.isSynced,
+    required this.createdAt,
+    required this.lastModified,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['family_member_id'] = Variable<String>(familyMemberId);
+    map['family_group_id'] = Variable<String>(familyGroupId);
+    map['record_type'] = Variable<String>(recordType);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || condition != null) {
+      map['condition'] = Variable<String>(condition);
+    }
+    if (!nullToAbsent || symptoms != null) {
+      map['symptoms'] = Variable<String>(symptoms);
+    }
+    map['severity'] = Variable<String>(severity);
+    if (!nullToAbsent || treatment != null) {
+      map['treatment'] = Variable<String>(treatment);
+    }
+    if (!nullToAbsent || medications != null) {
+      map['medications'] = Variable<String>(medications);
+    }
+    if (!nullToAbsent || doctorName != null) {
+      map['doctor_name'] = Variable<String>(doctorName);
+    }
+    if (!nullToAbsent || hospitalName != null) {
+      map['hospital_name'] = Variable<String>(hospitalName);
+    }
+    if (!nullToAbsent || reportUrl != null) {
+      map['report_url'] = Variable<String>(reportUrl);
+    }
+    if (!nullToAbsent || attachments != null) {
+      map['attachments'] = Variable<String>(attachments);
+    }
+    map['record_date'] = Variable<DateTime>(recordDate);
+    if (!nullToAbsent || followUpDate != null) {
+      map['follow_up_date'] = Variable<DateTime>(followUpDate);
+    }
+    map['is_emergency'] = Variable<bool>(isEmergency);
+    map['is_resolved'] = Variable<bool>(isResolved);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['is_synced'] = Variable<bool>(isSynced);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_modified'] = Variable<DateTime>(lastModified);
+    return map;
+  }
+
+  FamilyHealthRecordsCompanion toCompanion(bool nullToAbsent) {
+    return FamilyHealthRecordsCompanion(
+      id: Value(id),
+      familyMemberId: Value(familyMemberId),
+      familyGroupId: Value(familyGroupId),
+      recordType: Value(recordType),
+      title: Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      condition: condition == null && nullToAbsent
+          ? const Value.absent()
+          : Value(condition),
+      symptoms: symptoms == null && nullToAbsent
+          ? const Value.absent()
+          : Value(symptoms),
+      severity: Value(severity),
+      treatment: treatment == null && nullToAbsent
+          ? const Value.absent()
+          : Value(treatment),
+      medications: medications == null && nullToAbsent
+          ? const Value.absent()
+          : Value(medications),
+      doctorName: doctorName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(doctorName),
+      hospitalName: hospitalName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(hospitalName),
+      reportUrl: reportUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reportUrl),
+      attachments: attachments == null && nullToAbsent
+          ? const Value.absent()
+          : Value(attachments),
+      recordDate: Value(recordDate),
+      followUpDate: followUpDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(followUpDate),
+      isEmergency: Value(isEmergency),
+      isResolved: Value(isResolved),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      isSynced: Value(isSynced),
+      createdAt: Value(createdAt),
+      lastModified: Value(lastModified),
+    );
+  }
+
+  factory FamilyHealthRecord.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FamilyHealthRecord(
+      id: serializer.fromJson<String>(json['id']),
+      familyMemberId: serializer.fromJson<String>(json['familyMemberId']),
+      familyGroupId: serializer.fromJson<String>(json['familyGroupId']),
+      recordType: serializer.fromJson<String>(json['recordType']),
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
+      condition: serializer.fromJson<String?>(json['condition']),
+      symptoms: serializer.fromJson<String?>(json['symptoms']),
+      severity: serializer.fromJson<String>(json['severity']),
+      treatment: serializer.fromJson<String?>(json['treatment']),
+      medications: serializer.fromJson<String?>(json['medications']),
+      doctorName: serializer.fromJson<String?>(json['doctorName']),
+      hospitalName: serializer.fromJson<String?>(json['hospitalName']),
+      reportUrl: serializer.fromJson<String?>(json['reportUrl']),
+      attachments: serializer.fromJson<String?>(json['attachments']),
+      recordDate: serializer.fromJson<DateTime>(json['recordDate']),
+      followUpDate: serializer.fromJson<DateTime?>(json['followUpDate']),
+      isEmergency: serializer.fromJson<bool>(json['isEmergency']),
+      isResolved: serializer.fromJson<bool>(json['isResolved']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastModified: serializer.fromJson<DateTime>(json['lastModified']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'familyMemberId': serializer.toJson<String>(familyMemberId),
+      'familyGroupId': serializer.toJson<String>(familyGroupId),
+      'recordType': serializer.toJson<String>(recordType),
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String?>(description),
+      'condition': serializer.toJson<String?>(condition),
+      'symptoms': serializer.toJson<String?>(symptoms),
+      'severity': serializer.toJson<String>(severity),
+      'treatment': serializer.toJson<String?>(treatment),
+      'medications': serializer.toJson<String?>(medications),
+      'doctorName': serializer.toJson<String?>(doctorName),
+      'hospitalName': serializer.toJson<String?>(hospitalName),
+      'reportUrl': serializer.toJson<String?>(reportUrl),
+      'attachments': serializer.toJson<String?>(attachments),
+      'recordDate': serializer.toJson<DateTime>(recordDate),
+      'followUpDate': serializer.toJson<DateTime?>(followUpDate),
+      'isEmergency': serializer.toJson<bool>(isEmergency),
+      'isResolved': serializer.toJson<bool>(isResolved),
+      'notes': serializer.toJson<String?>(notes),
+      'isSynced': serializer.toJson<bool>(isSynced),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastModified': serializer.toJson<DateTime>(lastModified),
+    };
+  }
+
+  FamilyHealthRecord copyWith({
+    String? id,
+    String? familyMemberId,
+    String? familyGroupId,
+    String? recordType,
+    String? title,
+    Value<String?> description = const Value.absent(),
+    Value<String?> condition = const Value.absent(),
+    Value<String?> symptoms = const Value.absent(),
+    String? severity,
+    Value<String?> treatment = const Value.absent(),
+    Value<String?> medications = const Value.absent(),
+    Value<String?> doctorName = const Value.absent(),
+    Value<String?> hospitalName = const Value.absent(),
+    Value<String?> reportUrl = const Value.absent(),
+    Value<String?> attachments = const Value.absent(),
+    DateTime? recordDate,
+    Value<DateTime?> followUpDate = const Value.absent(),
+    bool? isEmergency,
+    bool? isResolved,
+    Value<String?> notes = const Value.absent(),
+    bool? isSynced,
+    DateTime? createdAt,
+    DateTime? lastModified,
+  }) => FamilyHealthRecord(
+    id: id ?? this.id,
+    familyMemberId: familyMemberId ?? this.familyMemberId,
+    familyGroupId: familyGroupId ?? this.familyGroupId,
+    recordType: recordType ?? this.recordType,
+    title: title ?? this.title,
+    description: description.present ? description.value : this.description,
+    condition: condition.present ? condition.value : this.condition,
+    symptoms: symptoms.present ? symptoms.value : this.symptoms,
+    severity: severity ?? this.severity,
+    treatment: treatment.present ? treatment.value : this.treatment,
+    medications: medications.present ? medications.value : this.medications,
+    doctorName: doctorName.present ? doctorName.value : this.doctorName,
+    hospitalName: hospitalName.present ? hospitalName.value : this.hospitalName,
+    reportUrl: reportUrl.present ? reportUrl.value : this.reportUrl,
+    attachments: attachments.present ? attachments.value : this.attachments,
+    recordDate: recordDate ?? this.recordDate,
+    followUpDate: followUpDate.present ? followUpDate.value : this.followUpDate,
+    isEmergency: isEmergency ?? this.isEmergency,
+    isResolved: isResolved ?? this.isResolved,
+    notes: notes.present ? notes.value : this.notes,
+    isSynced: isSynced ?? this.isSynced,
+    createdAt: createdAt ?? this.createdAt,
+    lastModified: lastModified ?? this.lastModified,
+  );
+  FamilyHealthRecord copyWithCompanion(FamilyHealthRecordsCompanion data) {
+    return FamilyHealthRecord(
+      id: data.id.present ? data.id.value : this.id,
+      familyMemberId: data.familyMemberId.present
+          ? data.familyMemberId.value
+          : this.familyMemberId,
+      familyGroupId: data.familyGroupId.present
+          ? data.familyGroupId.value
+          : this.familyGroupId,
+      recordType: data.recordType.present
+          ? data.recordType.value
+          : this.recordType,
+      title: data.title.present ? data.title.value : this.title,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      condition: data.condition.present ? data.condition.value : this.condition,
+      symptoms: data.symptoms.present ? data.symptoms.value : this.symptoms,
+      severity: data.severity.present ? data.severity.value : this.severity,
+      treatment: data.treatment.present ? data.treatment.value : this.treatment,
+      medications: data.medications.present
+          ? data.medications.value
+          : this.medications,
+      doctorName: data.doctorName.present
+          ? data.doctorName.value
+          : this.doctorName,
+      hospitalName: data.hospitalName.present
+          ? data.hospitalName.value
+          : this.hospitalName,
+      reportUrl: data.reportUrl.present ? data.reportUrl.value : this.reportUrl,
+      attachments: data.attachments.present
+          ? data.attachments.value
+          : this.attachments,
+      recordDate: data.recordDate.present
+          ? data.recordDate.value
+          : this.recordDate,
+      followUpDate: data.followUpDate.present
+          ? data.followUpDate.value
+          : this.followUpDate,
+      isEmergency: data.isEmergency.present
+          ? data.isEmergency.value
+          : this.isEmergency,
+      isResolved: data.isResolved.present
+          ? data.isResolved.value
+          : this.isResolved,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastModified: data.lastModified.present
+          ? data.lastModified.value
+          : this.lastModified,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyHealthRecord(')
+          ..write('id: $id, ')
+          ..write('familyMemberId: $familyMemberId, ')
+          ..write('familyGroupId: $familyGroupId, ')
+          ..write('recordType: $recordType, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('condition: $condition, ')
+          ..write('symptoms: $symptoms, ')
+          ..write('severity: $severity, ')
+          ..write('treatment: $treatment, ')
+          ..write('medications: $medications, ')
+          ..write('doctorName: $doctorName, ')
+          ..write('hospitalName: $hospitalName, ')
+          ..write('reportUrl: $reportUrl, ')
+          ..write('attachments: $attachments, ')
+          ..write('recordDate: $recordDate, ')
+          ..write('followUpDate: $followUpDate, ')
+          ..write('isEmergency: $isEmergency, ')
+          ..write('isResolved: $isResolved, ')
+          ..write('notes: $notes, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastModified: $lastModified')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    familyMemberId,
+    familyGroupId,
+    recordType,
+    title,
+    description,
+    condition,
+    symptoms,
+    severity,
+    treatment,
+    medications,
+    doctorName,
+    hospitalName,
+    reportUrl,
+    attachments,
+    recordDate,
+    followUpDate,
+    isEmergency,
+    isResolved,
+    notes,
+    isSynced,
+    createdAt,
+    lastModified,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FamilyHealthRecord &&
+          other.id == this.id &&
+          other.familyMemberId == this.familyMemberId &&
+          other.familyGroupId == this.familyGroupId &&
+          other.recordType == this.recordType &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.condition == this.condition &&
+          other.symptoms == this.symptoms &&
+          other.severity == this.severity &&
+          other.treatment == this.treatment &&
+          other.medications == this.medications &&
+          other.doctorName == this.doctorName &&
+          other.hospitalName == this.hospitalName &&
+          other.reportUrl == this.reportUrl &&
+          other.attachments == this.attachments &&
+          other.recordDate == this.recordDate &&
+          other.followUpDate == this.followUpDate &&
+          other.isEmergency == this.isEmergency &&
+          other.isResolved == this.isResolved &&
+          other.notes == this.notes &&
+          other.isSynced == this.isSynced &&
+          other.createdAt == this.createdAt &&
+          other.lastModified == this.lastModified);
+}
+
+class FamilyHealthRecordsCompanion extends UpdateCompanion<FamilyHealthRecord> {
+  final Value<String> id;
+  final Value<String> familyMemberId;
+  final Value<String> familyGroupId;
+  final Value<String> recordType;
+  final Value<String> title;
+  final Value<String?> description;
+  final Value<String?> condition;
+  final Value<String?> symptoms;
+  final Value<String> severity;
+  final Value<String?> treatment;
+  final Value<String?> medications;
+  final Value<String?> doctorName;
+  final Value<String?> hospitalName;
+  final Value<String?> reportUrl;
+  final Value<String?> attachments;
+  final Value<DateTime> recordDate;
+  final Value<DateTime?> followUpDate;
+  final Value<bool> isEmergency;
+  final Value<bool> isResolved;
+  final Value<String?> notes;
+  final Value<bool> isSynced;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> lastModified;
+  final Value<int> rowid;
+  const FamilyHealthRecordsCompanion({
+    this.id = const Value.absent(),
+    this.familyMemberId = const Value.absent(),
+    this.familyGroupId = const Value.absent(),
+    this.recordType = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.condition = const Value.absent(),
+    this.symptoms = const Value.absent(),
+    this.severity = const Value.absent(),
+    this.treatment = const Value.absent(),
+    this.medications = const Value.absent(),
+    this.doctorName = const Value.absent(),
+    this.hospitalName = const Value.absent(),
+    this.reportUrl = const Value.absent(),
+    this.attachments = const Value.absent(),
+    this.recordDate = const Value.absent(),
+    this.followUpDate = const Value.absent(),
+    this.isEmergency = const Value.absent(),
+    this.isResolved = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.lastModified = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FamilyHealthRecordsCompanion.insert({
+    required String id,
+    required String familyMemberId,
+    required String familyGroupId,
+    required String recordType,
+    required String title,
+    this.description = const Value.absent(),
+    this.condition = const Value.absent(),
+    this.symptoms = const Value.absent(),
+    this.severity = const Value.absent(),
+    this.treatment = const Value.absent(),
+    this.medications = const Value.absent(),
+    this.doctorName = const Value.absent(),
+    this.hospitalName = const Value.absent(),
+    this.reportUrl = const Value.absent(),
+    this.attachments = const Value.absent(),
+    required DateTime recordDate,
+    this.followUpDate = const Value.absent(),
+    this.isEmergency = const Value.absent(),
+    this.isResolved = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime lastModified,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       familyMemberId = Value(familyMemberId),
+       familyGroupId = Value(familyGroupId),
+       recordType = Value(recordType),
+       title = Value(title),
+       recordDate = Value(recordDate),
+       createdAt = Value(createdAt),
+       lastModified = Value(lastModified);
+  static Insertable<FamilyHealthRecord> custom({
+    Expression<String>? id,
+    Expression<String>? familyMemberId,
+    Expression<String>? familyGroupId,
+    Expression<String>? recordType,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<String>? condition,
+    Expression<String>? symptoms,
+    Expression<String>? severity,
+    Expression<String>? treatment,
+    Expression<String>? medications,
+    Expression<String>? doctorName,
+    Expression<String>? hospitalName,
+    Expression<String>? reportUrl,
+    Expression<String>? attachments,
+    Expression<DateTime>? recordDate,
+    Expression<DateTime>? followUpDate,
+    Expression<bool>? isEmergency,
+    Expression<bool>? isResolved,
+    Expression<String>? notes,
+    Expression<bool>? isSynced,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastModified,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (familyMemberId != null) 'family_member_id': familyMemberId,
+      if (familyGroupId != null) 'family_group_id': familyGroupId,
+      if (recordType != null) 'record_type': recordType,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (condition != null) 'condition': condition,
+      if (symptoms != null) 'symptoms': symptoms,
+      if (severity != null) 'severity': severity,
+      if (treatment != null) 'treatment': treatment,
+      if (medications != null) 'medications': medications,
+      if (doctorName != null) 'doctor_name': doctorName,
+      if (hospitalName != null) 'hospital_name': hospitalName,
+      if (reportUrl != null) 'report_url': reportUrl,
+      if (attachments != null) 'attachments': attachments,
+      if (recordDate != null) 'record_date': recordDate,
+      if (followUpDate != null) 'follow_up_date': followUpDate,
+      if (isEmergency != null) 'is_emergency': isEmergency,
+      if (isResolved != null) 'is_resolved': isResolved,
+      if (notes != null) 'notes': notes,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (createdAt != null) 'created_at': createdAt,
+      if (lastModified != null) 'last_modified': lastModified,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FamilyHealthRecordsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? familyMemberId,
+    Value<String>? familyGroupId,
+    Value<String>? recordType,
+    Value<String>? title,
+    Value<String?>? description,
+    Value<String?>? condition,
+    Value<String?>? symptoms,
+    Value<String>? severity,
+    Value<String?>? treatment,
+    Value<String?>? medications,
+    Value<String?>? doctorName,
+    Value<String?>? hospitalName,
+    Value<String?>? reportUrl,
+    Value<String?>? attachments,
+    Value<DateTime>? recordDate,
+    Value<DateTime?>? followUpDate,
+    Value<bool>? isEmergency,
+    Value<bool>? isResolved,
+    Value<String?>? notes,
+    Value<bool>? isSynced,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? lastModified,
+    Value<int>? rowid,
+  }) {
+    return FamilyHealthRecordsCompanion(
+      id: id ?? this.id,
+      familyMemberId: familyMemberId ?? this.familyMemberId,
+      familyGroupId: familyGroupId ?? this.familyGroupId,
+      recordType: recordType ?? this.recordType,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      condition: condition ?? this.condition,
+      symptoms: symptoms ?? this.symptoms,
+      severity: severity ?? this.severity,
+      treatment: treatment ?? this.treatment,
+      medications: medications ?? this.medications,
+      doctorName: doctorName ?? this.doctorName,
+      hospitalName: hospitalName ?? this.hospitalName,
+      reportUrl: reportUrl ?? this.reportUrl,
+      attachments: attachments ?? this.attachments,
+      recordDate: recordDate ?? this.recordDate,
+      followUpDate: followUpDate ?? this.followUpDate,
+      isEmergency: isEmergency ?? this.isEmergency,
+      isResolved: isResolved ?? this.isResolved,
+      notes: notes ?? this.notes,
+      isSynced: isSynced ?? this.isSynced,
+      createdAt: createdAt ?? this.createdAt,
+      lastModified: lastModified ?? this.lastModified,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (familyMemberId.present) {
+      map['family_member_id'] = Variable<String>(familyMemberId.value);
+    }
+    if (familyGroupId.present) {
+      map['family_group_id'] = Variable<String>(familyGroupId.value);
+    }
+    if (recordType.present) {
+      map['record_type'] = Variable<String>(recordType.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (condition.present) {
+      map['condition'] = Variable<String>(condition.value);
+    }
+    if (symptoms.present) {
+      map['symptoms'] = Variable<String>(symptoms.value);
+    }
+    if (severity.present) {
+      map['severity'] = Variable<String>(severity.value);
+    }
+    if (treatment.present) {
+      map['treatment'] = Variable<String>(treatment.value);
+    }
+    if (medications.present) {
+      map['medications'] = Variable<String>(medications.value);
+    }
+    if (doctorName.present) {
+      map['doctor_name'] = Variable<String>(doctorName.value);
+    }
+    if (hospitalName.present) {
+      map['hospital_name'] = Variable<String>(hospitalName.value);
+    }
+    if (reportUrl.present) {
+      map['report_url'] = Variable<String>(reportUrl.value);
+    }
+    if (attachments.present) {
+      map['attachments'] = Variable<String>(attachments.value);
+    }
+    if (recordDate.present) {
+      map['record_date'] = Variable<DateTime>(recordDate.value);
+    }
+    if (followUpDate.present) {
+      map['follow_up_date'] = Variable<DateTime>(followUpDate.value);
+    }
+    if (isEmergency.present) {
+      map['is_emergency'] = Variable<bool>(isEmergency.value);
+    }
+    if (isResolved.present) {
+      map['is_resolved'] = Variable<bool>(isResolved.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (lastModified.present) {
+      map['last_modified'] = Variable<DateTime>(lastModified.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyHealthRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('familyMemberId: $familyMemberId, ')
+          ..write('familyGroupId: $familyGroupId, ')
+          ..write('recordType: $recordType, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('condition: $condition, ')
+          ..write('symptoms: $symptoms, ')
+          ..write('severity: $severity, ')
+          ..write('treatment: $treatment, ')
+          ..write('medications: $medications, ')
+          ..write('doctorName: $doctorName, ')
+          ..write('hospitalName: $hospitalName, ')
+          ..write('reportUrl: $reportUrl, ')
+          ..write('attachments: $attachments, ')
+          ..write('recordDate: $recordDate, ')
+          ..write('followUpDate: $followUpDate, ')
+          ..write('isEmergency: $isEmergency, ')
+          ..write('isResolved: $isResolved, ')
+          ..write('notes: $notes, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastModified: $lastModified, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CaregiverSessionsTable extends CaregiverSessions
+    with TableInfo<$CaregiverSessionsTable, CaregiverSession> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CaregiverSessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _caregiverIdMeta = const VerificationMeta(
+    'caregiverId',
+  );
+  @override
+  late final GeneratedColumn<String> caregiverId = GeneratedColumn<String>(
+    'caregiver_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dependentIdMeta = const VerificationMeta(
+    'dependentId',
+  );
+  @override
+  late final GeneratedColumn<String> dependentId = GeneratedColumn<String>(
+    'dependent_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startTimeMeta = const VerificationMeta(
+    'startTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startTime = GeneratedColumn<DateTime>(
+    'start_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endTimeMeta = const VerificationMeta(
+    'endTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> endTime = GeneratedColumn<DateTime>(
+    'end_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activatedFeaturesMeta = const VerificationMeta(
+    'activatedFeatures',
+  );
+  @override
+  late final GeneratedColumn<String> activatedFeatures =
+      GeneratedColumn<String>(
+        'activated_features',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _actionsPerformedMeta = const VerificationMeta(
+    'actionsPerformed',
+  );
+  @override
+  late final GeneratedColumn<String> actionsPerformed = GeneratedColumn<String>(
+    'actions_performed',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    caregiverId,
+    dependentId,
+    startTime,
+    endTime,
+    activatedFeatures,
+    actionsPerformed,
+    isActive,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'caregiver_sessions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CaregiverSession> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('caregiver_id')) {
+      context.handle(
+        _caregiverIdMeta,
+        caregiverId.isAcceptableOrUnknown(
+          data['caregiver_id']!,
+          _caregiverIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_caregiverIdMeta);
+    }
+    if (data.containsKey('dependent_id')) {
+      context.handle(
+        _dependentIdMeta,
+        dependentId.isAcceptableOrUnknown(
+          data['dependent_id']!,
+          _dependentIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dependentIdMeta);
+    }
+    if (data.containsKey('start_time')) {
+      context.handle(
+        _startTimeMeta,
+        startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startTimeMeta);
+    }
+    if (data.containsKey('end_time')) {
+      context.handle(
+        _endTimeMeta,
+        endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta),
+      );
+    }
+    if (data.containsKey('activated_features')) {
+      context.handle(
+        _activatedFeaturesMeta,
+        activatedFeatures.isAcceptableOrUnknown(
+          data['activated_features']!,
+          _activatedFeaturesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('actions_performed')) {
+      context.handle(
+        _actionsPerformedMeta,
+        actionsPerformed.isAcceptableOrUnknown(
+          data['actions_performed']!,
+          _actionsPerformedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CaregiverSession map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CaregiverSession(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      caregiverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}caregiver_id'],
+      )!,
+      dependentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dependent_id'],
+      )!,
+      startTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start_time'],
+      )!,
+      endTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}end_time'],
+      ),
+      activatedFeatures: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}activated_features'],
+      ),
+      actionsPerformed: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}actions_performed'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CaregiverSessionsTable createAlias(String alias) {
+    return $CaregiverSessionsTable(attachedDatabase, alias);
+  }
+}
+
+class CaregiverSession extends DataClass
+    implements Insertable<CaregiverSession> {
+  final String id;
+  final String caregiverId;
+  final String dependentId;
+  final DateTime startTime;
+  final DateTime? endTime;
+  final String? activatedFeatures;
+  final String? actionsPerformed;
+  final bool isActive;
+  final DateTime createdAt;
+  const CaregiverSession({
+    required this.id,
+    required this.caregiverId,
+    required this.dependentId,
+    required this.startTime,
+    this.endTime,
+    this.activatedFeatures,
+    this.actionsPerformed,
+    required this.isActive,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['caregiver_id'] = Variable<String>(caregiverId);
+    map['dependent_id'] = Variable<String>(dependentId);
+    map['start_time'] = Variable<DateTime>(startTime);
+    if (!nullToAbsent || endTime != null) {
+      map['end_time'] = Variable<DateTime>(endTime);
+    }
+    if (!nullToAbsent || activatedFeatures != null) {
+      map['activated_features'] = Variable<String>(activatedFeatures);
+    }
+    if (!nullToAbsent || actionsPerformed != null) {
+      map['actions_performed'] = Variable<String>(actionsPerformed);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  CaregiverSessionsCompanion toCompanion(bool nullToAbsent) {
+    return CaregiverSessionsCompanion(
+      id: Value(id),
+      caregiverId: Value(caregiverId),
+      dependentId: Value(dependentId),
+      startTime: Value(startTime),
+      endTime: endTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endTime),
+      activatedFeatures: activatedFeatures == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activatedFeatures),
+      actionsPerformed: actionsPerformed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(actionsPerformed),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory CaregiverSession.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CaregiverSession(
+      id: serializer.fromJson<String>(json['id']),
+      caregiverId: serializer.fromJson<String>(json['caregiverId']),
+      dependentId: serializer.fromJson<String>(json['dependentId']),
+      startTime: serializer.fromJson<DateTime>(json['startTime']),
+      endTime: serializer.fromJson<DateTime?>(json['endTime']),
+      activatedFeatures: serializer.fromJson<String?>(
+        json['activatedFeatures'],
+      ),
+      actionsPerformed: serializer.fromJson<String?>(json['actionsPerformed']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'caregiverId': serializer.toJson<String>(caregiverId),
+      'dependentId': serializer.toJson<String>(dependentId),
+      'startTime': serializer.toJson<DateTime>(startTime),
+      'endTime': serializer.toJson<DateTime?>(endTime),
+      'activatedFeatures': serializer.toJson<String?>(activatedFeatures),
+      'actionsPerformed': serializer.toJson<String?>(actionsPerformed),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  CaregiverSession copyWith({
+    String? id,
+    String? caregiverId,
+    String? dependentId,
+    DateTime? startTime,
+    Value<DateTime?> endTime = const Value.absent(),
+    Value<String?> activatedFeatures = const Value.absent(),
+    Value<String?> actionsPerformed = const Value.absent(),
+    bool? isActive,
+    DateTime? createdAt,
+  }) => CaregiverSession(
+    id: id ?? this.id,
+    caregiverId: caregiverId ?? this.caregiverId,
+    dependentId: dependentId ?? this.dependentId,
+    startTime: startTime ?? this.startTime,
+    endTime: endTime.present ? endTime.value : this.endTime,
+    activatedFeatures: activatedFeatures.present
+        ? activatedFeatures.value
+        : this.activatedFeatures,
+    actionsPerformed: actionsPerformed.present
+        ? actionsPerformed.value
+        : this.actionsPerformed,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  CaregiverSession copyWithCompanion(CaregiverSessionsCompanion data) {
+    return CaregiverSession(
+      id: data.id.present ? data.id.value : this.id,
+      caregiverId: data.caregiverId.present
+          ? data.caregiverId.value
+          : this.caregiverId,
+      dependentId: data.dependentId.present
+          ? data.dependentId.value
+          : this.dependentId,
+      startTime: data.startTime.present ? data.startTime.value : this.startTime,
+      endTime: data.endTime.present ? data.endTime.value : this.endTime,
+      activatedFeatures: data.activatedFeatures.present
+          ? data.activatedFeatures.value
+          : this.activatedFeatures,
+      actionsPerformed: data.actionsPerformed.present
+          ? data.actionsPerformed.value
+          : this.actionsPerformed,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CaregiverSession(')
+          ..write('id: $id, ')
+          ..write('caregiverId: $caregiverId, ')
+          ..write('dependentId: $dependentId, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('activatedFeatures: $activatedFeatures, ')
+          ..write('actionsPerformed: $actionsPerformed, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    caregiverId,
+    dependentId,
+    startTime,
+    endTime,
+    activatedFeatures,
+    actionsPerformed,
+    isActive,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CaregiverSession &&
+          other.id == this.id &&
+          other.caregiverId == this.caregiverId &&
+          other.dependentId == this.dependentId &&
+          other.startTime == this.startTime &&
+          other.endTime == this.endTime &&
+          other.activatedFeatures == this.activatedFeatures &&
+          other.actionsPerformed == this.actionsPerformed &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt);
+}
+
+class CaregiverSessionsCompanion extends UpdateCompanion<CaregiverSession> {
+  final Value<String> id;
+  final Value<String> caregiverId;
+  final Value<String> dependentId;
+  final Value<DateTime> startTime;
+  final Value<DateTime?> endTime;
+  final Value<String?> activatedFeatures;
+  final Value<String?> actionsPerformed;
+  final Value<bool> isActive;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const CaregiverSessionsCompanion({
+    this.id = const Value.absent(),
+    this.caregiverId = const Value.absent(),
+    this.dependentId = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.activatedFeatures = const Value.absent(),
+    this.actionsPerformed = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CaregiverSessionsCompanion.insert({
+    required String id,
+    required String caregiverId,
+    required String dependentId,
+    required DateTime startTime,
+    this.endTime = const Value.absent(),
+    this.activatedFeatures = const Value.absent(),
+    this.actionsPerformed = const Value.absent(),
+    this.isActive = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       caregiverId = Value(caregiverId),
+       dependentId = Value(dependentId),
+       startTime = Value(startTime),
+       createdAt = Value(createdAt);
+  static Insertable<CaregiverSession> custom({
+    Expression<String>? id,
+    Expression<String>? caregiverId,
+    Expression<String>? dependentId,
+    Expression<DateTime>? startTime,
+    Expression<DateTime>? endTime,
+    Expression<String>? activatedFeatures,
+    Expression<String>? actionsPerformed,
+    Expression<bool>? isActive,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (caregiverId != null) 'caregiver_id': caregiverId,
+      if (dependentId != null) 'dependent_id': dependentId,
+      if (startTime != null) 'start_time': startTime,
+      if (endTime != null) 'end_time': endTime,
+      if (activatedFeatures != null) 'activated_features': activatedFeatures,
+      if (actionsPerformed != null) 'actions_performed': actionsPerformed,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CaregiverSessionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? caregiverId,
+    Value<String>? dependentId,
+    Value<DateTime>? startTime,
+    Value<DateTime?>? endTime,
+    Value<String?>? activatedFeatures,
+    Value<String?>? actionsPerformed,
+    Value<bool>? isActive,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return CaregiverSessionsCompanion(
+      id: id ?? this.id,
+      caregiverId: caregiverId ?? this.caregiverId,
+      dependentId: dependentId ?? this.dependentId,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      activatedFeatures: activatedFeatures ?? this.activatedFeatures,
+      actionsPerformed: actionsPerformed ?? this.actionsPerformed,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (caregiverId.present) {
+      map['caregiver_id'] = Variable<String>(caregiverId.value);
+    }
+    if (dependentId.present) {
+      map['dependent_id'] = Variable<String>(dependentId.value);
+    }
+    if (startTime.present) {
+      map['start_time'] = Variable<DateTime>(startTime.value);
+    }
+    if (endTime.present) {
+      map['end_time'] = Variable<DateTime>(endTime.value);
+    }
+    if (activatedFeatures.present) {
+      map['activated_features'] = Variable<String>(activatedFeatures.value);
+    }
+    if (actionsPerformed.present) {
+      map['actions_performed'] = Variable<String>(actionsPerformed.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CaregiverSessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('caregiverId: $caregiverId, ')
+          ..write('dependentId: $dependentId, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('activatedFeatures: $activatedFeatures, ')
+          ..write('actionsPerformed: $actionsPerformed, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$OfflineDatabase extends GeneratedDatabase {
   _$OfflineDatabase(QueryExecutor e) : super(e);
   $OfflineDatabaseManager get managers => $OfflineDatabaseManager(this);
@@ -6239,6 +10255,12 @@ abstract class _$OfflineDatabase extends GeneratedDatabase {
   late final $SyncQueuesTable syncQueues = $SyncQueuesTable(this);
   late final $MedicalReportsTable medicalReports = $MedicalReportsTable(this);
   late final $VitalSignsTable vitalSigns = $VitalSignsTable(this);
+  late final $FamilyMembersTable familyMembers = $FamilyMembersTable(this);
+  late final $FamilyGroupsTable familyGroups = $FamilyGroupsTable(this);
+  late final $FamilyHealthRecordsTable familyHealthRecords =
+      $FamilyHealthRecordsTable(this);
+  late final $CaregiverSessionsTable caregiverSessions =
+      $CaregiverSessionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6252,6 +10274,10 @@ abstract class _$OfflineDatabase extends GeneratedDatabase {
     syncQueues,
     medicalReports,
     vitalSigns,
+    familyMembers,
+    familyGroups,
+    familyHealthRecords,
+    caregiverSessions,
   ];
 }
 
@@ -9227,6 +13253,1831 @@ typedef $$VitalSignsTableProcessedTableManager =
       VitalSign,
       PrefetchHooks Function()
     >;
+typedef $$FamilyMembersTableCreateCompanionBuilder =
+    FamilyMembersCompanion Function({
+      required String id,
+      required String familyGroupId,
+      required String primaryUserId,
+      required String name,
+      required String relationship,
+      required DateTime dateOfBirth,
+      required String gender,
+      Value<String?> bloodGroup,
+      Value<String?> phoneNumber,
+      Value<String?> email,
+      Value<String?> allergies,
+      Value<String?> medicalConditions,
+      Value<String?> medications,
+      Value<String?> emergencyContact,
+      Value<bool> isActive,
+      Value<bool> hasOwnAccount,
+      Value<String?> linkedAccountId,
+      Value<bool> allowIndependentAccess,
+      Value<String?> caregiverPermissions,
+      Value<String?> profileImageUrl,
+      Value<bool> isSynced,
+      required DateTime createdAt,
+      required DateTime lastModified,
+      Value<int> rowid,
+    });
+typedef $$FamilyMembersTableUpdateCompanionBuilder =
+    FamilyMembersCompanion Function({
+      Value<String> id,
+      Value<String> familyGroupId,
+      Value<String> primaryUserId,
+      Value<String> name,
+      Value<String> relationship,
+      Value<DateTime> dateOfBirth,
+      Value<String> gender,
+      Value<String?> bloodGroup,
+      Value<String?> phoneNumber,
+      Value<String?> email,
+      Value<String?> allergies,
+      Value<String?> medicalConditions,
+      Value<String?> medications,
+      Value<String?> emergencyContact,
+      Value<bool> isActive,
+      Value<bool> hasOwnAccount,
+      Value<String?> linkedAccountId,
+      Value<bool> allowIndependentAccess,
+      Value<String?> caregiverPermissions,
+      Value<String?> profileImageUrl,
+      Value<bool> isSynced,
+      Value<DateTime> createdAt,
+      Value<DateTime> lastModified,
+      Value<int> rowid,
+    });
+
+class $$FamilyMembersTableFilterComposer
+    extends Composer<_$OfflineDatabase, $FamilyMembersTable> {
+  $$FamilyMembersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyGroupId => $composableBuilder(
+    column: $table.familyGroupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get primaryUserId => $composableBuilder(
+    column: $table.primaryUserId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get relationship => $composableBuilder(
+    column: $table.relationship,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateOfBirth => $composableBuilder(
+    column: $table.dateOfBirth,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bloodGroup => $composableBuilder(
+    column: $table.bloodGroup,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get allergies => $composableBuilder(
+    column: $table.allergies,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get medicalConditions => $composableBuilder(
+    column: $table.medicalConditions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get medications => $composableBuilder(
+    column: $table.medications,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get emergencyContact => $composableBuilder(
+    column: $table.emergencyContact,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasOwnAccount => $composableBuilder(
+    column: $table.hasOwnAccount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get linkedAccountId => $composableBuilder(
+    column: $table.linkedAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get allowIndependentAccess => $composableBuilder(
+    column: $table.allowIndependentAccess,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get caregiverPermissions => $composableBuilder(
+    column: $table.caregiverPermissions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get profileImageUrl => $composableBuilder(
+    column: $table.profileImageUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FamilyMembersTableOrderingComposer
+    extends Composer<_$OfflineDatabase, $FamilyMembersTable> {
+  $$FamilyMembersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyGroupId => $composableBuilder(
+    column: $table.familyGroupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get primaryUserId => $composableBuilder(
+    column: $table.primaryUserId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get relationship => $composableBuilder(
+    column: $table.relationship,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateOfBirth => $composableBuilder(
+    column: $table.dateOfBirth,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bloodGroup => $composableBuilder(
+    column: $table.bloodGroup,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get allergies => $composableBuilder(
+    column: $table.allergies,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get medicalConditions => $composableBuilder(
+    column: $table.medicalConditions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get medications => $composableBuilder(
+    column: $table.medications,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get emergencyContact => $composableBuilder(
+    column: $table.emergencyContact,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasOwnAccount => $composableBuilder(
+    column: $table.hasOwnAccount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get linkedAccountId => $composableBuilder(
+    column: $table.linkedAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get allowIndependentAccess => $composableBuilder(
+    column: $table.allowIndependentAccess,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get caregiverPermissions => $composableBuilder(
+    column: $table.caregiverPermissions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get profileImageUrl => $composableBuilder(
+    column: $table.profileImageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FamilyMembersTableAnnotationComposer
+    extends Composer<_$OfflineDatabase, $FamilyMembersTable> {
+  $$FamilyMembersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get familyGroupId => $composableBuilder(
+    column: $table.familyGroupId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get primaryUserId => $composableBuilder(
+    column: $table.primaryUserId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get relationship => $composableBuilder(
+    column: $table.relationship,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateOfBirth => $composableBuilder(
+    column: $table.dateOfBirth,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get gender =>
+      $composableBuilder(column: $table.gender, builder: (column) => column);
+
+  GeneratedColumn<String> get bloodGroup => $composableBuilder(
+    column: $table.bloodGroup,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get allergies =>
+      $composableBuilder(column: $table.allergies, builder: (column) => column);
+
+  GeneratedColumn<String> get medicalConditions => $composableBuilder(
+    column: $table.medicalConditions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get medications => $composableBuilder(
+    column: $table.medications,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get emergencyContact => $composableBuilder(
+    column: $table.emergencyContact,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<bool> get hasOwnAccount => $composableBuilder(
+    column: $table.hasOwnAccount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get linkedAccountId => $composableBuilder(
+    column: $table.linkedAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get allowIndependentAccess => $composableBuilder(
+    column: $table.allowIndependentAccess,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get caregiverPermissions => $composableBuilder(
+    column: $table.caregiverPermissions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get profileImageUrl => $composableBuilder(
+    column: $table.profileImageUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => column,
+  );
+}
+
+class $$FamilyMembersTableTableManager
+    extends
+        RootTableManager<
+          _$OfflineDatabase,
+          $FamilyMembersTable,
+          FamilyMember,
+          $$FamilyMembersTableFilterComposer,
+          $$FamilyMembersTableOrderingComposer,
+          $$FamilyMembersTableAnnotationComposer,
+          $$FamilyMembersTableCreateCompanionBuilder,
+          $$FamilyMembersTableUpdateCompanionBuilder,
+          (
+            FamilyMember,
+            BaseReferences<
+              _$OfflineDatabase,
+              $FamilyMembersTable,
+              FamilyMember
+            >,
+          ),
+          FamilyMember,
+          PrefetchHooks Function()
+        > {
+  $$FamilyMembersTableTableManager(
+    _$OfflineDatabase db,
+    $FamilyMembersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FamilyMembersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FamilyMembersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FamilyMembersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> familyGroupId = const Value.absent(),
+                Value<String> primaryUserId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> relationship = const Value.absent(),
+                Value<DateTime> dateOfBirth = const Value.absent(),
+                Value<String> gender = const Value.absent(),
+                Value<String?> bloodGroup = const Value.absent(),
+                Value<String?> phoneNumber = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<String?> allergies = const Value.absent(),
+                Value<String?> medicalConditions = const Value.absent(),
+                Value<String?> medications = const Value.absent(),
+                Value<String?> emergencyContact = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<bool> hasOwnAccount = const Value.absent(),
+                Value<String?> linkedAccountId = const Value.absent(),
+                Value<bool> allowIndependentAccess = const Value.absent(),
+                Value<String?> caregiverPermissions = const Value.absent(),
+                Value<String?> profileImageUrl = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> lastModified = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyMembersCompanion(
+                id: id,
+                familyGroupId: familyGroupId,
+                primaryUserId: primaryUserId,
+                name: name,
+                relationship: relationship,
+                dateOfBirth: dateOfBirth,
+                gender: gender,
+                bloodGroup: bloodGroup,
+                phoneNumber: phoneNumber,
+                email: email,
+                allergies: allergies,
+                medicalConditions: medicalConditions,
+                medications: medications,
+                emergencyContact: emergencyContact,
+                isActive: isActive,
+                hasOwnAccount: hasOwnAccount,
+                linkedAccountId: linkedAccountId,
+                allowIndependentAccess: allowIndependentAccess,
+                caregiverPermissions: caregiverPermissions,
+                profileImageUrl: profileImageUrl,
+                isSynced: isSynced,
+                createdAt: createdAt,
+                lastModified: lastModified,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String familyGroupId,
+                required String primaryUserId,
+                required String name,
+                required String relationship,
+                required DateTime dateOfBirth,
+                required String gender,
+                Value<String?> bloodGroup = const Value.absent(),
+                Value<String?> phoneNumber = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<String?> allergies = const Value.absent(),
+                Value<String?> medicalConditions = const Value.absent(),
+                Value<String?> medications = const Value.absent(),
+                Value<String?> emergencyContact = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<bool> hasOwnAccount = const Value.absent(),
+                Value<String?> linkedAccountId = const Value.absent(),
+                Value<bool> allowIndependentAccess = const Value.absent(),
+                Value<String?> caregiverPermissions = const Value.absent(),
+                Value<String?> profileImageUrl = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime lastModified,
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyMembersCompanion.insert(
+                id: id,
+                familyGroupId: familyGroupId,
+                primaryUserId: primaryUserId,
+                name: name,
+                relationship: relationship,
+                dateOfBirth: dateOfBirth,
+                gender: gender,
+                bloodGroup: bloodGroup,
+                phoneNumber: phoneNumber,
+                email: email,
+                allergies: allergies,
+                medicalConditions: medicalConditions,
+                medications: medications,
+                emergencyContact: emergencyContact,
+                isActive: isActive,
+                hasOwnAccount: hasOwnAccount,
+                linkedAccountId: linkedAccountId,
+                allowIndependentAccess: allowIndependentAccess,
+                caregiverPermissions: caregiverPermissions,
+                profileImageUrl: profileImageUrl,
+                isSynced: isSynced,
+                createdAt: createdAt,
+                lastModified: lastModified,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FamilyMembersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$OfflineDatabase,
+      $FamilyMembersTable,
+      FamilyMember,
+      $$FamilyMembersTableFilterComposer,
+      $$FamilyMembersTableOrderingComposer,
+      $$FamilyMembersTableAnnotationComposer,
+      $$FamilyMembersTableCreateCompanionBuilder,
+      $$FamilyMembersTableUpdateCompanionBuilder,
+      (
+        FamilyMember,
+        BaseReferences<_$OfflineDatabase, $FamilyMembersTable, FamilyMember>,
+      ),
+      FamilyMember,
+      PrefetchHooks Function()
+    >;
+typedef $$FamilyGroupsTableCreateCompanionBuilder =
+    FamilyGroupsCompanion Function({
+      required String id,
+      required String primaryMemberId,
+      required String familyName,
+      Value<String?> address,
+      Value<String?> village,
+      Value<String?> pincode,
+      Value<String?> emergencyContact,
+      Value<String?> emergencyPhone,
+      Value<String?> healthInsurance,
+      Value<bool> isActive,
+      Value<bool> isSynced,
+      required DateTime createdAt,
+      required DateTime lastModified,
+      Value<int> rowid,
+    });
+typedef $$FamilyGroupsTableUpdateCompanionBuilder =
+    FamilyGroupsCompanion Function({
+      Value<String> id,
+      Value<String> primaryMemberId,
+      Value<String> familyName,
+      Value<String?> address,
+      Value<String?> village,
+      Value<String?> pincode,
+      Value<String?> emergencyContact,
+      Value<String?> emergencyPhone,
+      Value<String?> healthInsurance,
+      Value<bool> isActive,
+      Value<bool> isSynced,
+      Value<DateTime> createdAt,
+      Value<DateTime> lastModified,
+      Value<int> rowid,
+    });
+
+class $$FamilyGroupsTableFilterComposer
+    extends Composer<_$OfflineDatabase, $FamilyGroupsTable> {
+  $$FamilyGroupsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get primaryMemberId => $composableBuilder(
+    column: $table.primaryMemberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyName => $composableBuilder(
+    column: $table.familyName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get village => $composableBuilder(
+    column: $table.village,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pincode => $composableBuilder(
+    column: $table.pincode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get emergencyContact => $composableBuilder(
+    column: $table.emergencyContact,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get emergencyPhone => $composableBuilder(
+    column: $table.emergencyPhone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get healthInsurance => $composableBuilder(
+    column: $table.healthInsurance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FamilyGroupsTableOrderingComposer
+    extends Composer<_$OfflineDatabase, $FamilyGroupsTable> {
+  $$FamilyGroupsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get primaryMemberId => $composableBuilder(
+    column: $table.primaryMemberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyName => $composableBuilder(
+    column: $table.familyName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get village => $composableBuilder(
+    column: $table.village,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pincode => $composableBuilder(
+    column: $table.pincode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get emergencyContact => $composableBuilder(
+    column: $table.emergencyContact,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get emergencyPhone => $composableBuilder(
+    column: $table.emergencyPhone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get healthInsurance => $composableBuilder(
+    column: $table.healthInsurance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FamilyGroupsTableAnnotationComposer
+    extends Composer<_$OfflineDatabase, $FamilyGroupsTable> {
+  $$FamilyGroupsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get primaryMemberId => $composableBuilder(
+    column: $table.primaryMemberId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get familyName => $composableBuilder(
+    column: $table.familyName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<String> get village =>
+      $composableBuilder(column: $table.village, builder: (column) => column);
+
+  GeneratedColumn<String> get pincode =>
+      $composableBuilder(column: $table.pincode, builder: (column) => column);
+
+  GeneratedColumn<String> get emergencyContact => $composableBuilder(
+    column: $table.emergencyContact,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get emergencyPhone => $composableBuilder(
+    column: $table.emergencyPhone,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get healthInsurance => $composableBuilder(
+    column: $table.healthInsurance,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => column,
+  );
+}
+
+class $$FamilyGroupsTableTableManager
+    extends
+        RootTableManager<
+          _$OfflineDatabase,
+          $FamilyGroupsTable,
+          FamilyGroup,
+          $$FamilyGroupsTableFilterComposer,
+          $$FamilyGroupsTableOrderingComposer,
+          $$FamilyGroupsTableAnnotationComposer,
+          $$FamilyGroupsTableCreateCompanionBuilder,
+          $$FamilyGroupsTableUpdateCompanionBuilder,
+          (
+            FamilyGroup,
+            BaseReferences<_$OfflineDatabase, $FamilyGroupsTable, FamilyGroup>,
+          ),
+          FamilyGroup,
+          PrefetchHooks Function()
+        > {
+  $$FamilyGroupsTableTableManager(
+    _$OfflineDatabase db,
+    $FamilyGroupsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FamilyGroupsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FamilyGroupsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FamilyGroupsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> primaryMemberId = const Value.absent(),
+                Value<String> familyName = const Value.absent(),
+                Value<String?> address = const Value.absent(),
+                Value<String?> village = const Value.absent(),
+                Value<String?> pincode = const Value.absent(),
+                Value<String?> emergencyContact = const Value.absent(),
+                Value<String?> emergencyPhone = const Value.absent(),
+                Value<String?> healthInsurance = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> lastModified = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyGroupsCompanion(
+                id: id,
+                primaryMemberId: primaryMemberId,
+                familyName: familyName,
+                address: address,
+                village: village,
+                pincode: pincode,
+                emergencyContact: emergencyContact,
+                emergencyPhone: emergencyPhone,
+                healthInsurance: healthInsurance,
+                isActive: isActive,
+                isSynced: isSynced,
+                createdAt: createdAt,
+                lastModified: lastModified,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String primaryMemberId,
+                required String familyName,
+                Value<String?> address = const Value.absent(),
+                Value<String?> village = const Value.absent(),
+                Value<String?> pincode = const Value.absent(),
+                Value<String?> emergencyContact = const Value.absent(),
+                Value<String?> emergencyPhone = const Value.absent(),
+                Value<String?> healthInsurance = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime lastModified,
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyGroupsCompanion.insert(
+                id: id,
+                primaryMemberId: primaryMemberId,
+                familyName: familyName,
+                address: address,
+                village: village,
+                pincode: pincode,
+                emergencyContact: emergencyContact,
+                emergencyPhone: emergencyPhone,
+                healthInsurance: healthInsurance,
+                isActive: isActive,
+                isSynced: isSynced,
+                createdAt: createdAt,
+                lastModified: lastModified,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FamilyGroupsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$OfflineDatabase,
+      $FamilyGroupsTable,
+      FamilyGroup,
+      $$FamilyGroupsTableFilterComposer,
+      $$FamilyGroupsTableOrderingComposer,
+      $$FamilyGroupsTableAnnotationComposer,
+      $$FamilyGroupsTableCreateCompanionBuilder,
+      $$FamilyGroupsTableUpdateCompanionBuilder,
+      (
+        FamilyGroup,
+        BaseReferences<_$OfflineDatabase, $FamilyGroupsTable, FamilyGroup>,
+      ),
+      FamilyGroup,
+      PrefetchHooks Function()
+    >;
+typedef $$FamilyHealthRecordsTableCreateCompanionBuilder =
+    FamilyHealthRecordsCompanion Function({
+      required String id,
+      required String familyMemberId,
+      required String familyGroupId,
+      required String recordType,
+      required String title,
+      Value<String?> description,
+      Value<String?> condition,
+      Value<String?> symptoms,
+      Value<String> severity,
+      Value<String?> treatment,
+      Value<String?> medications,
+      Value<String?> doctorName,
+      Value<String?> hospitalName,
+      Value<String?> reportUrl,
+      Value<String?> attachments,
+      required DateTime recordDate,
+      Value<DateTime?> followUpDate,
+      Value<bool> isEmergency,
+      Value<bool> isResolved,
+      Value<String?> notes,
+      Value<bool> isSynced,
+      required DateTime createdAt,
+      required DateTime lastModified,
+      Value<int> rowid,
+    });
+typedef $$FamilyHealthRecordsTableUpdateCompanionBuilder =
+    FamilyHealthRecordsCompanion Function({
+      Value<String> id,
+      Value<String> familyMemberId,
+      Value<String> familyGroupId,
+      Value<String> recordType,
+      Value<String> title,
+      Value<String?> description,
+      Value<String?> condition,
+      Value<String?> symptoms,
+      Value<String> severity,
+      Value<String?> treatment,
+      Value<String?> medications,
+      Value<String?> doctorName,
+      Value<String?> hospitalName,
+      Value<String?> reportUrl,
+      Value<String?> attachments,
+      Value<DateTime> recordDate,
+      Value<DateTime?> followUpDate,
+      Value<bool> isEmergency,
+      Value<bool> isResolved,
+      Value<String?> notes,
+      Value<bool> isSynced,
+      Value<DateTime> createdAt,
+      Value<DateTime> lastModified,
+      Value<int> rowid,
+    });
+
+class $$FamilyHealthRecordsTableFilterComposer
+    extends Composer<_$OfflineDatabase, $FamilyHealthRecordsTable> {
+  $$FamilyHealthRecordsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyMemberId => $composableBuilder(
+    column: $table.familyMemberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyGroupId => $composableBuilder(
+    column: $table.familyGroupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordType => $composableBuilder(
+    column: $table.recordType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get condition => $composableBuilder(
+    column: $table.condition,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get symptoms => $composableBuilder(
+    column: $table.symptoms,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get severity => $composableBuilder(
+    column: $table.severity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get treatment => $composableBuilder(
+    column: $table.treatment,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get medications => $composableBuilder(
+    column: $table.medications,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get doctorName => $composableBuilder(
+    column: $table.doctorName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hospitalName => $composableBuilder(
+    column: $table.hospitalName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reportUrl => $composableBuilder(
+    column: $table.reportUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get attachments => $composableBuilder(
+    column: $table.attachments,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get recordDate => $composableBuilder(
+    column: $table.recordDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get followUpDate => $composableBuilder(
+    column: $table.followUpDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isEmergency => $composableBuilder(
+    column: $table.isEmergency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isResolved => $composableBuilder(
+    column: $table.isResolved,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FamilyHealthRecordsTableOrderingComposer
+    extends Composer<_$OfflineDatabase, $FamilyHealthRecordsTable> {
+  $$FamilyHealthRecordsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyMemberId => $composableBuilder(
+    column: $table.familyMemberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyGroupId => $composableBuilder(
+    column: $table.familyGroupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordType => $composableBuilder(
+    column: $table.recordType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get condition => $composableBuilder(
+    column: $table.condition,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get symptoms => $composableBuilder(
+    column: $table.symptoms,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get severity => $composableBuilder(
+    column: $table.severity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get treatment => $composableBuilder(
+    column: $table.treatment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get medications => $composableBuilder(
+    column: $table.medications,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get doctorName => $composableBuilder(
+    column: $table.doctorName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hospitalName => $composableBuilder(
+    column: $table.hospitalName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reportUrl => $composableBuilder(
+    column: $table.reportUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get attachments => $composableBuilder(
+    column: $table.attachments,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get recordDate => $composableBuilder(
+    column: $table.recordDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get followUpDate => $composableBuilder(
+    column: $table.followUpDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isEmergency => $composableBuilder(
+    column: $table.isEmergency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isResolved => $composableBuilder(
+    column: $table.isResolved,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FamilyHealthRecordsTableAnnotationComposer
+    extends Composer<_$OfflineDatabase, $FamilyHealthRecordsTable> {
+  $$FamilyHealthRecordsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get familyMemberId => $composableBuilder(
+    column: $table.familyMemberId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get familyGroupId => $composableBuilder(
+    column: $table.familyGroupId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recordType => $composableBuilder(
+    column: $table.recordType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get condition =>
+      $composableBuilder(column: $table.condition, builder: (column) => column);
+
+  GeneratedColumn<String> get symptoms =>
+      $composableBuilder(column: $table.symptoms, builder: (column) => column);
+
+  GeneratedColumn<String> get severity =>
+      $composableBuilder(column: $table.severity, builder: (column) => column);
+
+  GeneratedColumn<String> get treatment =>
+      $composableBuilder(column: $table.treatment, builder: (column) => column);
+
+  GeneratedColumn<String> get medications => $composableBuilder(
+    column: $table.medications,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get doctorName => $composableBuilder(
+    column: $table.doctorName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hospitalName => $composableBuilder(
+    column: $table.hospitalName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reportUrl =>
+      $composableBuilder(column: $table.reportUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get attachments => $composableBuilder(
+    column: $table.attachments,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get recordDate => $composableBuilder(
+    column: $table.recordDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get followUpDate => $composableBuilder(
+    column: $table.followUpDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isEmergency => $composableBuilder(
+    column: $table.isEmergency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isResolved => $composableBuilder(
+    column: $table.isResolved,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => column,
+  );
+}
+
+class $$FamilyHealthRecordsTableTableManager
+    extends
+        RootTableManager<
+          _$OfflineDatabase,
+          $FamilyHealthRecordsTable,
+          FamilyHealthRecord,
+          $$FamilyHealthRecordsTableFilterComposer,
+          $$FamilyHealthRecordsTableOrderingComposer,
+          $$FamilyHealthRecordsTableAnnotationComposer,
+          $$FamilyHealthRecordsTableCreateCompanionBuilder,
+          $$FamilyHealthRecordsTableUpdateCompanionBuilder,
+          (
+            FamilyHealthRecord,
+            BaseReferences<
+              _$OfflineDatabase,
+              $FamilyHealthRecordsTable,
+              FamilyHealthRecord
+            >,
+          ),
+          FamilyHealthRecord,
+          PrefetchHooks Function()
+        > {
+  $$FamilyHealthRecordsTableTableManager(
+    _$OfflineDatabase db,
+    $FamilyHealthRecordsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FamilyHealthRecordsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FamilyHealthRecordsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$FamilyHealthRecordsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> familyMemberId = const Value.absent(),
+                Value<String> familyGroupId = const Value.absent(),
+                Value<String> recordType = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String?> condition = const Value.absent(),
+                Value<String?> symptoms = const Value.absent(),
+                Value<String> severity = const Value.absent(),
+                Value<String?> treatment = const Value.absent(),
+                Value<String?> medications = const Value.absent(),
+                Value<String?> doctorName = const Value.absent(),
+                Value<String?> hospitalName = const Value.absent(),
+                Value<String?> reportUrl = const Value.absent(),
+                Value<String?> attachments = const Value.absent(),
+                Value<DateTime> recordDate = const Value.absent(),
+                Value<DateTime?> followUpDate = const Value.absent(),
+                Value<bool> isEmergency = const Value.absent(),
+                Value<bool> isResolved = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> lastModified = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyHealthRecordsCompanion(
+                id: id,
+                familyMemberId: familyMemberId,
+                familyGroupId: familyGroupId,
+                recordType: recordType,
+                title: title,
+                description: description,
+                condition: condition,
+                symptoms: symptoms,
+                severity: severity,
+                treatment: treatment,
+                medications: medications,
+                doctorName: doctorName,
+                hospitalName: hospitalName,
+                reportUrl: reportUrl,
+                attachments: attachments,
+                recordDate: recordDate,
+                followUpDate: followUpDate,
+                isEmergency: isEmergency,
+                isResolved: isResolved,
+                notes: notes,
+                isSynced: isSynced,
+                createdAt: createdAt,
+                lastModified: lastModified,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String familyMemberId,
+                required String familyGroupId,
+                required String recordType,
+                required String title,
+                Value<String?> description = const Value.absent(),
+                Value<String?> condition = const Value.absent(),
+                Value<String?> symptoms = const Value.absent(),
+                Value<String> severity = const Value.absent(),
+                Value<String?> treatment = const Value.absent(),
+                Value<String?> medications = const Value.absent(),
+                Value<String?> doctorName = const Value.absent(),
+                Value<String?> hospitalName = const Value.absent(),
+                Value<String?> reportUrl = const Value.absent(),
+                Value<String?> attachments = const Value.absent(),
+                required DateTime recordDate,
+                Value<DateTime?> followUpDate = const Value.absent(),
+                Value<bool> isEmergency = const Value.absent(),
+                Value<bool> isResolved = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime lastModified,
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyHealthRecordsCompanion.insert(
+                id: id,
+                familyMemberId: familyMemberId,
+                familyGroupId: familyGroupId,
+                recordType: recordType,
+                title: title,
+                description: description,
+                condition: condition,
+                symptoms: symptoms,
+                severity: severity,
+                treatment: treatment,
+                medications: medications,
+                doctorName: doctorName,
+                hospitalName: hospitalName,
+                reportUrl: reportUrl,
+                attachments: attachments,
+                recordDate: recordDate,
+                followUpDate: followUpDate,
+                isEmergency: isEmergency,
+                isResolved: isResolved,
+                notes: notes,
+                isSynced: isSynced,
+                createdAt: createdAt,
+                lastModified: lastModified,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FamilyHealthRecordsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$OfflineDatabase,
+      $FamilyHealthRecordsTable,
+      FamilyHealthRecord,
+      $$FamilyHealthRecordsTableFilterComposer,
+      $$FamilyHealthRecordsTableOrderingComposer,
+      $$FamilyHealthRecordsTableAnnotationComposer,
+      $$FamilyHealthRecordsTableCreateCompanionBuilder,
+      $$FamilyHealthRecordsTableUpdateCompanionBuilder,
+      (
+        FamilyHealthRecord,
+        BaseReferences<
+          _$OfflineDatabase,
+          $FamilyHealthRecordsTable,
+          FamilyHealthRecord
+        >,
+      ),
+      FamilyHealthRecord,
+      PrefetchHooks Function()
+    >;
+typedef $$CaregiverSessionsTableCreateCompanionBuilder =
+    CaregiverSessionsCompanion Function({
+      required String id,
+      required String caregiverId,
+      required String dependentId,
+      required DateTime startTime,
+      Value<DateTime?> endTime,
+      Value<String?> activatedFeatures,
+      Value<String?> actionsPerformed,
+      Value<bool> isActive,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$CaregiverSessionsTableUpdateCompanionBuilder =
+    CaregiverSessionsCompanion Function({
+      Value<String> id,
+      Value<String> caregiverId,
+      Value<String> dependentId,
+      Value<DateTime> startTime,
+      Value<DateTime?> endTime,
+      Value<String?> activatedFeatures,
+      Value<String?> actionsPerformed,
+      Value<bool> isActive,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$CaregiverSessionsTableFilterComposer
+    extends Composer<_$OfflineDatabase, $CaregiverSessionsTable> {
+  $$CaregiverSessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get caregiverId => $composableBuilder(
+    column: $table.caregiverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dependentId => $composableBuilder(
+    column: $table.dependentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activatedFeatures => $composableBuilder(
+    column: $table.activatedFeatures,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get actionsPerformed => $composableBuilder(
+    column: $table.actionsPerformed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CaregiverSessionsTableOrderingComposer
+    extends Composer<_$OfflineDatabase, $CaregiverSessionsTable> {
+  $$CaregiverSessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get caregiverId => $composableBuilder(
+    column: $table.caregiverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dependentId => $composableBuilder(
+    column: $table.dependentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activatedFeatures => $composableBuilder(
+    column: $table.activatedFeatures,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get actionsPerformed => $composableBuilder(
+    column: $table.actionsPerformed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CaregiverSessionsTableAnnotationComposer
+    extends Composer<_$OfflineDatabase, $CaregiverSessionsTable> {
+  $$CaregiverSessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get caregiverId => $composableBuilder(
+    column: $table.caregiverId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dependentId => $composableBuilder(
+    column: $table.dependentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get startTime =>
+      $composableBuilder(column: $table.startTime, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endTime =>
+      $composableBuilder(column: $table.endTime, builder: (column) => column);
+
+  GeneratedColumn<String> get activatedFeatures => $composableBuilder(
+    column: $table.activatedFeatures,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get actionsPerformed => $composableBuilder(
+    column: $table.actionsPerformed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$CaregiverSessionsTableTableManager
+    extends
+        RootTableManager<
+          _$OfflineDatabase,
+          $CaregiverSessionsTable,
+          CaregiverSession,
+          $$CaregiverSessionsTableFilterComposer,
+          $$CaregiverSessionsTableOrderingComposer,
+          $$CaregiverSessionsTableAnnotationComposer,
+          $$CaregiverSessionsTableCreateCompanionBuilder,
+          $$CaregiverSessionsTableUpdateCompanionBuilder,
+          (
+            CaregiverSession,
+            BaseReferences<
+              _$OfflineDatabase,
+              $CaregiverSessionsTable,
+              CaregiverSession
+            >,
+          ),
+          CaregiverSession,
+          PrefetchHooks Function()
+        > {
+  $$CaregiverSessionsTableTableManager(
+    _$OfflineDatabase db,
+    $CaregiverSessionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CaregiverSessionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CaregiverSessionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CaregiverSessionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> caregiverId = const Value.absent(),
+                Value<String> dependentId = const Value.absent(),
+                Value<DateTime> startTime = const Value.absent(),
+                Value<DateTime?> endTime = const Value.absent(),
+                Value<String?> activatedFeatures = const Value.absent(),
+                Value<String?> actionsPerformed = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CaregiverSessionsCompanion(
+                id: id,
+                caregiverId: caregiverId,
+                dependentId: dependentId,
+                startTime: startTime,
+                endTime: endTime,
+                activatedFeatures: activatedFeatures,
+                actionsPerformed: actionsPerformed,
+                isActive: isActive,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String caregiverId,
+                required String dependentId,
+                required DateTime startTime,
+                Value<DateTime?> endTime = const Value.absent(),
+                Value<String?> activatedFeatures = const Value.absent(),
+                Value<String?> actionsPerformed = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CaregiverSessionsCompanion.insert(
+                id: id,
+                caregiverId: caregiverId,
+                dependentId: dependentId,
+                startTime: startTime,
+                endTime: endTime,
+                activatedFeatures: activatedFeatures,
+                actionsPerformed: actionsPerformed,
+                isActive: isActive,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CaregiverSessionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$OfflineDatabase,
+      $CaregiverSessionsTable,
+      CaregiverSession,
+      $$CaregiverSessionsTableFilterComposer,
+      $$CaregiverSessionsTableOrderingComposer,
+      $$CaregiverSessionsTableAnnotationComposer,
+      $$CaregiverSessionsTableCreateCompanionBuilder,
+      $$CaregiverSessionsTableUpdateCompanionBuilder,
+      (
+        CaregiverSession,
+        BaseReferences<
+          _$OfflineDatabase,
+          $CaregiverSessionsTable,
+          CaregiverSession
+        >,
+      ),
+      CaregiverSession,
+      PrefetchHooks Function()
+    >;
 
 class $OfflineDatabaseManager {
   final _$OfflineDatabase _db;
@@ -9247,4 +15098,12 @@ class $OfflineDatabaseManager {
       $$MedicalReportsTableTableManager(_db, _db.medicalReports);
   $$VitalSignsTableTableManager get vitalSigns =>
       $$VitalSignsTableTableManager(_db, _db.vitalSigns);
+  $$FamilyMembersTableTableManager get familyMembers =>
+      $$FamilyMembersTableTableManager(_db, _db.familyMembers);
+  $$FamilyGroupsTableTableManager get familyGroups =>
+      $$FamilyGroupsTableTableManager(_db, _db.familyGroups);
+  $$FamilyHealthRecordsTableTableManager get familyHealthRecords =>
+      $$FamilyHealthRecordsTableTableManager(_db, _db.familyHealthRecords);
+  $$CaregiverSessionsTableTableManager get caregiverSessions =>
+      $$CaregiverSessionsTableTableManager(_db, _db.caregiverSessions);
 }

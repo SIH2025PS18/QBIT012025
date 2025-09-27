@@ -77,7 +77,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
         tableNameColumn: 'patient_profiles',
         recordId: user.id,
         operation: 'create',
-        data: jsonEncode(_mapLocalToSupabaseData(localProfile)),
+        data: jsonEncode(_mapLocalToData(localProfile)),
         isCompleted: false,
         retryCount: 0,
         createdAt: DateTime.now(),
@@ -117,7 +117,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
         tableNameColumn: 'patient_profiles',
         recordId: user.id,
         operation: 'update',
-        data: jsonEncode(_mapLocalToSupabaseData(localProfile)),
+        data: jsonEncode(_mapLocalToData(localProfile)),
         isCompleted: false,
         retryCount: 0,
         createdAt: DateTime.now(),
@@ -189,7 +189,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
   @override
   Future<String> uploadProfilePhoto(String filePath) async {
     // For now, return the file path as URL
-    // In a real implementation, you would upload to Supabase storage
+    // In a real implementation, you would upload to  storage
     // and handle offline scenarios by storing the file locally
     return filePath;
   }
@@ -299,7 +299,7 @@ class OfflinePatientProfileRepository implements PatientProfileRepository {
   }
 
   /// Map local profile to MongoDB backend data format
-  Map<String, dynamic> _mapLocalToSupabaseData(LocalPatientProfile local) {
+  Map<String, dynamic> _mapLocalToData(LocalPatientProfile local) {
     return {
       'id': local.id,
       'fullName': local.fullName,

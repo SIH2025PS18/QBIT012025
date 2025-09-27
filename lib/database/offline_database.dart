@@ -171,6 +171,105 @@ class UserProfiles extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('FamilyMember')
+class FamilyMembers extends Table {
+  TextColumn get id => text()();
+  TextColumn get familyGroupId => text()();
+  TextColumn get primaryUserId => text()();
+  TextColumn get name => text()();
+  TextColumn get relationship => text()();
+  DateTimeColumn get dateOfBirth => dateTime()();
+  TextColumn get gender => text()();
+  TextColumn get bloodGroup => text().nullable()();
+  TextColumn get phoneNumber => text().nullable()();
+  TextColumn get email => text().nullable()();
+  TextColumn get allergies => text().nullable()();
+  TextColumn get medicalConditions => text().nullable()(); // JSON string
+  TextColumn get medications => text().nullable()(); // JSON string
+  TextColumn get emergencyContact => text().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  BoolColumn get hasOwnAccount =>
+      boolean().withDefault(const Constant(false))();
+  TextColumn get linkedAccountId => text().nullable()();
+  BoolColumn get allowIndependentAccess =>
+      boolean().withDefault(const Constant(false))();
+  TextColumn get caregiverPermissions => text().nullable()(); // JSON string
+  TextColumn get profileImageUrl => text().nullable()();
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastModified => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('FamilyGroup')
+class FamilyGroups extends Table {
+  TextColumn get id => text()();
+  TextColumn get primaryMemberId => text()();
+  TextColumn get familyName => text()();
+  TextColumn get address => text().nullable()();
+  TextColumn get village => text().nullable()();
+  TextColumn get pincode => text().nullable()();
+  TextColumn get emergencyContact => text().nullable()();
+  TextColumn get emergencyPhone => text().nullable()();
+  TextColumn get healthInsurance => text().nullable()(); // JSON string
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastModified => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('FamilyHealthRecord')
+class FamilyHealthRecords extends Table {
+  TextColumn get id => text()();
+  TextColumn get familyMemberId => text()();
+  TextColumn get familyGroupId => text()();
+  TextColumn get recordType =>
+      text()(); // vaccination, checkup, illness, emergency
+  TextColumn get title => text()();
+  TextColumn get description => text().nullable()();
+  TextColumn get condition => text().nullable()();
+  TextColumn get symptoms => text().nullable()(); // JSON string
+  TextColumn get severity => text().withDefault(const Constant('normal'))();
+  TextColumn get treatment => text().nullable()();
+  TextColumn get medications => text().nullable()(); // JSON string
+  TextColumn get doctorName => text().nullable()();
+  TextColumn get hospitalName => text().nullable()();
+  TextColumn get reportUrl => text().nullable()();
+  TextColumn get attachments => text().nullable()(); // JSON string
+  DateTimeColumn get recordDate => dateTime()();
+  DateTimeColumn get followUpDate => dateTime().nullable()();
+  BoolColumn get isEmergency => boolean().withDefault(const Constant(false))();
+  BoolColumn get isResolved => boolean().withDefault(const Constant(false))();
+  TextColumn get notes => text().nullable()();
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastModified => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('CaregiverSession')
+class CaregiverSessions extends Table {
+  TextColumn get id => text()();
+  TextColumn get caregiverId => text()();
+  TextColumn get dependentId => text()();
+  DateTimeColumn get startTime => dateTime()();
+  DateTimeColumn get endTime => dateTime().nullable()();
+  TextColumn get activatedFeatures => text().nullable()(); // JSON string
+  TextColumn get actionsPerformed => text().nullable()(); // JSON string
+  BoolColumn get isActive => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 // Database class
 @DriftDatabase(
   tables: [
@@ -182,13 +281,17 @@ class UserProfiles extends Table {
     SyncQueues,
     MedicalReports,
     VitalSigns,
+    FamilyMembers,
+    FamilyGroups,
+    FamilyHealthRecords,
+    CaregiverSessions,
   ],
 )
 class OfflineDatabase extends _$OfflineDatabase {
   OfflineDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -256,7 +359,7 @@ class OfflineDatabase extends _$OfflineDatabase {
         email: Value(userData['email'] as String?),
         isVerified: Value(userData['is_verified'] as bool? ?? false),
         isActive: Value(userData['is_active'] as bool? ?? true),
-        isSynced: const Value(true), // Since it's coming from Supabase
+        isSynced: const Value(true), // Since it's coming from
         createdAt: Value(
           userData['created_at'] != null
               ? DateTime.parse(userData['created_at'] as String)
@@ -786,6 +889,381 @@ class OfflineDatabase extends _$OfflineDatabase {
     } catch (e) {
       print('Error populating dummy medical data: $e');
     }
+  }
+
+  // Family Group Operations
+  Future<String> createFamilyGroup({
+    required String primaryMemberId,
+    required String familyName,
+    String? address,
+    String? village,
+    String? pincode,
+    String? emergencyContact,
+    String? emergencyPhone,
+    Map<String, dynamic>? healthInsurance,
+  }) async {
+    final id = const Uuid().v4();
+    final familyGroup = FamilyGroupsCompanion(
+      id: Value(id),
+      primaryMemberId: Value(primaryMemberId),
+      familyName: Value(familyName),
+      address: Value(address),
+      village: Value(village),
+      pincode: Value(pincode),
+      emergencyContact: Value(emergencyContact),
+      emergencyPhone: Value(emergencyPhone),
+      healthInsurance: Value(healthInsurance?.toString()),
+      isActive: const Value(true),
+      isSynced: const Value(false),
+      createdAt: Value(DateTime.now()),
+      lastModified: Value(DateTime.now()),
+    );
+
+    await into(familyGroups).insert(familyGroup);
+    await _addToSyncQueue('family_groups', id, 'INSERT', {
+      'id': id,
+      'primaryMemberId': primaryMemberId,
+      'familyName': familyName,
+      'address': address,
+      'village': village,
+      'pincode': pincode,
+      'emergencyContact': emergencyContact,
+      'emergencyPhone': emergencyPhone,
+      'healthInsurance': healthInsurance,
+      'createdAt': DateTime.now().toIso8601String(),
+    });
+
+    return id;
+  }
+
+  Future<List<FamilyGroup>> getFamilyGroups(String primaryMemberId) async {
+    return await (select(familyGroups)
+          ..where(
+            (fg) =>
+                fg.primaryMemberId.equals(primaryMemberId) &
+                fg.isActive.equals(true),
+          )
+          ..orderBy([
+            (fg) =>
+                OrderingTerm(expression: fg.createdAt, mode: OrderingMode.desc),
+          ]))
+        .get();
+  }
+
+  Future<FamilyGroup?> getFamilyGroupById(String id) async {
+    return await (select(
+      familyGroups,
+    )..where((fg) => fg.id.equals(id))).getSingleOrNull();
+  }
+
+  // Family Member Operations
+  Future<String> createFamilyMember({
+    required String familyGroupId,
+    required String primaryUserId,
+    required String name,
+    required String relationship,
+    required DateTime dateOfBirth,
+    required String gender,
+    String? bloodGroup,
+    String? phoneNumber,
+    String? email,
+    String? allergies,
+    List<String>? medicalConditions,
+    List<String>? medications,
+    String? emergencyContact,
+    bool hasOwnAccount = false,
+    String? linkedAccountId,
+    bool allowIndependentAccess = false,
+    List<String>? caregiverPermissions,
+    String? profileImageUrl,
+  }) async {
+    final id = const Uuid().v4();
+    final familyMember = FamilyMembersCompanion(
+      id: Value(id),
+      familyGroupId: Value(familyGroupId),
+      primaryUserId: Value(primaryUserId),
+      name: Value(name),
+      relationship: Value(relationship),
+      dateOfBirth: Value(dateOfBirth),
+      gender: Value(gender),
+      bloodGroup: Value(bloodGroup),
+      phoneNumber: Value(phoneNumber),
+      email: Value(email),
+      allergies: Value(allergies),
+      medicalConditions: Value(medicalConditions?.toString()),
+      medications: Value(medications?.toString()),
+      emergencyContact: Value(emergencyContact),
+      isActive: const Value(true),
+      hasOwnAccount: Value(hasOwnAccount),
+      linkedAccountId: Value(linkedAccountId),
+      allowIndependentAccess: Value(allowIndependentAccess),
+      caregiverPermissions: Value(caregiverPermissions?.toString()),
+      profileImageUrl: Value(profileImageUrl),
+      isSynced: const Value(false),
+      createdAt: Value(DateTime.now()),
+      lastModified: Value(DateTime.now()),
+    );
+
+    await into(familyMembers).insert(familyMember);
+    await _addToSyncQueue('family_members', id, 'INSERT', {
+      'id': id,
+      'familyGroupId': familyGroupId,
+      'primaryUserId': primaryUserId,
+      'name': name,
+      'relationship': relationship,
+      'dateOfBirth': dateOfBirth.toIso8601String(),
+      'gender': gender,
+      'bloodGroup': bloodGroup,
+      'phoneNumber': phoneNumber,
+      'email': email,
+      'allergies': allergies,
+      'medicalConditions': medicalConditions,
+      'medications': medications,
+      'emergencyContact': emergencyContact,
+      'hasOwnAccount': hasOwnAccount,
+      'linkedAccountId': linkedAccountId,
+      'allowIndependentAccess': allowIndependentAccess,
+      'caregiverPermissions': caregiverPermissions,
+      'profileImageUrl': profileImageUrl,
+      'createdAt': DateTime.now().toIso8601String(),
+    });
+
+    return id;
+  }
+
+  Future<List<FamilyMember>> getFamilyMembers(String familyGroupId) async {
+    return await (select(familyMembers)
+          ..where(
+            (fm) =>
+                fm.familyGroupId.equals(familyGroupId) &
+                fm.isActive.equals(true),
+          )
+          ..orderBy([
+            (fm) =>
+                OrderingTerm(expression: fm.createdAt, mode: OrderingMode.desc),
+          ]))
+        .get();
+  }
+
+  Future<List<FamilyMember>> getUserFamilyMembers(String primaryUserId) async {
+    return await (select(familyMembers)
+          ..where(
+            (fm) =>
+                fm.primaryUserId.equals(primaryUserId) &
+                fm.isActive.equals(true),
+          )
+          ..orderBy([
+            (fm) =>
+                OrderingTerm(expression: fm.createdAt, mode: OrderingMode.desc),
+          ]))
+        .get();
+  }
+
+  Future<FamilyMember?> getFamilyMemberById(String id) async {
+    return await (select(
+      familyMembers,
+    )..where((fm) => fm.id.equals(id))).getSingleOrNull();
+  }
+
+  Future<void> updateFamilyMember(
+    String id,
+    Map<String, dynamic> updates,
+  ) async {
+    final companion = FamilyMembersCompanion(
+      name: updates['name'] != null
+          ? Value(updates['name'])
+          : const Value.absent(),
+      relationship: updates['relationship'] != null
+          ? Value(updates['relationship'])
+          : const Value.absent(),
+      bloodGroup: updates['bloodGroup'] != null
+          ? Value(updates['bloodGroup'])
+          : const Value.absent(),
+      phoneNumber: updates['phoneNumber'] != null
+          ? Value(updates['phoneNumber'])
+          : const Value.absent(),
+      email: updates['email'] != null
+          ? Value(updates['email'])
+          : const Value.absent(),
+      allergies: updates['allergies'] != null
+          ? Value(updates['allergies'])
+          : const Value.absent(),
+      medicalConditions: updates['medicalConditions'] != null
+          ? Value(updates['medicalConditions'].toString())
+          : const Value.absent(),
+      medications: updates['medications'] != null
+          ? Value(updates['medications'].toString())
+          : const Value.absent(),
+      emergencyContact: updates['emergencyContact'] != null
+          ? Value(updates['emergencyContact'])
+          : const Value.absent(),
+      lastModified: Value(DateTime.now()),
+      isSynced: const Value(false),
+    );
+
+    await (update(
+      familyMembers,
+    )..where((fm) => fm.id.equals(id))).write(companion);
+    await _addToSyncQueue('family_members', id, 'UPDATE', updates);
+  }
+
+  // Family Health Record Operations
+  Future<String> createFamilyHealthRecord({
+    required String familyMemberId,
+    required String familyGroupId,
+    required String recordType,
+    required String title,
+    String? description,
+    String? condition,
+    List<String>? symptoms,
+    String severity = 'normal',
+    String? treatment,
+    List<String>? medications,
+    String? doctorName,
+    String? hospitalName,
+    String? reportUrl,
+    List<String>? attachments,
+    required DateTime recordDate,
+    DateTime? followUpDate,
+    bool isEmergency = false,
+    bool isResolved = false,
+    String? notes,
+  }) async {
+    final id = const Uuid().v4();
+    final healthRecord = FamilyHealthRecordsCompanion(
+      id: Value(id),
+      familyMemberId: Value(familyMemberId),
+      familyGroupId: Value(familyGroupId),
+      recordType: Value(recordType),
+      title: Value(title),
+      description: Value(description),
+      condition: Value(condition),
+      symptoms: Value(symptoms?.toString()),
+      severity: Value(severity),
+      treatment: Value(treatment),
+      medications: Value(medications?.toString()),
+      doctorName: Value(doctorName),
+      hospitalName: Value(hospitalName),
+      reportUrl: Value(reportUrl),
+      attachments: Value(attachments?.toString()),
+      recordDate: Value(recordDate),
+      followUpDate: Value(followUpDate),
+      isEmergency: Value(isEmergency),
+      isResolved: Value(isResolved),
+      notes: Value(notes),
+      isSynced: const Value(false),
+      createdAt: Value(DateTime.now()),
+      lastModified: Value(DateTime.now()),
+    );
+
+    await into(familyHealthRecords).insert(healthRecord);
+    await _addToSyncQueue('family_health_records', id, 'INSERT', {
+      'id': id,
+      'familyMemberId': familyMemberId,
+      'familyGroupId': familyGroupId,
+      'recordType': recordType,
+      'title': title,
+      'description': description,
+      'condition': condition,
+      'symptoms': symptoms,
+      'severity': severity,
+      'treatment': treatment,
+      'medications': medications,
+      'doctorName': doctorName,
+      'hospitalName': hospitalName,
+      'reportUrl': reportUrl,
+      'attachments': attachments,
+      'recordDate': recordDate.toIso8601String(),
+      'followUpDate': followUpDate?.toIso8601String(),
+      'isEmergency': isEmergency,
+      'isResolved': isResolved,
+      'notes': notes,
+      'createdAt': DateTime.now().toIso8601String(),
+    });
+
+    return id;
+  }
+
+  Future<List<FamilyHealthRecord>> getFamilyHealthRecords(
+    String familyMemberId,
+  ) async {
+    return await (select(familyHealthRecords)
+          ..where((fhr) => fhr.familyMemberId.equals(familyMemberId))
+          ..orderBy([
+            (fhr) => OrderingTerm(
+              expression: fhr.recordDate,
+              mode: OrderingMode.desc,
+            ),
+          ]))
+        .get();
+  }
+
+  Future<List<FamilyHealthRecord>> getFamilyGroupHealthRecords(
+    String familyGroupId,
+  ) async {
+    return await (select(familyHealthRecords)
+          ..where((fhr) => fhr.familyGroupId.equals(familyGroupId))
+          ..orderBy([
+            (fhr) => OrderingTerm(
+              expression: fhr.recordDate,
+              mode: OrderingMode.desc,
+            ),
+          ]))
+        .get();
+  }
+
+  // Caregiver Session Operations
+  Future<String> startCaregiverSession(
+    String caregiverId,
+    String dependentId,
+    List<String> features,
+  ) async {
+    final id = const Uuid().v4();
+    final session = CaregiverSessionsCompanion(
+      id: Value(id),
+      caregiverId: Value(caregiverId),
+      dependentId: Value(dependentId),
+      startTime: Value(DateTime.now()),
+      activatedFeatures: Value(features.toString()),
+      actionsPerformed: const Value('[]'),
+      isActive: const Value(true),
+      createdAt: Value(DateTime.now()),
+    );
+
+    await into(caregiverSessions).insert(session);
+    return id;
+  }
+
+  Future<void> endCaregiverSession(String sessionId) async {
+    await (update(
+      caregiverSessions,
+    )..where((cs) => cs.id.equals(sessionId))).write(
+      CaregiverSessionsCompanion(
+        endTime: Value(DateTime.now()),
+        isActive: const Value(false),
+      ),
+    );
+  }
+
+  Future<CaregiverSession?> getActiveCaregiverSession(
+    String caregiverId,
+  ) async {
+    return await (select(caregiverSessions)..where(
+          (cs) => cs.caregiverId.equals(caregiverId) & cs.isActive.equals(true),
+        ))
+        .getSingleOrNull();
+  }
+
+  Future<List<CaregiverSession>> getCaregiverSessions(
+    String caregiverId,
+  ) async {
+    return await (select(caregiverSessions)
+          ..where((cs) => cs.caregiverId.equals(caregiverId))
+          ..orderBy([
+            (cs) =>
+                OrderingTerm(expression: cs.startTime, mode: OrderingMode.desc),
+          ]))
+        .get();
   }
 
   // Sync Queue Operations

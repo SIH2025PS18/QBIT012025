@@ -20,13 +20,13 @@ echo.
 echo ✅ All services started successfully!
 echo.
 echo 📊 Service URLs:
-echo • Unified Backend:     http://localhost:5001
-echo • Doctor Dashboard:    http://localhost:8083
+echo • Unified Backend:     http://192.168.1.7:5001
+echo • Doctor Dashboard:    http://192.168.1.7:8083
 echo.
 echo 📱 Patient App: Run 'flutter run' in the project root
 echo.
 echo 🔍 Health checks:
-echo • Backend health:      http://localhost:5001/api/health
+echo • Backend health:      http://192.168.1.7:5001/api/health
 echo.
 echo Press any key to close this window...
 pause >nul

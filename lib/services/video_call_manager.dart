@@ -270,7 +270,7 @@ class VideoCallManager extends ChangeNotifier {
       );
 
       if (recordingId != null) {
-        await _agoraService.startRecording(recordingId: recordingId);
+        await _agoraService.startRecording();
         _isRecording = true;
         _startRecordingTimer();
 

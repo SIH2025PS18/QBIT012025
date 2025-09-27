@@ -63,6 +63,9 @@ const _$MedicineCategoryEnumMap = {
   MedicineCategory.controlledSubstance: 'controlled_substance',
   MedicineCategory.supplement: 'supplement',
   MedicineCategory.medicalDevice: 'medical_device',
+  MedicineCategory.vitamins: 'vitamins',
+  MedicineCategory.diabetes: 'diabetes',
+  MedicineCategory.cardiovascular: 'cardiovascular',
 };
 
 PriceComparison _$PriceComparisonFromJson(Map<String, dynamic> json) =>

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../models/doctor.dart';
@@ -9,6 +10,7 @@ import '../services/auth_service.dart';
 class DoctorService extends ChangeNotifier {
   final ApiService _apiService = ApiService();
   late IO.Socket _socket;
+  Timer? _refreshTimer;
 
   List<Doctor> _allDoctors = [];
   List<Doctor> _onlineDoctors = [];
@@ -28,6 +30,11 @@ class DoctorService extends ChangeNotifier {
   void initialize() {
     _initializeSocket();
     refreshDoctors();
+
+    // Start periodic refresh for live doctors every 30 seconds
+    _refreshTimer = Timer.periodic(Duration(seconds: 30), (timer) {
+      refreshLiveDoctors();
+    });
   }
 
   /// Initialize socket connection for real-time updates
@@ -106,28 +113,62 @@ class DoctorService extends ChangeNotifier {
     _error = null;
 
     try {
-      final response = await _apiService.get(ApiConfig.doctorsAvailable);
+      // Fetch all available doctors for backup/general list
+      final availableResponse = await _apiService.get(
+        ApiConfig.doctorsAvailable,
+      );
 
-      if (response.isSuccess && response.data != null) {
-        final List<dynamic> doctorsData = response.data as List<dynamic>;
+      // Fetch live/online doctors for real-time display
+      final liveResponse = await _apiService.get(ApiConfig.doctorsLive);
+
+      if (availableResponse.isSuccess && availableResponse.data != null) {
+        final List<dynamic> doctorsData =
+            availableResponse.data as List<dynamic>;
         _allDoctors = doctorsData.map((data) => Doctor.fromMap(data)).toList();
+      }
+
+      if (liveResponse.isSuccess && liveResponse.data != null) {
+        final List<dynamic> liveDoctorsData =
+            liveResponse.data as List<dynamic>;
+        _onlineDoctors = liveDoctorsData
+            .map((data) => Doctor.fromMap(data))
+            .toList();
+      } else {
+        // Fallback to filtering available doctors if live endpoint fails
         _onlineDoctors = _allDoctors
             .where((doctor) => doctor.status == 'online')
             .toList();
-
-        print(
-          '✅ Refreshed ${_allDoctors.length} doctors, ${_onlineDoctors.length} online',
-        );
-      } else {
-        _error = 'Failed to load doctors: ${response.error}';
-        print('❌ Error loading doctors: ${response.error}');
       }
+
+      print(
+        '✅ Refreshed ${_allDoctors.length} available doctors, ${_onlineDoctors.length} live/online',
+      );
     } catch (e) {
       _error = 'Error loading doctors: $e';
       print('❌ Exception loading doctors: $e');
     }
 
     _setLoading(false);
+  }
+
+  /// Refresh only live/online doctors for real-time updates
+  Future<void> refreshLiveDoctors() async {
+    try {
+      final liveResponse = await _apiService.get(ApiConfig.doctorsLive);
+
+      if (liveResponse.isSuccess && liveResponse.data != null) {
+        final List<dynamic> liveDoctorsData =
+            liveResponse.data as List<dynamic>;
+        _onlineDoctors = liveDoctorsData
+            .map((data) => Doctor.fromMap(data))
+            .toList();
+
+        print('🔄 Live doctors updated: ${_onlineDoctors.length} online');
+        notifyListeners(); // Notify UI of the update
+      }
+    } catch (e) {
+      print('❌ Exception refreshing live doctors: $e');
+    }
   }
 
   /// Search doctors by speciality
@@ -248,6 +289,7 @@ class DoctorService extends ChangeNotifier {
 
   @override
   void dispose() {
+    _refreshTimer?.cancel();
     _socket.dispose();
     super.dispose();
   }

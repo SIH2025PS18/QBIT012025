@@ -344,7 +344,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 12),
           const Text(
-            'To use Nabha Sehat via SMS:',
+            'To use Sehat Sarthi via SMS:',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -516,7 +516,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Nabha Sehat',
+                      'Sehat Sarthi',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

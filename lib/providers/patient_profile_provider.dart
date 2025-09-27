@@ -6,7 +6,7 @@ import '../services/auth_service.dart';
 
 /// Provider class for managing patient profile state
 class PatientProfileProvider extends ChangeNotifier {
-  static const String _baseUrl = 'https://telemed18.onrender.com/api';
+  static const String _baseUrl = 'http://192.168.1.7:5002/api';
   final AuthService _authService = AuthService();
 
   PatientProfile? _profile;
@@ -51,6 +51,40 @@ class PatientProfileProvider extends ChangeNotifier {
         final data = jsonDecode(response.body);
         if (data['success'] == true && data['data'] != null) {
           final patientData = data['data'];
+
+          // Extract address from object structure
+          String addressString = '';
+          if (patientData['address'] != null) {
+            final address = patientData['address'];
+            if (address is String) {
+              addressString = address;
+            } else if (address is Map) {
+              addressString =
+                  [
+                        address['street'],
+                        address['city'],
+                        address['state'],
+                        address['pincode'],
+                      ]
+                      .where(
+                        (part) => part != null && part.toString().isNotEmpty,
+                      )
+                      .join(', ');
+            }
+          }
+
+          // Extract emergency contact from array structure
+          String emergencyContactName = '';
+          String emergencyContactPhone = '';
+          if (patientData['emergencyContacts'] != null &&
+              patientData['emergencyContacts'] is List &&
+              (patientData['emergencyContacts'] as List).isNotEmpty) {
+            final firstContact =
+                (patientData['emergencyContacts'] as List).first;
+            emergencyContactName = firstContact['name'] ?? '';
+            emergencyContactPhone = firstContact['phone'] ?? '';
+          }
+
           _profile = PatientProfile(
             id: patientData['_id'] ?? currentUser.id,
             fullName: patientData['name'] ?? currentUser.name,
@@ -61,19 +95,43 @@ class PatientProfileProvider extends ChangeNotifier {
                 : DateTime.now().subtract(const Duration(days: 365 * 25)),
             gender: patientData['gender'] ?? 'Not specified',
             bloodGroup: patientData['bloodGroup'] ?? '',
-            address: patientData['address'] ?? '',
-            emergencyContact: patientData['emergencyContact'] ?? '',
-            emergencyContactPhone: patientData['emergencyContactPhone'] ?? '',
+            address: addressString,
+            emergencyContact: emergencyContactName,
+            emergencyContactPhone: emergencyContactPhone,
             profilePhotoUrl: patientData['profilePhotoUrl'] ?? '',
             allergies: patientData['allergies'] != null
-                ? List<String>.from(patientData['allergies'])
+                ? (patientData['allergies'] as List).map((allergy) {
+                    if (allergy is String) return allergy;
+                    if (allergy is Map)
+                      return allergy['allergen']?.toString() ?? '';
+                    return allergy.toString();
+                  }).toList()
                 : [],
-            medications: patientData['medications'] != null
-                ? List<String>.from(patientData['medications'])
+            medications: patientData['currentMedications'] != null
+                ? (patientData['currentMedications'] as List).map((medication) {
+                    if (medication is String) return medication;
+                    if (medication is Map)
+                      return medication['name']?.toString() ?? '';
+                    return medication.toString();
+                  }).toList()
                 : [],
-            medicalHistory: patientData['medicalHistory'] ?? {},
-            lastVisit: patientData['lastVisit'] != null
-                ? DateTime.parse(patientData['lastVisit'])
+            medicalHistory:
+                patientData['medicalHistory'] != null &&
+                    patientData['medicalHistory'] is List
+                ? Map<String, dynamic>.fromEntries(
+                    (patientData['medicalHistory'] as List).map((history) {
+                      if (history is Map) {
+                        return MapEntry(
+                          history['condition']?.toString() ?? 'Unknown',
+                          history['notes']?.toString() ?? '',
+                        );
+                      }
+                      return MapEntry('Unknown', history.toString());
+                    }),
+                  )
+                : {},
+            lastVisit: patientData['lastConsultation'] != null
+                ? DateTime.parse(patientData['lastConsultation'])
                 : null,
             createdAt: patientData['createdAt'] != null
                 ? DateTime.parse(patientData['createdAt'])
@@ -173,7 +231,7 @@ class PatientProfileProvider extends ChangeNotifier {
         throw Exception('Authentication token not found');
       }
 
-      // Prepare the update data
+      // Prepare the update data to match backend Patient schema
       final updateData = {
         'name': profile.fullName,
         'phone': profile.phoneNumber,
@@ -181,13 +239,61 @@ class PatientProfileProvider extends ChangeNotifier {
         'dateOfBirth': profile.dateOfBirth.toIso8601String(),
         'gender': profile.gender.toLowerCase(),
         'bloodGroup': profile.bloodGroup,
-        'address': profile.address,
-        'emergencyContact': profile.emergencyContact,
-        'emergencyContactPhone': profile.emergencyContactPhone,
-        'allergies': profile.allergies,
-        'medications': profile.medications,
-        'medicalHistory': profile.medicalHistory,
+        // Convert address string to object structure expected by backend
+        'address': {
+          'street': profile.address,
+          'city': '',
+          'state': '',
+          'pincode': '',
+          'country': 'India',
+        },
+        // Convert emergency contact to array structure expected by backend
+        'emergencyContacts': profile.emergencyContact.isNotEmpty
+            ? [
+                {
+                  'name': profile.emergencyContact,
+                  'relationship': 'Emergency Contact',
+                  'phone': profile.emergencyContactPhone,
+                  'isPrimary': true,
+                },
+              ]
+            : [],
+        'allergies': profile.allergies
+            .map(
+              (allergy) => {
+                'allergen': allergy,
+                'severity': 'mild',
+                'reaction': '',
+              },
+            )
+            .toList(),
+        'currentMedications': profile.medications
+            .map(
+              (medication) => {
+                'name': medication,
+                'dosage': '',
+                'frequency': '',
+                'prescribedBy': '',
+                'startDate': DateTime.now().toIso8601String(),
+              },
+            )
+            .toList(),
+        'medicalHistory': profile.medicalHistory.entries
+            .map(
+              (entry) => {
+                'condition': entry.key,
+                'notes': entry.value.toString(),
+                'status': 'active',
+              },
+            )
+            .toList(),
       };
+
+      print('🔄 Starting profile update...');
+      print('🌐 Base URL: $_baseUrl');
+      print('👤 Current user: ${currentUser.name} (ID: ${currentUser.id})');
+      print('🔑 Token length: ${token.length}');
+      print('📝 Update data keys: ${updateData.keys}');
 
       final response = await http.put(
         Uri.parse('$_baseUrl/patients/profile'),
@@ -198,14 +304,49 @@ class PatientProfileProvider extends ChangeNotifier {
         body: jsonEncode(updateData),
       );
 
-      print('Update Profile Response: ${response.statusCode}');
-      print('Update Profile Body: ${response.body}');
+      print('📡 Update Profile Response: ${response.statusCode}');
+      print('📦 Update Profile Body: ${response.body}');
+      print('🔍 Response Headers: ${response.headers}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true && data['data'] != null) {
           // Map the backend patient data to our profile model
           final patientData = data['data'];
+
+          // Extract address from object structure
+          String addressString = '';
+          if (patientData['address'] != null) {
+            final address = patientData['address'];
+            if (address is String) {
+              addressString = address;
+            } else if (address is Map) {
+              addressString =
+                  [
+                        address['street'],
+                        address['city'],
+                        address['state'],
+                        address['pincode'],
+                      ]
+                      .where(
+                        (part) => part != null && part.toString().isNotEmpty,
+                      )
+                      .join(', ');
+            }
+          }
+
+          // Extract emergency contact from array structure
+          String emergencyContactName = '';
+          String emergencyContactPhone = '';
+          if (patientData['emergencyContacts'] != null &&
+              patientData['emergencyContacts'] is List &&
+              (patientData['emergencyContacts'] as List).isNotEmpty) {
+            final firstContact =
+                (patientData['emergencyContacts'] as List).first;
+            emergencyContactName = firstContact['name'] ?? '';
+            emergencyContactPhone = firstContact['phone'] ?? '';
+          }
+
           _profile = PatientProfile(
             id: patientData['_id'] ?? profile.id,
             fullName: patientData['name'] ?? profile.fullName,
@@ -216,24 +357,48 @@ class PatientProfileProvider extends ChangeNotifier {
                 : profile.dateOfBirth,
             gender: patientData['gender'] ?? profile.gender,
             bloodGroup: patientData['bloodGroup'] ?? profile.bloodGroup,
-            address: patientData['address'] ?? profile.address,
-            emergencyContact:
-                patientData['emergencyContact'] ?? profile.emergencyContact,
-            emergencyContactPhone:
-                patientData['emergencyContactPhone'] ??
-                profile.emergencyContactPhone,
+            address: addressString.isNotEmpty ? addressString : profile.address,
+            emergencyContact: emergencyContactName.isNotEmpty
+                ? emergencyContactName
+                : profile.emergencyContact,
+            emergencyContactPhone: emergencyContactPhone.isNotEmpty
+                ? emergencyContactPhone
+                : profile.emergencyContactPhone,
             profilePhotoUrl:
                 patientData['profilePhotoUrl'] ?? profile.profilePhotoUrl,
             allergies: patientData['allergies'] != null
-                ? List<String>.from(patientData['allergies'])
+                ? (patientData['allergies'] as List).map((allergy) {
+                    if (allergy is String) return allergy;
+                    if (allergy is Map)
+                      return allergy['allergen']?.toString() ?? '';
+                    return allergy.toString();
+                  }).toList()
                 : profile.allergies,
-            medications: patientData['medications'] != null
-                ? List<String>.from(patientData['medications'])
+            medications: patientData['currentMedications'] != null
+                ? (patientData['currentMedications'] as List).map((medication) {
+                    if (medication is String) return medication;
+                    if (medication is Map)
+                      return medication['name']?.toString() ?? '';
+                    return medication.toString();
+                  }).toList()
                 : profile.medications,
             medicalHistory:
-                patientData['medicalHistory'] ?? profile.medicalHistory,
-            lastVisit: patientData['lastVisit'] != null
-                ? DateTime.parse(patientData['lastVisit'])
+                patientData['medicalHistory'] != null &&
+                    patientData['medicalHistory'] is List
+                ? Map<String, dynamic>.fromEntries(
+                    (patientData['medicalHistory'] as List).map((history) {
+                      if (history is Map) {
+                        return MapEntry(
+                          history['condition']?.toString() ?? 'Unknown',
+                          history['notes']?.toString() ?? '',
+                        );
+                      }
+                      return MapEntry('Unknown', history.toString());
+                    }),
+                  )
+                : profile.medicalHistory,
+            lastVisit: patientData['lastConsultation'] != null
+                ? DateTime.parse(patientData['lastConsultation'])
                 : profile.lastVisit,
             createdAt: patientData['createdAt'] != null
                 ? DateTime.parse(patientData['createdAt'])

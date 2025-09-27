@@ -173,8 +173,8 @@ class PhoneAuthService {
       };
 
       // Store in user_profiles table
-      // Store in offline database instead of Supabase
-      // await _supabase.from('user_profiles').insert(userData);
+      // Store in offline database instead of
+      // await _.from('user_profiles').insert(userData);
       print('User data stored locally: $userData');
 
       // Store offline for future access

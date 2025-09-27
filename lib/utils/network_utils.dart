@@ -35,14 +35,14 @@ class NetworkUtils {
     }
   }
 
-  /// Test Supabase hostname specifically
-  static Future<bool> canReachSupabase(String supabaseUrl) async {
+  /// Test  hostname specifically
+  static Future<bool> canReach(String Url) async {
     try {
       // Extract hostname from URL
-      final uri = Uri.parse(supabaseUrl);
+      final uri = Uri.parse(Url);
       final hostname = uri.host;
 
-      debugPrint('🔍 Testing connectivity to Supabase: $hostname');
+      debugPrint('🔍 Testing connectivity to : $hostname');
 
       // Test HTTPS port (443)
       final socket = await Socket.connect(
@@ -52,18 +52,16 @@ class NetworkUtils {
       );
       socket.destroy();
 
-      debugPrint('✅ Successfully connected to Supabase hostname');
+      debugPrint('✅ Successfully connected to  hostname');
       return true;
     } catch (e) {
-      debugPrint('❌ Cannot reach Supabase hostname: $e');
+      debugPrint('❌ Cannot reach  hostname: $e');
       return false;
     }
   }
 
   /// Get detailed network diagnostics
-  static Future<Map<String, dynamic>> getNetworkDiagnostics(
-    String supabaseUrl,
-  ) async {
+  static Future<Map<String, dynamic>> getNetworkDiagnostics(String Url) async {
     final diagnostics = <String, dynamic>{};
 
     try {
@@ -71,9 +69,9 @@ class NetworkUtils {
       final hasInternet = await hasInternetConnection();
       diagnostics['hasInternet'] = hasInternet;
 
-      // Test Supabase connectivity
-      final canReachSupabase = await NetworkUtils.canReachSupabase(supabaseUrl);
-      diagnostics['canReachSupabase'] = canReachSupabase;
+      // Test  connectivity
+      final canReach = await NetworkUtils.canReach(Url);
+      diagnostics['canReach'] = canReach;
 
       // Get platform info
       diagnostics['platform'] = Platform.operatingSystem;

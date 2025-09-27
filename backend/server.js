@@ -15,7 +15,7 @@ connectDB();
 // Import all routes
 const authRoutes = require("./routes/auth");
 const doctorRoutes = require("./routes/doctors");
-const patientRoutes = require("./routes/patients");
+const patientRoutes = require("./routes/patients_profile_test");
 const consultationRoutes = require("./routes/consultations");
 const medicineRoutes = require("./routes/medicines");
 const orderRoutes = require("./routes/orders");
@@ -26,6 +26,7 @@ const callRoutes = require("./routes/calls");
 const adminRoutes = require("./routes/admin");
 const familyRoutes = require("./routes/family");
 const smartPharmacyRoutes = require("./routes/smart_pharmacy");
+const communityHealthRoutes = require("./routes/communityHealth");
 
 const app = express();
 const server = http.createServer(app);
@@ -58,6 +59,7 @@ app.use("/api/calls", callRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/family", familyRoutes);
 app.use("/api/smart-pharmacy", smartPharmacyRoutes);
+app.use("/api/community-health", communityHealthRoutes);
 
 // API info endpoint
 app.get("/api", (req, res) => {
@@ -141,11 +143,11 @@ app.use((req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5002;
 
 server.listen(PORT, () => {
   console.log(`🚀 Unified Telemedicine Backend Server running on port ${PORT}`);
-  console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
-  console.log(`📋 API Endpoints: http://localhost:${PORT}/api`);
+  console.log(`📊 Health Check: http://192.168.1.7:${PORT}/api/health`);
+  console.log(`📋 API Endpoints: http://192.168.1.7:${PORT}/api`);
   console.log(`🔌 Socket.IO ready for real-time connections`);
 });

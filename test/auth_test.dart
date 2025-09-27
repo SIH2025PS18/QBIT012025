@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:_flutter/_flutter.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
@@ -9,8 +9,8 @@ import 'package:telemed/screens/auth/register_screen.dart';
 import 'package:telemed/widgets/custom_text_field.dart';
 import 'package:telemed/widgets/custom_button.dart';
 
-// Mock Supabase for testing
-class MockSupabaseClient extends Mock implements SupabaseClient {}
+// Mock  for testing
+class MockClient extends Mock implements Client {}
 
 void main() {
   group('Authentication Widget Tests', () {

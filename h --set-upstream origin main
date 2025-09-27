@@ -6,7 +6,7 @@ Date:   Wed Sep 10 11:18:56 2025 +0530
     
     - Flutter mobile app with offline capabilities
     - Node.js backend services (webrtc-signal, doctor-dashboard, medstore)
-    - Comprehensive authentication system with Supabase integration
+    - Comprehensive authentication system with  integration
     - Video consultation features with Agora integration
     - Multilingual support (English, Hindi, Punjabi)
     - Offline-first architecture with local database

@@ -8,6 +8,7 @@ import 'services/auth_service.dart';
 import 'services/doctor_provider.dart';
 import 'services/facility_service.dart';
 import 'providers/language_provider.dart';
+import 'providers/theme_provider.dart';
 import 'providers/patient_profile_provider.dart';
 import 'providers/emergency_data_provider.dart';
 import 'providers/family_profile_provider.dart';
@@ -23,7 +24,9 @@ import 'screens/doctor_queue_screen.dart';
 import 'screens/queue_waiting_screen.dart';
 import 'screens/facility_search_screen.dart';
 import 'screens/emergency_access_screen.dart';
+import 'screens/family_management_screen.dart';
 import 'widgets/emergency_access_monitor.dart';
+import 'screens/doctor_test_screen.dart';
 import 'generated/l10n/app_localizations.dart';
 
 void main() async {
@@ -46,6 +49,11 @@ class TelemedApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // Theme provider
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (_) => ThemeProvider()..initializeTheme(),
+        ),
+
         // Language provider
         ChangeNotifierProvider<LanguageProvider>(
           create: (_) => LanguageProvider()..initializeLanguage(),
@@ -93,15 +101,15 @@ class TelemedApp extends StatelessWidget {
               VideoConsultationService(context.read<ConnectivityService>()),
         ),
       ],
-      child: Consumer<LanguageProvider>(
-        builder: (context, languageProvider, child) {
+      child: Consumer2<LanguageProvider, ThemeProvider>(
+        builder: (context, languageProvider, themeProvider, child) {
           return MaterialApp(
-            title: 'Telemedicine Platform',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              useMaterial3: true,
-              appBarTheme: const AppBarTheme(centerTitle: true, elevation: 1),
-            ),
+            title: 'Sehat Sarthi',
+            theme: themeProvider.lightTheme,
+            darkTheme: themeProvider.darkTheme,
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
             locale: languageProvider.currentLocale,
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -129,6 +137,8 @@ class TelemedApp extends StatelessWidget {
                   const DoctorQueueScreen(), // Add doctor queue route
               '/facility-search': (context) =>
                   const FacilitySearchScreen(), // Add facility search route
+              '/family-management': (context) =>
+                  const FamilyManagementScreen(), // Add family management route
               '/emergency-access': (context) {
                 final args =
                     ModalRoute.of(context)!.settings.arguments
@@ -148,6 +158,8 @@ class TelemedApp extends StatelessWidget {
                     ModalRoute.of(context)!.settings.arguments as LiveDoctor;
                 return QueueWaitingScreen(doctor: doctor);
               }, // Add queue waiting route
+              '/doctor-test': (context) =>
+                  const DoctorTestScreen(), // Add doctor test route
             },
             debugShowCheckedModeBanner: false,
           );

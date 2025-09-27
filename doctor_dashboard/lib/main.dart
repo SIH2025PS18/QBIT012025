@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/doctor_login_screen.dart';
 import 'providers/doctor_provider.dart';
+import 'providers/doctor_theme_provider.dart';
 import 'providers/video_call_provider.dart';
 import 'providers/chat_provider.dart';
 
@@ -16,24 +17,28 @@ class DoctorDashboardApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+            create: (_) => DoctorThemeProvider()..initializeTheme()),
         ChangeNotifierProvider(create: (_) => DoctorProvider()),
         ChangeNotifierProvider(create: (_) => VideoCallProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
-      child: MaterialApp(
-        title: 'Doctor Dashboard',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: const Color(0xFF6366F1),
-          scaffoldBackgroundColor: const Color(0xFF1A1B23),
-          fontFamily: 'Inter',
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF6366F1),
-            brightness: Brightness.dark,
-          ),
-        ),
-        home: const DoctorLoginScreen(),
+      child: Consumer<DoctorThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'Doctor Dashboard',
+            debugShowCheckedModeBanner: false,
+            theme: themeProvider.lightTheme,
+            darkTheme: themeProvider.darkTheme,
+            themeMode:
+                themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            initialRoute: '/login',
+            routes: {
+              '/login': (context) => const DoctorLoginScreen(),
+            },
+            home: const DoctorLoginScreen(),
+          );
+        },
       ),
     );
   }

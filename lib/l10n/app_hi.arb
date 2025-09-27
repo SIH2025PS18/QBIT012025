@@ -2,7 +2,7 @@
   "@@locale": "hi",
   "@@last_modified": "2025-09-04T20:01:00Z",
   
-  "appTitle": "टेलीमेड",
+  "appTitle": "सेहत सारथी",
   "welcome": "स्वागत",
   "welcomeMessage": "टेलीमेड में आपका स्वागत है - आपका स्वास्थ्य, हमारी प्राथमिकता",
   "getStarted": "शुरू करें",
@@ -284,5 +284,7 @@
   "contactSupport": "सहायता से संपर्क करें",
   "faq": "अक्सर पूछे जाने वाले प्रश्न",
   "termsConditions": "नियम और शर्तें",
-  "privacyPolicy": "गोपनीयता नीति"
+  "privacyPolicy": "गोपनीयता नीति",
+  "familyMembers": "परिवार के सदस्य",
+  "smartPharmacy": "स्मार्ट फार्मेसी"
 }

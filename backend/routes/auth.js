@@ -649,12 +649,13 @@ router.post(
         });
       }
 
-      // Update last active for doctors
+      // Update last active and status for doctors
       if (userType === "doctor") {
-        console.log("🕒 Updating doctor last active time:", user._id);
+        console.log("🕒 Updating doctor last active time and status:", user._id);
         user.lastActive = new Date();
+        user.status = "online";  // Set doctor as online when they login
         await user.save();
-        console.log("✅ Doctor last active time updated");
+        console.log("✅ Doctor last active time and status updated to online");
       }
 
       // Generate token
@@ -883,14 +884,25 @@ router.post("/logout", async (req, res) => {
     // For JWT, we typically just tell the client to remove the token
     // In a more advanced setup, you might maintain a blacklist of tokens
 
-    // If it's a doctor, update their status to offline
-    if (req.user && req.user.userType === "doctor") {
-      console.log("🕒 Updating doctor status to offline:", req.user.id);
-      await Doctor.findByIdAndUpdate(req.user.id, {
-        status: "offline",
-        lastActive: new Date(),
-      });
-      console.log("✅ Doctor status updated to offline");
+    // Try to get user info from authorization header
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.substring(7);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // If it's a doctor, update their status to offline
+        if (decoded.userType === "doctor") {
+          console.log("🕒 Updating doctor status to offline:", decoded.id);
+          await Doctor.findByIdAndUpdate(decoded.id, {
+            status: "offline",
+            lastActive: new Date(),
+          });
+          console.log("✅ Doctor status updated to offline");
+        }
+      } catch (tokenError) {
+        console.log("Token decode error during logout:", tokenError.message);
+      }
     }
 
     console.log("✅ Logout successful");

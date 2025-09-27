@@ -11,7 +11,8 @@ class VideoConsultationExample extends StatefulWidget {
   const VideoConsultationExample({Key? key}) : super(key: key);
 
   @override
-  State<VideoConsultationExample> createState() => _VideoConsultationExampleState();
+  State<VideoConsultationExample> createState() =>
+      _VideoConsultationExampleState();
 }
 
 class _VideoConsultationExampleState extends State<VideoConsultationExample> {
@@ -20,30 +21,23 @@ class _VideoConsultationExampleState extends State<VideoConsultationExample> {
     return MultiProvider(
       providers: [
         // Add your service providers
-        Provider<ConnectivityService>(
-          create: (_) => ConnectivityService(),
-        ),
+        Provider<ConnectivityService>(create: (_) => ConnectivityService()),
         ChangeNotifierProvider<VideoConsultationService>(
-          create: (context) => VideoConsultationService(
-            context.read<ConnectivityService>(),
-          ),
+          create: (context) =>
+              VideoConsultationService(context.read<ConnectivityService>()),
         ),
       ],
       child: MaterialApp(
         title: 'Telemedicine Video Consultation',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-        ),
+        theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
         home: const ConsultationHomeScreen(),
         routes: {
           '/patient-consultation': (context) => const VideoConsultationScreen(
-                userId: 'patient-123',
-                isDoctor: false,
-              ),
-          '/doctor-dashboard': (context) => const DoctorDashboardScreen(
-                doctorId: 'doctor-123',
-              ),
+            userId: 'patient-123',
+            isDoctor: false,
+          ),
+          '/doctor-dashboard': (context) =>
+              const DoctorDashboardScreen(doctorId: 'doctor-123'),
         },
       ),
     );
@@ -80,31 +74,25 @@ class ConsultationHomeScreen extends StatelessWidget {
                   color: Colors.blue,
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               const Text(
                 'Video Consultation Platform',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               Text(
                 'Connect with healthcare professionals through secure video consultations',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 48),
-              
+
               // Patient interface button
               SizedBox(
                 width: double.infinity,
@@ -128,9 +116,9 @@ class ConsultationHomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Doctor interface button
               SizedBox(
                 width: double.infinity,
@@ -139,9 +127,8 @@ class ConsultationHomeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const DoctorDashboardScreen(
-                          doctorId: 'doctor-123',
-                        ),
+                        builder: (context) =>
+                            const DoctorDashboardScreen(doctorId: 'doctor-123'),
                       ),
                     );
                   },
@@ -155,9 +142,9 @@ class ConsultationHomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Demo features
               Card(
                 child: Padding(
@@ -174,8 +161,14 @@ class ConsultationHomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       _buildFeatureItem(Icons.queue, 'Queue Management System'),
-                      _buildFeatureItem(Icons.meeting_room, 'Virtual Waiting Room'),
-                      _buildFeatureItem(Icons.videocam, 'HD Video Consultation'),
+                      _buildFeatureItem(
+                        Icons.meeting_room,
+                        'Virtual Waiting Room',
+                      ),
+                      _buildFeatureItem(
+                        Icons.videocam,
+                        'HD Video Consultation',
+                      ),
                       _buildFeatureItem(Icons.chat, 'Real-time Chat'),
                       _buildFeatureItem(Icons.dashboard, 'Doctor Dashboard'),
                       _buildFeatureItem(Icons.history, 'Consultation History'),
@@ -214,7 +207,7 @@ class ConsultationHomeScreen extends StatelessWidget {
  *    - Replace placeholder video views with actual video widgets
  * 
  * 2. BACKEND SETUP:
- *    - Ensure Supabase tables are created for video_consultations
+ *    - Ensure  tables are created for video_consultations
  *    - Set up real-time subscriptions for queue updates
  *    - Implement chat message storage and real-time sync
  * 

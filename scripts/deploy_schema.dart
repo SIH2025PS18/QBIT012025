@@ -1,4 +1,4 @@
-// import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:_flutter/_flutter.dart';
 // import 'dart:io';
 
 // Future<void> deployUserProfilesTable() async {
@@ -8,7 +8,7 @@
 //     final sqlContent = await sqlFile.readAsString();
 
 //     // Execute the SQL
-//     final client = Supabase.instance.client;
+//     final client = .instance.client;
 //     await client.rpc('execute_sql', params: {'sql': sqlContent});
 
 //     print('✅ User profiles table created successfully!');
@@ -17,15 +17,15 @@
 
 //     // Try alternative approach - execute statements individually
 //     try {
-//       final client = Supabase.instance.client;
+//       final client = .instance.client;
 
 //       // Create table
 //       await client.from('user_profiles').select().limit(1);
 //       print('✅ Table already exists or created successfully');
 //     } catch (e2) {
 //       print('❌ Alternative approach failed: $e2');
-//       print('Please run the SQL manually in Supabase SQL Editor:');
-//       print('https://supabase.com/dashboard/project/szrxgxvypusvkkyykrjz/sql');
+//       print('Please run the SQL manually in  SQL Editor:');
+//       print('https://.com/dashboard/project/szrxgxvypusvkkyykrjz/sql');
 //     }
 //   }
 // }

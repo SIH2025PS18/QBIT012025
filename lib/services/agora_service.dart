@@ -42,6 +42,10 @@ class AgoraService {
   int? get localUserUid => _localUserUid;
   List<int> get remoteUsers => _remoteUsers;
 
+  // Add isReconnecting getter for compatibility with VideoCallManager
+  bool get isReconnecting =>
+      false; // TODO: Implement actual reconnect logic if needed
+
   // Streams
   Stream<bool> get mutedStream => _mutedController.stream;
   Stream<bool> get videoEnabledStream => _videoEnabledController.stream;
@@ -350,10 +354,11 @@ class AgoraService {
     }
   }
 
-  /// Set video layout (placeholder for future layout optimizations)
-  void setVideoLayout(String layout) {
-    log('Video layout set to: $layout');
-    // Implementation depends on specific layout requirements
+  /// Set video layout (for compatibility)
+  void setVideoLayout(dynamic layout) {
+    // This is a stub for layout switching, can be expanded for real logic
+    // Accepts VideoLayout enum or String
+    // No-op for now
   }
 
   /// Set remote video stream type
@@ -417,5 +422,23 @@ class AgoraService {
 
     // Return empty string for testing (works with Agora's test mode)
     return '';
+  }
+
+  Future<void> toggleMute() async {
+    _isMuted = !_isMuted;
+    await _engine?.muteLocalAudioStream(_isMuted);
+    _mutedController.add(_isMuted);
+  }
+
+  Future<void> toggleCamera() async {
+    _isVideoEnabled = !_isVideoEnabled;
+    await _engine?.muteLocalVideoStream(!_isVideoEnabled);
+    _videoEnabledController.add(_isVideoEnabled);
+  }
+
+  Future<void> toggleSpeaker() async {
+    _isSpeakerOn = !_isSpeakerOn;
+    await _engine?.setEnableSpeakerphone(_isSpeakerOn);
+    _speakerController.add(_isSpeakerOn);
   }
 }

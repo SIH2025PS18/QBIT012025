@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../providers/video_call_provider.dart';
+import '../providers/doctor_theme_provider.dart';
 
 class VideoCallWidget extends StatefulWidget {
   final Patient patient;
@@ -15,42 +16,49 @@ class VideoCallWidget extends StatefulWidget {
 class _VideoCallWidgetState extends State<VideoCallWidget> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFF1A1B23),
-      child: Stack(
-        children: [
-          // Main video area (patient's video)
-          // Refresh analyzer
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF2A2D37),
-                borderRadius: BorderRadius.circular(16),
+    return Consumer<DoctorThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return Container(
+          color: themeProvider.primaryBackgroundColor,
+          child: Stack(
+            children: [
+              // Main video area (patient's video)
+              // Refresh analyzer
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: themeProvider.cardBackgroundColor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  margin: const EdgeInsets.all(16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: _buildMainVideoView(themeProvider),
+                  ),
+                ),
               ),
-              margin: const EdgeInsets.all(16),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: _buildMainVideoView(),
+
+              // Doctor's video (small overlay)
+              Positioned(
+                  top: 32,
+                  right: 32,
+                  child: _buildDoctorVideoOverlay(themeProvider)),
+
+              // Video call controls at bottom
+              Positioned(
+                bottom: 32,
+                left: 0,
+                right: 0,
+                child: _buildVideoControls(themeProvider),
               ),
-            ),
+            ],
           ),
-
-          // Doctor's video (small overlay)
-          Positioned(top: 32, right: 32, child: _buildDoctorVideoOverlay()),
-
-          // Video call controls at bottom
-          Positioned(
-            bottom: 32,
-            left: 0,
-            right: 0,
-            child: _buildVideoControls(),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildMainVideoView() {
+  Widget _buildMainVideoView(DoctorThemeProvider themeProvider) {
     return Consumer<VideoCallProvider>(
       builder: (context, videoProvider, child) {
         return Stack(
@@ -59,30 +67,32 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
             Container(
               width: double.infinity,
               height: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Color(0xFF3A3D47), Color(0xFF2A2D37)],
+                  colors: themeProvider.isDarkMode
+                      ? [const Color(0xFF3A3D47), const Color(0xFF2A2D37)]
+                      : [Colors.grey[200]!, Colors.grey[100]!],
                 ),
               ),
               child: videoProvider.remoteUsers.isNotEmpty
                   ? videoProvider.webrtcService.createRemoteVideoView()
-                  : const Center(
+                  : Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CircleAvatar(
                             radius: 80,
-                            backgroundColor: Color(0xFF6366F1),
-                            child: Icon(Icons.person,
+                            backgroundColor: themeProvider.accentColor,
+                            child: const Icon(Icons.person,
                                 size: 80, color: Colors.white),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
                             'Waiting for patient...',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: themeProvider.primaryTextColor,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
@@ -97,16 +107,16 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
     );
   }
 
-  Widget _buildDoctorVideoOverlay() {
+  Widget _buildDoctorVideoOverlay(DoctorThemeProvider themeProvider) {
     return Consumer<VideoCallProvider>(
       builder: (context, videoProvider, child) {
         return Container(
           width: 180,
           height: 240,
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2D37),
+            color: themeProvider.cardBackgroundColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF6366F1), width: 2),
+            border: Border.all(color: themeProvider.accentColor, width: 2),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
@@ -161,16 +171,16 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
     );
   }
 
-  Widget _buildVideoControls() {
+  Widget _buildVideoControls(DoctorThemeProvider themeProvider) {
     return Consumer<VideoCallProvider>(
       builder: (context, videoProvider, child) {
         return Center(
             child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2D37).withValues(alpha: 0.9),
+            color: themeProvider.cardBackgroundColor.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: const Color(0xFF3A3D47), width: 1),
+            border: Border.all(color: themeProvider.borderColor, width: 1),
           ),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -184,6 +194,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                   isActive: videoProvider.isAudioEnabled,
                   onPressed: () => videoProvider.toggleAudio(),
                   tooltip: videoProvider.isAudioEnabled ? 'Mute' : 'Unmute',
+                  themeProvider: themeProvider,
                 ),
 
                 const SizedBox(width: 12),
@@ -198,6 +209,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                   tooltip: videoProvider.isVideoEnabled
                       ? 'Turn off camera'
                       : 'Turn on camera',
+                  themeProvider: themeProvider,
                 ),
 
                 const SizedBox(width: 12),
@@ -209,13 +221,14 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                   onPressed: () {
                     // Screen share functionality
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Screen sharing started'),
-                        backgroundColor: Color(0xFF6366F1),
+                      SnackBar(
+                        content: const Text('Screen sharing started'),
+                        backgroundColor: themeProvider.accentColor,
                       ),
                     );
                   },
                   tooltip: 'Share screen',
+                  themeProvider: themeProvider,
                 ),
 
                 const SizedBox(width: 12),
@@ -225,9 +238,10 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
                   icon: Icons.more_horiz,
                   isActive: false,
                   onPressed: () {
-                    _showMoreOptions(context);
+                    _showMoreOptions(context, themeProvider);
                   },
                   tooltip: 'More options',
+                  themeProvider: themeProvider,
                 ),
 
                 const SizedBox(width: 20),
@@ -265,6 +279,7 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
     required bool isActive,
     required VoidCallback onPressed,
     required String tooltip,
+    required DoctorThemeProvider themeProvider,
   }) {
     return Tooltip(
       message: tooltip,
@@ -273,18 +288,20 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
         height: 48,
         decoration: BoxDecoration(
           color: isActive
-              ? const Color(0xFF6366F1).withValues(alpha: 0.2)
-              : const Color(0xFF3A3D47),
+              ? themeProvider.accentColor.withValues(alpha: 0.2)
+              : themeProvider.cardBackgroundColor,
           shape: BoxShape.circle,
           border: isActive
-              ? Border.all(color: const Color(0xFF6366F1), width: 1)
+              ? Border.all(color: themeProvider.accentColor, width: 1)
               : null,
         ),
         child: IconButton(
           onPressed: onPressed,
           icon: Icon(
             icon,
-            color: isActive ? const Color(0xFF6366F1) : Colors.grey,
+            color: isActive
+                ? themeProvider.accentColor
+                : themeProvider.secondaryTextColor,
             size: 20,
           ),
         ),
@@ -292,10 +309,11 @@ class _VideoCallWidgetState extends State<VideoCallWidget> {
     );
   }
 
-  void _showMoreOptions(BuildContext context) {
+  void _showMoreOptions(
+      BuildContext context, DoctorThemeProvider themeProvider) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF2A2D37),
+      backgroundColor: themeProvider.cardBackgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

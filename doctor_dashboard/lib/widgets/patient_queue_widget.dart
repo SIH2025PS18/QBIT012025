@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/doctor_provider.dart';
 import '../providers/video_call_provider.dart';
+import '../providers/doctor_theme_provider.dart';
 import '../models/models.dart';
 
 class PatientQueueWidget extends StatelessWidget {
@@ -9,41 +10,47 @@ class PatientQueueWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF1A1B23),
-        border: Border(right: BorderSide(color: Color(0xFF3A3D47), width: 1)),
-      ),
-      child: Column(
-        children: [
-          // Header
-          _buildHeader(),
+    return Consumer<DoctorThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return Container(
+          decoration: BoxDecoration(
+            color: themeProvider.cardBackgroundColor,
+            border: Border(
+                left: BorderSide(color: themeProvider.borderColor, width: 1)),
+          ),
+          child: Column(
+            children: [
+              // Header
+              _buildHeader(themeProvider),
 
-          // Queue list
-          Expanded(child: _buildQueueList()),
-        ],
-      ),
+              // Queue list
+              Expanded(child: _buildQueueList(themeProvider)),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(DoctorThemeProvider themeProvider) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        color: Color(0xFF2A2D37),
-        border: Border(bottom: BorderSide(color: Color(0xFF3A3D47), width: 1)),
+      decoration: BoxDecoration(
+        color: themeProvider.secondaryBackgroundColor,
+        border: Border(
+            bottom: BorderSide(color: themeProvider.borderColor, width: 1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.people, color: Color(0xFF6366F1), size: 24),
+              Icon(Icons.people, color: themeProvider.accentColor, size: 24),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Patient Queue',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: themeProvider.primaryTextColor,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -57,7 +64,7 @@ class PatientQueueWidget extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6366F1),
+                      color: themeProvider.accentColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -74,22 +81,25 @@ class PatientQueueWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Patients waiting for consultation',
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+            style: TextStyle(
+              color: themeProvider.secondaryTextColor,
+              fontSize: 14,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildQueueList() {
+  Widget _buildQueueList(DoctorThemeProvider themeProvider) {
     return Consumer<DoctorProvider>(
       builder: (context, doctorProvider, child) {
         final patients = doctorProvider.patientQueue;
 
         if (patients.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyState(themeProvider);
         }
 
         return ListView.builder(
@@ -97,28 +107,39 @@ class PatientQueueWidget extends StatelessWidget {
           itemCount: patients.length,
           itemBuilder: (context, index) {
             final patient = patients[index];
-            return _buildPatientCard(context, patient, index + 1);
+            return _buildPatientCard(
+                context, patient, index + 1, themeProvider);
           },
         );
       },
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(DoctorThemeProvider themeProvider) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.people_outline, size: 64, color: Colors.grey),
+          Icon(
+            Icons.people_outline,
+            size: 64,
+            color: themeProvider.secondaryTextColor,
+          ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No patients in queue',
-            style: TextStyle(color: Colors.grey, fontSize: 16),
+            style: TextStyle(
+              color: themeProvider.secondaryTextColor,
+              fontSize: 16,
+            ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Patients will appear here when they join',
-            style: TextStyle(color: Colors.grey, fontSize: 12),
+            style: TextStyle(
+              color: themeProvider.secondaryTextColor,
+              fontSize: 12,
+            ),
           ),
           const SizedBox(height: 24),
           Builder(
@@ -132,7 +153,7 @@ class PatientQueueWidget extends StatelessWidget {
                   icon: const Icon(Icons.person_add),
                   label: const Text('Add Test Patient'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6366F1),
+                    backgroundColor: themeProvider.accentColor,
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -149,6 +170,19 @@ class PatientQueueWidget extends StatelessWidget {
                     foregroundColor: Colors.white,
                   ),
                 ),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Provider.of<DoctorProvider>(context, listen: false)
+                        .testSocketPatientJoin();
+                  },
+                  icon: const Icon(Icons.wifi),
+                  label: const Text('Test Socket'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
               ],
             ),
           ),
@@ -161,6 +195,7 @@ class PatientQueueWidget extends StatelessWidget {
     BuildContext context,
     Patient patient,
     int position,
+    DoctorThemeProvider themeProvider,
   ) {
     final isNext = position == 1;
     final timeUntilAppointment = patient.appointmentTime.difference(
@@ -172,12 +207,15 @@ class PatientQueueWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: isNext
-            ? const Color(0xFF6366F1).withValues(alpha: 0.1)
-            : const Color(0xFF2A2D37),
+            ? themeProvider.accentColor.withValues(alpha: 0.1)
+            : themeProvider.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: isNext
-            ? Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.3))
-            : null,
+        border: Border.all(
+          color: isNext
+              ? themeProvider.accentColor.withValues(alpha: 0.3)
+              : themeProvider.borderColor,
+          width: 1,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -191,15 +229,21 @@ class PatientQueueWidget extends StatelessWidget {
                   height: 32,
                   decoration: BoxDecoration(
                     color: isNext
-                        ? const Color(0xFF6366F1)
-                        : const Color(0xFF3A3D47),
+                        ? themeProvider.accentColor
+                        : themeProvider.isDarkMode
+                            ? const Color(0xFF3A3D47)
+                            : Colors.grey[200],
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
                     child: Text(
                       position.toString(),
                       style: TextStyle(
-                        color: isNext ? Colors.white : Colors.grey,
+                        color: isNext
+                            ? Colors.white
+                            : themeProvider.isDarkMode
+                                ? Colors.grey
+                                : Colors.grey[600],
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -212,8 +256,8 @@ class PatientQueueWidget extends StatelessWidget {
                     children: [
                       Text(
                         patient.name,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: themeProvider.primaryTextColor,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -239,7 +283,9 @@ class PatientQueueWidget extends StatelessWidget {
                         ? Colors.red.withValues(alpha: 0.2)
                         : isNext
                             ? const Color(0xFF10B981).withValues(alpha: 0.2)
-                            : const Color(0xFF3A3D47),
+                            : themeProvider.isDarkMode
+                                ? const Color(0xFF3A3D47)
+                                : Colors.grey[100],
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -253,7 +299,7 @@ class PatientQueueWidget extends StatelessWidget {
                           ? Colors.red
                           : isNext
                               ? const Color(0xFF10B981)
-                              : Colors.grey,
+                              : themeProvider.secondaryTextColor,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),
@@ -268,24 +314,29 @@ class PatientQueueWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF3A3D47).withValues(alpha: 0.5),
+                color: themeProvider.isDarkMode
+                    ? const Color(0xFF3A3D47).withValues(alpha: 0.5)
+                    : Colors.grey[50],
                 borderRadius: BorderRadius.circular(8),
+                border: themeProvider.isDarkMode
+                    ? null
+                    : Border.all(color: Colors.grey[200]!, width: 1),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.access_time,
                         size: 14,
-                        color: Colors.grey,
+                        color: themeProvider.secondaryTextColor,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         _formatAppointmentTime(patient.appointmentTime),
-                        style: const TextStyle(
-                          color: Colors.grey,
+                        style: TextStyle(
+                          color: themeProvider.secondaryTextColor,
                           fontSize: 12,
                         ),
                       ),
@@ -294,17 +345,17 @@ class PatientQueueWidget extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.medical_information,
                         size: 14,
-                        color: Colors.grey,
+                        color: themeProvider.secondaryTextColor,
                       ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           patient.symptoms,
-                          style: const TextStyle(
-                            color: Colors.grey,
+                          style: TextStyle(
+                            color: themeProvider.secondaryTextColor,
                             fontSize: 12,
                           ),
                           maxLines: 2,
@@ -340,7 +391,7 @@ class PatientQueueWidget extends StatelessWidget {
                           Container(
                             width: 2,
                             height: 12,
-                            color: Colors.grey[600],
+                            color: themeProvider.borderColor,
                           ),
                           const SizedBox(width: 12),
                         ],
@@ -379,7 +430,7 @@ class PatientQueueWidget extends StatelessWidget {
                       icon: const Icon(Icons.video_call, size: 16),
                       label: const Text('Start Call'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6366F1),
+                        backgroundColor: themeProvider.accentColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -396,8 +447,8 @@ class PatientQueueWidget extends StatelessWidget {
                     icon: const Icon(Icons.person, size: 16),
                     label: const Text('Details'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.grey,
-                      side: const BorderSide(color: Color(0xFF3A3D47)),
+                      foregroundColor: themeProvider.secondaryTextColor,
+                      side: BorderSide(color: themeProvider.borderColor),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

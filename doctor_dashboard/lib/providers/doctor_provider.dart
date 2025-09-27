@@ -4,20 +4,39 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:convert';
 import '../models/models.dart';
 
+// Video call request model
+class VideoCallRequest {
+  final String patientId;
+  final String patientName;
+  final String channelName;
+  final String symptoms;
+  final DateTime timestamp;
+
+  VideoCallRequest({
+    required this.patientId,
+    required this.patientName,
+    required this.channelName,
+    required this.symptoms,
+    required this.timestamp,
+  });
+}
+
 class DoctorProvider with ChangeNotifier {
   Doctor? _currentDoctor;
   List<Patient> _patientQueue = [];
+  List<VideoCallRequest> _pendingCallRequests = [];
   bool _isLoading = false;
   int _todaysCallsCount = 0;
   String? _authToken;
   IO.Socket? _socket;
 
   // Backend API URL
-  static const String _baseUrl = 'https://telemed18.onrender.com/api';
-  static const String _socketUrl = 'https://telemed18.onrender.com';
+  static const String _baseUrl = 'http://192.168.1.7:5002/api';
+  static const String _socketUrl = 'http://192.168.1.7:5002';
 
   Doctor? get currentDoctor => _currentDoctor;
   List<Patient> get patientQueue => _patientQueue;
+  List<VideoCallRequest> get pendingCallRequests => _pendingCallRequests;
   bool get isLoading => _isLoading;
   int get todaysCallsCount => _todaysCallsCount;
   int get waitingPatientsCount => _patientQueue.length;
@@ -202,11 +221,37 @@ class DoctorProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void logout() {
+  // Logout with backend API call
+  Future<void> logout() async {
+    try {
+      // Call logout API to set doctor status to offline
+      if (_authToken != null) {
+        print('Calling logout API to set doctor status offline...');
+        final response = await http.post(
+          Uri.parse('$_baseUrl/auth/logout'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $_authToken',
+          },
+        );
+
+        print('Logout API Response Status: ${response.statusCode}');
+        print('Logout API Response Body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during logout API call: $e');
+    }
+
+    // Clear local data regardless of API call result
     _currentDoctor = null;
     _patientQueue.clear();
     _todaysCallsCount = 0;
     _authToken = null;
+
+    // Disconnect socket if connected
+    _socket?.disconnect();
+    _socket = null;
+
     notifyListeners();
   }
 
@@ -253,6 +298,30 @@ class DoctorProvider with ChangeNotifier {
     _patientQueue.insert(0, testPatient); // Add at the beginning
     notifyListeners();
     print('✅ Added test patient: ${testPatient.name} to doctor queue');
+  }
+
+  /// Test socket communication by simulating patient join queue event
+  void testSocketPatientJoin() {
+    if (_socket == null || !_socket!.connected) {
+      print('❌ Socket not connected - cannot test');
+      return;
+    }
+
+    // Simulate receiving a join_queue event
+    print('🧪 Testing socket communication...');
+
+    // Test data to simulate what patient app sends
+    final testData = {
+      'patientId': 'test_patient_socket_123',
+      'patientName': 'Socket Test Patient',
+      'symptoms': 'Testing socket join queue event',
+      'timestamp': DateTime.now().toIso8601String(),
+    };
+
+    print('🧪 Simulating join_queue event with data: $testData');
+
+    // Manually trigger the handler as if we received the event
+    _handlePatientJoinQueue(testData);
   }
 
   /// Add multiple dummy patients for testing with comprehensive data including attachments
@@ -479,6 +548,7 @@ class DoctorProvider with ChangeNotifier {
       // Listen for patients joining queue
       _socket!.on('join_queue', (data) {
         print('📋 Patient joining queue: $data');
+        print('📋 Current doctor ID: ${_currentDoctor!.id}');
         _handlePatientJoinQueue(data);
       });
 
@@ -486,6 +556,18 @@ class DoctorProvider with ChangeNotifier {
       _socket!.on('leave_queue', (data) {
         print('📋 Patient leaving queue: $data');
         _handlePatientLeaveQueue(data);
+      });
+
+      // Listen for video call requests from patients
+      _socket!.on('patient_start_call', (data) {
+        print('📞 Incoming video call request: $data');
+        _handleIncomingVideoCall(data);
+      });
+
+      // Listen for patients ending calls
+      _socket!.on('patient_end_call', (data) {
+        print('📞 Patient ended call: $data');
+        _handlePatientEndCall(data);
       });
 
       print('✅ Socket initialized for doctor ${_currentDoctor!.name}');
@@ -539,6 +621,112 @@ class DoctorProvider with ChangeNotifier {
       print('✅ Removed patient $patientId from queue');
     } catch (e) {
       print('❌ Error handling patient leave queue: $e');
+    }
+  }
+
+  /// Handle incoming video call request from patient
+  void _handleIncomingVideoCall(Map<String, dynamic> data) {
+    try {
+      final patientId = data['patientId'];
+      final patientName = data['patientName'];
+      final channelName = data['channelName'];
+      final symptoms = data['symptoms'] ?? 'No symptoms provided';
+      final timestamp = data['timestamp'];
+
+      print('📞 Incoming video call from $patientName (ID: $patientId)');
+      print('📺 Channel: $channelName');
+      print('🩺 Symptoms: $symptoms');
+
+      // Create call request notification
+      final callRequest = VideoCallRequest(
+        patientId: patientId,
+        patientName: patientName,
+        channelName: channelName,
+        symptoms: symptoms,
+        timestamp: DateTime.tryParse(timestamp) ?? DateTime.now(),
+      );
+
+      // Add to pending call requests
+      _pendingCallRequests.add(callRequest);
+      notifyListeners();
+
+      // Show notification or dialog to doctor
+      _showCallRequestNotification(callRequest);
+    } catch (e) {
+      print('❌ Error handling incoming video call: $e');
+    }
+  }
+
+  /// Handle patient ending call
+  void _handlePatientEndCall(Map<String, dynamic> data) {
+    try {
+      final patientId = data['patientId'];
+      final channelName = data['channelName'];
+
+      print('📞 Patient $patientId ended call in channel $channelName');
+
+      // Remove from pending call requests
+      _pendingCallRequests
+          .removeWhere((request) => request.patientId == patientId);
+      notifyListeners();
+    } catch (e) {
+      print('❌ Error handling patient end call: $e');
+    }
+  }
+
+  /// Show call request notification to doctor
+  void _showCallRequestNotification(VideoCallRequest callRequest) {
+    // This method will trigger UI updates through notifyListeners()
+    // The actual notification dialog/UI will be handled by the dashboard screen
+    print('🔔 Call notification triggered for ${callRequest.patientName}');
+    print('📋 Channel: ${callRequest.channelName}');
+    print('🩺 Symptoms: ${callRequest.symptoms}');
+
+    // Notify listeners so UI can react to the new pending call request
+    notifyListeners();
+  }
+
+  /// Accept video call request
+  void acceptVideoCall(VideoCallRequest callRequest) {
+    try {
+      // Remove from pending requests
+      _pendingCallRequests
+          .removeWhere((request) => request.patientId == callRequest.patientId);
+
+      // Send acceptance via socket
+      _socket?.emit('doctor_accept_call', {
+        'doctorId': _currentDoctor?.id,
+        'patientId': callRequest.patientId,
+        'channelName': callRequest.channelName,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+
+      print('✅ Accepted video call from ${callRequest.patientName}');
+      notifyListeners();
+    } catch (e) {
+      print('❌ Error accepting video call: $e');
+    }
+  }
+
+  /// Reject video call request
+  void rejectVideoCall(VideoCallRequest callRequest) {
+    try {
+      // Remove from pending requests
+      _pendingCallRequests
+          .removeWhere((request) => request.patientId == callRequest.patientId);
+
+      // Send rejection via socket
+      _socket?.emit('doctor_reject_call', {
+        'doctorId': _currentDoctor?.id,
+        'patientId': callRequest.patientId,
+        'channelName': callRequest.channelName,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+
+      print('❌ Rejected video call from ${callRequest.patientName}');
+      notifyListeners();
+    } catch (e) {
+      print('❌ Error rejecting video call: $e');
     }
   }
 

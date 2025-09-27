@@ -4,6 +4,9 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart' hide VideoLayout;
 import '../services/agora_service.dart';
 import '../models/video_consultation.dart';
 
+/// Layout options for video participants
+enum VideoLayout { grid, speaker }
+
 /// Widget that displays video participants in a grid layout
 class ParticipantGridWidget extends StatefulWidget {
   final AgoraService agoraService;
@@ -132,8 +135,6 @@ class _ParticipantGridWidgetState extends State<ParticipantGridWidget> {
         return _buildGridLayout(participants);
       case VideoLayout.speaker:
         return _buildSpeakerLayout(participants);
-      default:
-        return _buildGridLayout(participants);
     }
   }
 

@@ -5,7 +5,7 @@ import '../models/medical_record.dart';
 
 class SymptomAnalysisService {
   // API endpoint for symptom analysis
-  static const String _baseUrl = 'http://localhost:5000'; // Flask API URL
+  static const String _baseUrl = 'http://192.168.1.7:5000'; // Flask API URL
 
   /// Analyzes symptoms and returns recommendations
   Future<SymptomAnalysis> analyzeSymptoms(String symptomsText) async {

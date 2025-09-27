@@ -18,6 +18,13 @@ class Patient {
   final List<String> medications;
   final List<String> medicalRecords;
 
+  // Add missing properties for modern UI
+  bool get isCritical =>
+      medicalHistory?.toLowerCase().contains('critical') ?? false;
+  bool get isEmergency =>
+      allergies.any((allergy) => allergy.toLowerCase().contains('emergency')) ||
+      (emergencyContact?.isNotEmpty ?? false);
+
   Patient({
     required this.id,
     required this.name,

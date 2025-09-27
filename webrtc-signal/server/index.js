@@ -20,7 +20,7 @@ const patientSessions = new Map(); // Track patient sessions
 const consultationRooms = new Map(); // Track active consultation rooms
 
 // Backend API configuration
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL = process.env.BACKEND_URL || "http://192.168.1.7:5000";
 
 // Helper function to update doctor status in backend
 const updateDoctorStatus = async (doctorId, status) => {

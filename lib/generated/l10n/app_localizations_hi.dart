@@ -14,7 +14,7 @@ class AppLocalizationsHi extends AppLocalizations {
   AppLocalizationsHi([String locale = 'hi']) : super(locale);
 
   @override
-  String get appTitle => 'टेलीमेड';
+  String get appTitle => 'सेहत सारथी';
 
   @override
   String get welcome => 'स्वागत';
@@ -844,4 +844,10 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get privacyPolicy => 'गोपनीयता नीति';
+
+  @override
+  String get familyMembers => 'परिवार के सदस्य';
+
+  @override
+  String get smartPharmacy => 'स्मार्ट फार्मेसी';
 }

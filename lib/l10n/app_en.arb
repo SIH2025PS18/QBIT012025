@@ -2,7 +2,7 @@
   "@@locale": "en",
   "@@last_modified": "2025-09-04T20:01:00Z",
   
-  "appTitle": "TeleMed",
+  "appTitle": "Sehat Sarthi",
   "@appTitle": {
     "description": "Application title"
   },
@@ -1400,5 +1400,15 @@
   "privacyPolicy": "Privacy Policy",
   "@privacyPolicy": {
     "description": "Privacy policy"
+  },
+
+  "familyMembers": "Family Members",
+  "@familyMembers": {
+    "description": "Family members navigation option"
+  },
+
+  "smartPharmacy": "Smart Pharmacy",
+  "@smartPharmacy": {
+    "description": "Smart pharmacy navigation option"
   }
 }

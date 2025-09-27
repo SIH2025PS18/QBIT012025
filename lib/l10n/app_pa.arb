@@ -2,7 +2,7 @@
   "@@locale": "pa",
   "@@last_modified": "2025-09-04T20:01:00Z",
   
-  "appTitle": "ਟੈਲੀਮੈਡ",
+  "appTitle": "ਸਿਹਤ ਸਾਥੀ",
   "welcome": "ਸੁਆਗਤ",
   "welcomeMessage": "ਟੈਲੀਮੈਡ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ - ਤੁਹਾਡੀ ਸਿਹਤ, ਸਾਡੀ ਪ੍ਰਾਥਮਿਕਤਾ",
   "getStarted": "ਸ਼ੁਰੂ ਕਰੋ",
@@ -287,5 +287,7 @@
   "contactSupport": "ਸਹਾਇਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋ",
   "faq": "ਅਕਸਰ ਪੁੱਛੇ ਜਾਣ ਵਾਲੇ ਸਵਾਲ",
   "termsConditions": "ਨਿਯਮ ਅਤੇ ਸ਼ਰਤਾਂ",
-  "privacyPolicy": "ਗੁਪਤਤਾ ਨੀਤੀ"
+  "privacyPolicy": "ਗੁਪਤਤਾ ਨੀਤੀ",
+  "familyMembers": "ਪਰਿਵਾਰਕ ਮੈਂਬਰ",
+  "smartPharmacy": "ਸਮਾਰਟ ਫਾਰਮੇਸੀ"
 }

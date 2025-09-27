@@ -237,7 +237,7 @@ class OfflineAppointmentRepository implements AppointmentRepository {
         tableNameColumn: 'appointments',
         recordId: appointmentId,
         operation: 'create',
-        data: jsonEncode(_mapLocalToSupabaseData(localAppointment)),
+        data: jsonEncode(_mapLocalToData(localAppointment)),
         isCompleted: false,
         retryCount: 0,
         createdAt: DateTime.now(),
@@ -297,7 +297,7 @@ class OfflineAppointmentRepository implements AppointmentRepository {
         tableNameColumn: 'appointments',
         recordId: appointment.id,
         operation: 'update',
-        data: jsonEncode(_mapLocalToSupabaseData(localAppointment)),
+        data: jsonEncode(_mapLocalToData(localAppointment)),
         isCompleted: false,
         retryCount: 0,
         createdAt: DateTime.now(),
@@ -351,7 +351,7 @@ class OfflineAppointmentRepository implements AppointmentRepository {
         tableNameColumn: 'appointments',
         recordId: appointmentId,
         operation: 'update',
-        data: jsonEncode(_mapLocalToSupabaseData(cancelledAppointment)),
+        data: jsonEncode(_mapLocalToData(cancelledAppointment)),
         isCompleted: false,
         retryCount: 0,
         createdAt: DateTime.now(),
@@ -427,7 +427,7 @@ class OfflineAppointmentRepository implements AppointmentRepository {
   }
 
   /// Map local appointment to MongoDB backend data format
-  Map<String, dynamic> _mapLocalToSupabaseData(LocalAppointment local) {
+  Map<String, dynamic> _mapLocalToData(LocalAppointment local) {
     return {
       'id': local.id,
       'patientId': local.patientId,

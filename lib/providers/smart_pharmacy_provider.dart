@@ -8,7 +8,7 @@ import '../services/auth_service.dart';
 
 /// Provider for Smart Pharmacy Engine with generic medicine suggestions and scheme integration
 class SmartPharmacyProvider extends ChangeNotifier {
-  static const String _baseUrl = 'http://localhost:3000/api';
+  static const String _baseUrl = 'http://192.168.1.7:3000/api';
 
   final AuthService _authService = AuthService();
 

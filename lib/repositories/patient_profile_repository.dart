@@ -1,7 +1,7 @@
 import '../models/patient_profile.dart';
 
 /// Abstract repository interface for patient profile operations
-/// This allows for easy swapping between different data sources (Supabase, Firebase, etc.)
+/// This allows for easy swapping between different data sources (, Firebase, etc.)
 abstract class PatientProfileRepository {
   /// Get the current user's profile
   Future<PatientProfile?> getCurrentProfile();

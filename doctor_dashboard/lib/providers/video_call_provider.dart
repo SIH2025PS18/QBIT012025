@@ -190,6 +190,54 @@ class VideoCallProvider with ChangeNotifier {
     }
   }
 
+  // Join an existing video call with specific channel name (for patient-initiated calls)
+  Future<bool> joinVideoCall(
+      String patientId, String patientName, String channelName) async {
+    try {
+      print('🚀 Doctor joining video call with patient: $patientName');
+      print('📱 Channel: $channelName');
+
+      // Create a patient object for the call
+      final patient = Patient(
+        id: patientId,
+        name: patientName,
+        profileImage: '',
+        age: 0,
+        gender: 'Unknown',
+        phone: '',
+        email: '',
+        status: 'waiting',
+        symptoms: 'Video call request',
+        appointmentTime: DateTime.now(),
+      );
+
+      _callId = channelName; // Use the patient's channel name as call ID
+      _currentPatient = patient;
+      _isInCall = true;
+
+      // Join the existing video call channel created by patient
+      await _agoraService.joinChannel(
+        channelId: channelName,
+        uid: 2, // Doctor uses uid 2, patient uses uid 1
+      );
+
+      // Explicitly enable video and audio after joining
+      await _agoraService.enableLocalVideo(true);
+      await _agoraService.muteLocalAudioStream(false);
+
+      print('✅ Doctor joined existing video call successfully');
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print('❌ Error joining video call: $e');
+      _isInCall = false;
+      _currentPatient = null;
+      _callId = null;
+      notifyListeners();
+      return false;
+    }
+  }
+
   // End the current call
   Future<void> endCall() async {
     if (_callId == null) return;

@@ -5,12 +5,13 @@ import '../services/doctor_provider.dart';
 import '../models/doctor.dart';
 import '../generated/l10n/app_localizations.dart';
 import 'auth/phone_login_with_password_screen.dart';
-import 'medical_records_screen.dart';
+import 'digital_health_locker_screen.dart';
 import 'offline_symptom_checker_screen.dart';
 import 'medicine_checker_screen.dart';
 import 'settings_screen.dart';
 import 'patient_profile_screen.dart';
 import 'doctor_selection_screen.dart';
+import 'doctor_appointment_screen.dart';
 import 'smart_pharmacy/pharmacy_locator_screen.dart';
 import 'family_dashboard_screen.dart';
 import '../services/phone_auth_service.dart';
@@ -46,8 +47,23 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
     });
   }
 
+  String _getOnlineText() {
+    final languageProvider = Provider.of<LanguageProvider>(
+      context,
+      listen: false,
+    );
+    switch (languageProvider.currentLanguageCode) {
+      case 'hi':
+        return 'ऑनलाइन';
+      case 'pa':
+        return 'ਔਨਲਾਈਨ';
+      default:
+        return 'Online';
+    }
+  }
+
   Future<void> _signOut() async {
-    // Sign out the user from Supabase and clear offline data
+    // Sign out the user from  and clear offline data
     await PhoneAuthService.signOut();
 
     // Navigate to login screen
@@ -78,7 +94,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
           },
         ),
         title: Text(
-          'Nabha Sehat',
+          AppLocalizations.of(context).appTitle,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -104,7 +120,9 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    _isOnline ? 'Online' : 'Offline',
+                    _isOnline
+                        ? _getOnlineText()
+                        : AppLocalizations.of(context).offline,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -383,6 +401,9 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
   }
 
   Widget _buildDoctorStatusBar() {
+    print(
+      '🏥 DEBUG: Building doctor status bar with appointment button',
+    ); // Debug line
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -452,6 +473,50 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     side: BorderSide(color: Colors.blue[600]!),
                     foregroundColor: Colors.blue[600],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Book appointment button - PROMINENTLY DISPLAYED
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    print(
+                      '📅 DEBUG: Book Appointment button pressed!',
+                    ); // Debug line
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DoctorAppointmentScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.calendar_today, size: 20),
+                  label: Text(
+                    AppLocalizations.of(context).bookAppointment,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.blue[600],
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -534,7 +599,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
       children: [
         _buildShortcutCard(
           icon: Icons.local_hospital,
-          title: 'Find Hospitals & Labs',
+          title: AppLocalizations.of(context).findHospitalsLabs,
           color: const Color(0xFF2E7D32),
           onTap: () {
             Navigator.of(context).pushNamed('/facility-search');
@@ -547,9 +612,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const MedicalRecordsScreen(
-                  patientId: 'demo-patient-123', // This would be dynamic
-                ),
+                builder: (context) => const DigitalHealthLockerScreen(),
               ),
             );
           },
@@ -568,7 +631,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
         ),
         _buildShortcutCard(
           icon: Icons.local_pharmacy,
-          title: 'Smart Pharmacy',
+          title: AppLocalizations.of(context).smartPharmacy,
           color: Colors.teal,
           onTap: () {
             Navigator.of(context).push(
@@ -580,7 +643,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
         ),
         _buildShortcutCard(
           icon: Icons.family_restroom,
-          title: 'Family Members',
+          title: AppLocalizations.of(context).familyMembers,
           color: Colors.indigo,
           onTap: () {
             Navigator.of(context).push(
@@ -604,7 +667,7 @@ class _NabhaHomeScreenState extends State<NabhaHomeScreen> {
         ),
         _buildShortcutCard(
           icon: Icons.qr_code_2,
-          title: 'Emergency QR',
+          title: AppLocalizations.of(context).emergencyQR,
           color: Colors.red.shade700,
           onTap: () {
             Navigator.of(context).pushNamed(

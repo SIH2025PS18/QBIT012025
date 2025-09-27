@@ -200,7 +200,7 @@ class _VideoCallScreenState extends State<VideoCallScreen>
     try {
       // Initialize socket service
       await _socketService.initialize(
-        serverUrl: 'https://telemed18.onrender.com', // Unified backend URL
+        serverUrl: 'http://192.168.1.7:5002', // Local backend URL
         userId: widget.userId,
         userRole: widget.isDoctor ? 'doctor' : 'patient',
         userName: widget.isDoctor
@@ -467,18 +467,23 @@ class _VideoCallScreenState extends State<VideoCallScreen>
   /// Build loading screen
   Widget _buildLoadingScreen() {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Theme.of(context).primaryColor,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
               'Connecting to consultation...',
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -486,7 +491,7 @@ class _VideoCallScreenState extends State<VideoCallScreen>
                   ? 'Preparing consultation room'
                   : 'Joining video consultation',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 fontSize: 14,
               ),
             ),
@@ -499,7 +504,7 @@ class _VideoCallScreenState extends State<VideoCallScreen>
   /// Build the main video call screen
   Widget _buildVideoCallScreen({VideoCallManager? manager}) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black, // Keep black for video calls
       body: SafeArea(
         child: Stack(
           children: [

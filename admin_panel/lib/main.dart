@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/admin_dashboard_screen_new.dart';
+import 'screens/modern_hospital_dashboard.dart';
 import 'screens/admin_login_screen.dart';
-import 'screens/doctor_management_screen.dart';
+import 'screens/modern_doctor_management_screen.dart';
 import 'screens/add_doctor_screen_new.dart';
+import 'screens/pharmacy_management_screen.dart';
+import 'screens/bulk_upload_screen.dart';
+import 'screens/modern_patient_management_screen.dart';
+import 'screens/modern_appointment_management_screen.dart';
+import 'screens/modern_analytics_screen.dart';
+import 'screens/department_management_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/family_hub_screen.dart';
+import 'screens/bulk_reports_screen.dart';
+import 'screens/modern_reports_screen.dart';
+import 'screens/modern_add_doctor_screen.dart';
 import 'providers/doctor_provider.dart';
+import 'providers/pharmacy_provider.dart';
+import 'providers/patient_provider.dart';
+import 'providers/family_hub_provider.dart';
+import 'providers/admin_theme_provider.dart';
 import 'services/auth_service.dart';
 
 void main() async {
@@ -33,32 +48,48 @@ class AdminPanelApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => DoctorProvider()),
+        ChangeNotifierProvider(create: (_) => PharmacyProvider()),
+        ChangeNotifierProvider(create: (_) => PatientProvider()),
+        ChangeNotifierProvider(create: (_) => FamilyHubProvider()),
+        ChangeNotifierProvider(
+            create: (_) => AdminThemeProvider()..initializeTheme()),
       ],
-      child: MaterialApp(
-        title: 'Hospital Admin Panel',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: const Color(0xFFFF6B9D),
-          scaffoldBackgroundColor: const Color(0xFF0A0E27),
-          fontFamily: 'Inter',
-          textTheme: const TextTheme(
-            bodyLarge: TextStyle(color: Colors.white),
-            bodyMedium: TextStyle(color: Colors.white),
-          ),
-        ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => _getInitialScreen(),
-          '/login': (context) => const AdminLoginScreen(),
-          '/dashboard': (context) => const AdminDashboardScreen(),
-          '/doctors': (context) => const DoctorManagementScreen(),
-          '/add-doctor': (context) => const AddDoctorScreen(),
-          '/patients': (context) => const PlaceholderScreen(title: 'Patients'),
-          '/appointments': (context) =>
-              const PlaceholderScreen(title: 'Appointments'),
-          '/departments': (context) =>
-              const PlaceholderScreen(title: 'Departments'),
-          '/settings': (context) => const PlaceholderScreen(title: 'Settings'),
+      child: Consumer<AdminThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'Hospital Admin Panel',
+            debugShowCheckedModeBanner: false,
+            theme: themeProvider.currentTheme,
+            initialRoute: '/',
+            routes: {
+              '/': (context) => _getInitialScreen(),
+              '/login': (context) => const AdminLoginScreen(),
+              '/dashboard': (context) => const ModernHospitalDashboard(),
+              '/doctors': (context) => const ModernDoctorManagementScreen(),
+              '/add-doctor': (context) => const AddDoctorScreen(),
+              '/modern-add-doctor': (context) => const ModernAddDoctorScreen(),
+              '/patients': (context) => const ModernPatientManagementScreen(),
+              '/patients/bulk-upload': (context) => const BulkUploadScreen(),
+              '/pharmacies': (context) => const PharmacyManagementScreen(),
+              '/pharmacies/all': (context) => const PharmacyManagementScreen(),
+              '/appointments': (context) =>
+                  const ModernAppointmentManagementScreen(),
+              '/analytics': (context) => const ModernAnalyticsScreen(),
+              '/departments': (context) => const DepartmentManagementScreen(),
+              '/family-hub': (context) => const FamilyHubScreen(),
+              '/bulk-reports': (context) => const BulkReportsScreen(),
+              '/modern-reports': (context) => const ModernReportsScreen(),
+              '/bulk-reports/patients': (context) => const BulkReportsScreen(),
+              '/bulk-reports/doctors': (context) => const BulkReportsScreen(),
+              '/bulk-reports/appointments': (context) =>
+                  const BulkReportsScreen(),
+              '/bulk-reports/community': (context) => const BulkReportsScreen(),
+              '/bulk-reports/financial': (context) => const BulkReportsScreen(),
+              '/bulk-reports/inventory': (context) => const BulkReportsScreen(),
+              '/bulk-reports/custom': (context) => const BulkReportsScreen(),
+              '/settings': (context) => const SettingsScreen(),
+            },
+          );
         },
       ),
     );

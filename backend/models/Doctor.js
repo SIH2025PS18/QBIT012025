@@ -58,6 +58,32 @@ const doctorSchema = new mongoose.Schema({
     required: true,
     min: 0,
   },
+  
+  // Admin management fields
+  employeeId: {
+    type: String,
+    unique: true,
+    sparse: true, // Allows null values to be unique
+  },
+  department: {
+    type: String,
+    default: "",
+  },
+  emergencyContact: {
+    type: String,
+    default: "",
+  },
+  licenseExpiryDate: {
+    type: String, // Store as string for flexible date formats
+    default: "",
+  },
+  permissions: [
+    {
+      type: String,
+      enum: ["consultation", "profile_update", "patient_management", "reports", "admin"],
+    },
+  ],
+  
   status: {
     type: String,
     enum: ["online", "offline", "busy"],

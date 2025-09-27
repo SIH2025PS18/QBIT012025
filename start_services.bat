@@ -26,8 +26,8 @@ echo.
 echo ========================================
 echo Both services are starting...
 echo ========================================
-echo WebRTC Signal Server: http://localhost:4000
-echo Doctor Dashboard: http://localhost:5173
+echo WebRTC Signal Server: http://192.168.1.7:4000
+echo Doctor Dashboard: http://192.168.1.7:5173
 echo ========================================
 echo.
 echo Press any key to close this window...

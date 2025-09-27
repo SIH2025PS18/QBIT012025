@@ -12,7 +12,7 @@ import '../config/api_config.dart';
 
 /// Service for managing video consultations, queue, and waiting room
 class VideoConsultationService extends ChangeNotifier {
-  // Using unified MongoDB backend instead of Supabase
+  // Using unified MongoDB backend instead of
   final ConnectivityService _connectivityService;
   final Uuid _uuid = const Uuid();
 

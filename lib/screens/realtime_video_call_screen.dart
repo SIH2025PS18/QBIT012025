@@ -125,7 +125,7 @@ class _RealtimeVideoCallScreenState extends State<RealtimeVideoCallScreen>
       await _agoraService.joinChannel(
         token: _agoraToken ?? '', // Provide empty string if null
         channelName: _channelName!,
-        uid: widget.patientId.hashCode, // Convert string to int
+        uid: 1, // Patient always uses UID 1
       );
 
       // Explicitly enable video and audio after joining

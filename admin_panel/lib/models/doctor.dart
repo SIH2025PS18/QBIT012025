@@ -26,6 +26,18 @@ class Doctor {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  // New credential and status fields
+  final bool isEnabled;
+  final String? defaultPassword;
+  final DateTime? lastPasswordReset;
+  final bool hasTemporaryPassword;
+  final String? emergencyContact;
+  final String? licenseExpiryDate;
+  final String? department;
+  final String? employeeId;
+  final List<String> permissions;
+  final Map<String, dynamic>? loginHistory;
+
   Doctor({
     required this.id,
     this.doctorId = '',
@@ -53,6 +65,17 @@ class Doctor {
     this.lastActive,
     this.createdAt,
     this.updatedAt,
+    // New credential and status fields
+    this.isEnabled = true,
+    this.defaultPassword,
+    this.lastPasswordReset,
+    this.hasTemporaryPassword = false,
+    this.emergencyContact,
+    this.licenseExpiryDate,
+    this.department,
+    this.employeeId,
+    this.permissions = const ['consultation', 'profile_update'],
+    this.loginHistory,
   });
 
   factory Doctor.fromJson(Map<String, dynamic> json) {
@@ -89,6 +112,21 @@ class Doctor {
           json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt:
           json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      // New credential and status fields
+      isEnabled: json['isEnabled'] ?? true,
+      defaultPassword: json['defaultPassword'],
+      lastPasswordReset: json['lastPasswordReset'] != null
+          ? DateTime.parse(json['lastPasswordReset'])
+          : null,
+      hasTemporaryPassword: json['hasTemporaryPassword'] ?? false,
+      emergencyContact: json['emergencyContact'],
+      licenseExpiryDate: json['licenseExpiryDate'],
+      department: json['department'],
+      employeeId: json['employeeId'],
+      permissions: json['permissions'] != null
+          ? List<String>.from(json['permissions'])
+          : ['consultation', 'profile_update'],
+      loginHistory: json['loginHistory'] as Map<String, dynamic>?,
     );
   }
 
@@ -120,6 +158,17 @@ class Doctor {
       'lastActive': lastActive?.toIso8601String(),
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      // New credential and status fields
+      'isEnabled': isEnabled,
+      'defaultPassword': defaultPassword,
+      'lastPasswordReset': lastPasswordReset?.toIso8601String(),
+      'hasTemporaryPassword': hasTemporaryPassword,
+      'emergencyContact': emergencyContact,
+      'licenseExpiryDate': licenseExpiryDate,
+      'department': department,
+      'employeeId': employeeId,
+      'permissions': permissions,
+      'loginHistory': loginHistory,
     };
   }
 
@@ -150,6 +199,17 @@ class Doctor {
     DateTime? lastActive,
     DateTime? createdAt,
     DateTime? updatedAt,
+    // New credential and status fields
+    bool? isEnabled,
+    String? defaultPassword,
+    DateTime? lastPasswordReset,
+    bool? hasTemporaryPassword,
+    String? emergencyContact,
+    String? licenseExpiryDate,
+    String? department,
+    String? employeeId,
+    List<String>? permissions,
+    Map<String, dynamic>? loginHistory,
   }) {
     return Doctor(
       id: id ?? this.id,
@@ -178,6 +238,17 @@ class Doctor {
       lastActive: lastActive ?? this.lastActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      // New credential and status fields
+      isEnabled: isEnabled ?? this.isEnabled,
+      defaultPassword: defaultPassword ?? this.defaultPassword,
+      lastPasswordReset: lastPasswordReset ?? this.lastPasswordReset,
+      hasTemporaryPassword: hasTemporaryPassword ?? this.hasTemporaryPassword,
+      emergencyContact: emergencyContact ?? this.emergencyContact,
+      licenseExpiryDate: licenseExpiryDate ?? this.licenseExpiryDate,
+      department: department ?? this.department,
+      employeeId: employeeId ?? this.employeeId,
+      permissions: permissions ?? this.permissions,
+      loginHistory: loginHistory ?? this.loginHistory,
     );
   }
 

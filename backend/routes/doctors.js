@@ -76,6 +76,55 @@ router.get("/available", async (req, res) => {
   }
 });
 
+// @desc    Get live/online doctors
+// @route   GET /api/doctors/live
+// @access  Public
+router.get("/live", async (req, res) => {
+  try {
+    const { speciality } = req.query;
+
+    const query = {
+      isAvailable: true,
+      isVerified: true,
+      status: "online"  // Only get doctors who are currently online
+    };
+
+    if (speciality) {
+      query.speciality = speciality;
+    }
+
+    const doctors = await Doctor.find(query)
+      .select("-password")
+      .sort({ lastActive: -1 });  // Sort by most recently active
+
+    res.json({
+      success: true,
+      count: doctors.length,
+      data: doctors.map((doctor) => ({
+        id: doctor._id,
+        doctorId: doctor.doctorId,
+        name: doctor.name,
+        speciality: doctor.speciality,
+        qualification: doctor.qualification,
+        experience: doctor.experience,
+        consultationFee: doctor.consultationFee,
+        rating: doctor.rating,
+        totalConsultations: doctor.totalConsultations,
+        languages: doctor.languages,
+        status: doctor.status,
+        isAvailable: doctor.isAvailable,
+        lastActive: doctor.lastActive,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching live doctors:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error fetching live doctors",
+    });
+  }
+});
+
 // @desc    Get single doctor by ID
 // @route   GET /api/doctors/:id
 // @access  Public
@@ -124,12 +173,29 @@ router.post("/", auth, authorize("admin"), async (req, res) => {
       workingHours,
       isAvailable,
       isVerified,
+      // Admin management fields
+      employeeId,
+      department,
+      emergencyContact,
+      licenseExpiryDate,
+      permissions,
     } = req.body;
 
     // Validate required fields
     if (!name || !email || !phone || !speciality || !qualification || 
-        experience === undefined || !licenseNumber || !consultationFee) {
+        experience === undefined || !licenseNumber || consultationFee === undefined) {
       console.log("❌ Missing required fields in request");
+      console.log("Request body keys:", Object.keys(req.body));
+      console.log("Detailed field check:", {
+        name: { value: name, type: typeof name, valid: !!name },
+        email: { value: email, type: typeof email, valid: !!email },
+        phone: { value: phone, type: typeof phone, valid: !!phone },
+        speciality: { value: speciality, type: typeof speciality, valid: !!speciality },
+        qualification: { value: qualification, type: typeof qualification, valid: !!qualification },
+        experience: { value: experience, type: typeof experience, valid: experience !== undefined },
+        licenseNumber: { value: licenseNumber, type: typeof licenseNumber, valid: !!licenseNumber },
+        consultationFee: { value: consultationFee, type: typeof consultationFee, valid: consultationFee !== undefined }
+      });
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
@@ -202,10 +268,13 @@ router.post("/", auth, authorize("admin"), async (req, res) => {
       isVerified: isVerified !== undefined ? isVerified : true, // Admin-created doctors are auto-verified
       status: "offline", // Start as offline
       isAvailable: isAvailable !== undefined ? isAvailable : true,
+      // Admin management fields
+      employeeId: employeeId || undefined,
+      department: department || undefined,
+      emergencyContact: emergencyContact || undefined,
+      licenseExpiryDate: licenseExpiryDate || undefined,
+      permissions: permissions && Array.isArray(permissions) ? permissions : ["consultation"],
     });
-
-    console.log("💾 Saving doctor to database...");
-    await doctor.save();
 
     console.log("💾 Saving doctor to database...");
     await doctor.save();

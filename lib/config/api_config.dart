@@ -2,24 +2,16 @@
 class ApiConfig {
   // Base API URL - can be configured via environment variables
   static String get baseUrl {
-    // Try to get from environment variable, fallback to production
-    // Note: In Flutter, environment variables are set at compile time
-    // You can set them using: flutter run --dart-define=BACKEND_URL=https://your-backend.com
-    const backendUrl = String.fromEnvironment(
-      'BACKEND_URL',
-      defaultValue: 'https://telemed18.onrender.com',
-    );
-    return '$backendUrl/api';
+    // FORCE LOCAL DEVELOPMENT - Override for testing
+    // TODO: Change this for production builds
+    return 'http://192.168.1.7:5002/api';
   }
 
   // WebSocket URL for real-time features
   static String get socketUrl {
-    // Try to get from environment variable, fallback to production
-    const backendUrl = String.fromEnvironment(
-      'BACKEND_URL',
-      defaultValue: 'https://telemed18.onrender.com',
-    );
-    return backendUrl;
+    // FORCE LOCAL DEVELOPMENT - Override for testing
+    // TODO: Change this for production builds
+    return 'http://192.168.1.7:5002';
   }
 
   // API Endpoints
@@ -56,6 +48,8 @@ class ApiConfig {
   static const String doctorAvailability = '$doctors/availability';
   static const String doctorsList = '$doctors';
   static const String doctorsAvailable = '$doctors/available';
+  static const String doctorsLive =
+      '$doctors/live'; // New endpoint for live/online doctors
   static const String doctorsProfile = '$doctors/profile';
   static const String doctorsStatus = '$doctors/status';
   static const String doctorsConsultations = '$doctors/consultations';

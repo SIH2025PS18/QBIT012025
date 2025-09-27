@@ -1,4 +1,5 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const { auth, authorize } = require("../middleware/auth");
 const Patient = require("../models/Patient");
 
@@ -171,9 +172,28 @@ router.delete("/:id", auth, authorize("admin"), async (req, res) => {
 // @desc    Get patient profile
 // @route   GET /api/patients/profile
 // @access  Private (Patient only)
-router.get("/profile", auth, authorize("patient"), async (req, res) => {
+router.get("/profile", async (req, res) => {
   try {
-    const patient = await Patient.findById(req.user._id).select("-password");
+    // Manual authentication check (bypassing middleware chain)
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: "No valid authorization header"
+      });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.userType !== 'patient') {
+      return res.status(403).json({
+        success: false,
+        message: "Patient access required"
+      });
+    }
+
+    const patient = await Patient.findById(decoded.id).select("-password");
 
     if (!patient) {
       return res.status(404).json({
@@ -198,33 +218,47 @@ router.get("/profile", auth, authorize("patient"), async (req, res) => {
 // @desc    Update patient profile
 // @route   PUT /api/patients/profile
 // @access  Private (Patient only)
-router.put("/profile", auth, authorize("patient"), async (req, res) => {
+router.put("/profile", async (req, res) => {
   try {
-    console.log("Updating patient profile for user:", req.user._id);
-    console.log("Update data:", req.body);
+    // Manual authentication check (bypassing middleware chain that was hanging)
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: "No valid authorization header"
+      });
+    }
 
-    const patient = await Patient.findById(req.user._id);
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    if (decoded.userType !== 'patient') {
+      return res.status(403).json({
+        success: false,
+        message: "Patient access required"
+      });
+    }
+
+    const patient = await Patient.findById(decoded.id);
     if (!patient) {
       return res.status(404).json({
         success: false,
-        message: "Patient profile not found",
+        message: "Patient not found"
       });
     }
 
     const updatedPatient = await Patient.findByIdAndUpdate(
-      req.user._id,
+      decoded.id,
       { ...req.body, updatedAt: new Date() },
       { new: true, runValidators: true }
     ).select("-password");
-
-    console.log("Updated patient:", updatedPatient);
 
     res.json({
       success: true,
       message: "Patient profile updated successfully",
       data: updatedPatient,
     });
+
   } catch (error) {
     console.error("Error updating patient profile:", error);
     res.status(500).json({
@@ -238,8 +272,27 @@ router.put("/profile", auth, authorize("patient"), async (req, res) => {
 // @desc    Get patient consultations
 // @route   GET /api/patients/consultations
 // @access  Private (Patient only)
-router.get("/consultations", auth, authorize("patient"), async (req, res) => {
+router.get("/consultations", async (req, res) => {
   try {
+    // Manual authentication check (bypassing middleware chain)
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: "No valid authorization header"
+      });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.userType !== 'patient') {
+      return res.status(403).json({
+        success: false,
+        message: "Patient access required"
+      });
+    }
+
     // TODO: Implement consultation model and fetch patient's consultations
     res.json({
       success: true,

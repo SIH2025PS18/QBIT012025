@@ -14,7 +14,7 @@ class AppLocalizationsPa extends AppLocalizations {
   AppLocalizationsPa([String locale = 'pa']) : super(locale);
 
   @override
-  String get appTitle => 'ਟੈਲੀਮੈਡ';
+  String get appTitle => 'ਸਿਹਤ ਸਾਥੀ';
 
   @override
   String get welcome => 'ਸਵਾਗਤ';
@@ -844,4 +844,10 @@ class AppLocalizationsPa extends AppLocalizations {
 
   @override
   String get privacyPolicy => 'ਗੁਪਤਤਾ ਨੀਤੀ';
+
+  @override
+  String get familyMembers => 'ਪਰਿਵਾਰਕ ਮੈਂਬਰ';
+
+  @override
+  String get smartPharmacy => 'ਸਮਾਰਟ ਫਾਰਮੇਸੀ';
 }

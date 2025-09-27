@@ -5,9 +5,11 @@ import 'dart:convert';
 import '../models/appointment.dart';
 import '../models/doctor.dart';
 import '../services/auth_service.dart';
+import '../config/api_config.dart';
 
 class AppointmentService {
-  static const String _baseUrl = 'https://telemed18.onrender.com/api';
+  // Use ApiConfig instead of hardcoded URL
+  static String get _baseUrl => ApiConfig.baseUrl;
   static final AuthService _authService = AuthService();
 
   /// Book a new appointment

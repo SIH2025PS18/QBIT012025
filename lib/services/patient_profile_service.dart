@@ -7,7 +7,8 @@ import '../services/auth_service.dart';
 
 /// Service for managing patient profile operations
 class PatientProfileService {
-  static const String _baseUrl = 'https://telemed18.onrender.com/api';
+  // Use ApiConfig instead of hardcoded URL
+  static String get _baseUrl => ApiConfig.baseUrl;
 
   /// Upload profile photo for a user
   static Future<String?> uploadProfilePhoto({

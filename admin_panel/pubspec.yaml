@@ -29,6 +29,9 @@ dependencies:
   # Date formatting
   intl: ^0.20.2
 
+  # Calendar
+  table_calendar: ^3.0.9
+
   # Socket.IO for real-time updates
   socket_io_client: ^2.0.3+1
 
@@ -40,6 +43,9 @@ dependencies:
 
   # File picker for reports
   file_picker: ^8.1.2
+
+  # CSV processing
+  csv: ^6.0.0
 
   # Image picker
   image_picker: ^1.0.7

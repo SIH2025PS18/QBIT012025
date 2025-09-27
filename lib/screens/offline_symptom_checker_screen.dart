@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../services/offline_symptom_service.dart';
+import '../services/community_health_service.dart';
 import '../models/symptom_data.dart';
+import 'package:geolocator/geolocator.dart';
 
 class OfflineSymptomCheckerScreen extends StatefulWidget {
   const OfflineSymptomCheckerScreen({Key? key}) : super(key: key);
@@ -14,12 +16,15 @@ class OfflineSymptomCheckerScreen extends StatefulWidget {
 class _OfflineSymptomCheckerScreenState
     extends State<OfflineSymptomCheckerScreen> {
   final OfflineSymptomService _symptomService = OfflineSymptomService();
+  final CommunityHealthService _communityHealthService =
+      CommunityHealthService();
   final TextEditingController _symptomController = TextEditingController();
   List<String> _parsedSymptoms = [];
   List<DiseasePrediction> _predictions = [];
   bool _isLoading = true;
   bool _isAnalyzing = false;
   String _healthTip = "";
+  List<Map<String, dynamic>> _healthAlerts = [];
 
   @override
   void initState() {
@@ -29,10 +34,30 @@ class _OfflineSymptomCheckerScreenState
 
   Future<void> _initializeService() async {
     await _symptomService.initialize();
+
+    // Load health alerts for demo location
+    _loadHealthAlerts();
+
     setState(() {
       _isLoading = false;
       _healthTip = _symptomService.getRandomHealthTip();
     });
+  }
+
+  Future<void> _loadHealthAlerts() async {
+    try {
+      final location = {
+        'pincode': '123456',
+        'coordinates': {'lat': 12.9716, 'lng': 77.5946},
+      };
+
+      final alerts = await _communityHealthService.getHealthAlerts(location);
+      setState(() {
+        _healthAlerts = alerts;
+      });
+    } catch (e) {
+      print('Failed to load health alerts: $e');
+    }
   }
 
   void _handleSymptomSubmit() async {
@@ -56,6 +81,9 @@ class _OfflineSymptomCheckerScreenState
         symptoms,
       );
 
+      // Submit to community health monitoring (anonymously)
+      _submitToCommunityHealth(symptoms, predictions);
+
       setState(() {
         _predictions = predictions;
         _isAnalyzing = false;
@@ -74,6 +102,53 @@ class _OfflineSymptomCheckerScreenState
         ),
       );
     }
+  }
+
+  /// Submit anonymized symptom data to community health monitoring
+  Future<void> _submitToCommunityHealth(
+    List<String> symptoms,
+    List<DiseasePrediction> predictions,
+  ) async {
+    try {
+      if (predictions.isEmpty) return;
+
+      final primaryCondition = predictions.first.disease;
+      final severity = _mapConfidenceToSeverity(predictions.first.confidence);
+
+      // Get user location (simplified for demo - in production this would be more privacy-conscious)
+      final location = {
+        'state': 'Demo State',
+        'district': 'Demo District',
+        'block': 'Demo Block',
+        'pincode': '123456',
+        'coordinates': {
+          'lat': 12.9716,
+          'lng': 77.5946,
+        }, // Bangalore coordinates for demo
+      };
+
+      // Submit anonymously
+      await _communityHealthService.submitSymptomData(
+        symptoms: symptoms,
+        primaryCondition: primaryCondition,
+        severity: severity,
+        location: location,
+        ageGroup: '19-35', // Default for demo
+        gender: 'other', // Anonymous
+      );
+
+      print('Community Health: Submitted symptom data for monitoring');
+    } catch (e) {
+      // Silently fail to not disrupt user experience
+      print('Community Health: Failed to submit data - $e');
+    }
+  }
+
+  /// Map confidence percentage to severity level
+  String _mapConfidenceToSeverity(double confidence) {
+    if (confidence >= 80) return 'high';
+    if (confidence >= 60) return 'moderate';
+    return 'low';
   }
 
   @override

@@ -13,8 +13,8 @@ if not exist node_modules (
 )
 
 echo Starting Telemedicine Backend Server...
-echo Server will be available at: http://localhost:5000
-echo Health check: http://localhost:5000/health
+echo Server will be available at: http://192.168.1.7:5000
+echo Health check: http://192.168.1.7:5000/health
 echo.
 echo Press Ctrl+C to stop the server
 echo ========================================
