@@ -1,4 +1,6 @@
 const express = require("express");
+// Frontend URL for admin panel hosted on Vercel
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://qbit1admin.vercel.app";
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
@@ -34,13 +36,16 @@ const server = http.createServer(app);
 // Socket.IO setup
 const io = socketIo(server, {
   cors: {
-    origin: "*",
+    origin: [FRONTEND_URL, "*"],
     methods: ["GET", "POST"],
   },
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [FRONTEND_URL, "*"],
+  credentials: true,
+}));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -147,7 +152,8 @@ const PORT = process.env.PORT || 5002;
 
 server.listen(PORT, () => {
   console.log(`🚀 Unified Telemedicine Backend Server running on port ${PORT}`);
-  console.log(`📊 Health Check: http://192.168.1.7:${PORT}/api/health`);
-  console.log(`📋 API Endpoints: http://192.168.1.7:${PORT}/api`);
+  console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
+  console.log(`📋 API Endpoints: http://localhost:${PORT}/api`);
+  console.log(`🌐 Admin Panel Frontend: ${FRONTEND_URL}`);
   console.log(`🔌 Socket.IO ready for real-time connections`);
 });
