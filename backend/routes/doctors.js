@@ -125,6 +125,60 @@ router.get("/live", async (req, res) => {
   }
 });
 
+// @desc    Get all doctors for appointment booking (includes offline doctors)
+// @route   GET /api/doctors/booking
+// @access  Public
+router.get("/booking", async (req, res) => {
+  try {
+    const { speciality } = req.query;
+
+    const query = {
+      isAvailable: true,
+      isVerified: true,
+      // Include all doctors regardless of online status for appointment booking
+    };
+
+    if (speciality) {
+      query.speciality = speciality;
+    }
+
+    const doctors = await Doctor.find(query)
+      .select("-password")
+      .sort({ 
+        // Online doctors first, then by rating
+        status: -1,
+        rating: -1, 
+        totalConsultations: -1 
+      });
+
+    res.json({
+      success: true,
+      count: doctors.length,
+      data: doctors.map((doctor) => ({
+        id: doctor._id,
+        doctorId: doctor.doctorId,
+        name: doctor.name,
+        speciality: doctor.speciality,
+        qualification: doctor.qualification,
+        experience: doctor.experience,
+        consultationFee: doctor.consultationFee,
+        rating: doctor.rating,
+        totalConsultations: doctor.totalConsultations,
+        languages: doctor.languages || doctor.languagesSpoken,
+        status: doctor.status,
+        isAvailable: doctor.isAvailable,
+        lastActive: doctor.lastActive,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching doctors for booking:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error fetching doctors for booking",
+    });
+  }
+});
+
 // @desc    Get single doctor by ID
 // @route   GET /api/doctors/:id
 // @access  Public

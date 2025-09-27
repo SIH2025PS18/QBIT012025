@@ -47,6 +47,7 @@ class ApiConfig {
   static const String doctorAvailability = '$doctors/availability';
   static const String doctorsList = '$doctors';
   static const String doctorsAvailable = '$doctors/available';
+  static const String doctorsBooking = '$doctors/booking'; // All doctors for appointment booking
   static const String doctorsLive =
       '$doctors/live'; // New endpoint for live/online doctors
   static const String doctorsProfile = '$doctors/profile';

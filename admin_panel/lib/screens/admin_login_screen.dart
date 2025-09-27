@@ -184,7 +184,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: const Icon(
-                        Icons.local_hospital,
+                        Icons.admin_panel_settings_rounded,
                         color: Colors.white,
                         size: 40,
                       ),

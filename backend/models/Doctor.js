@@ -200,19 +200,25 @@ doctorSchema.methods.updateStatus = function (status) {
   return this.save();
 };
 
-// Static method to find available doctors
+// Static method to find available doctors (includes offline doctors for appointment booking)
 doctorSchema.statics.findAvailable = function (speciality = null) {
   const query = {
     isAvailable: true,
-    status: { $in: ["online", "busy"] },
     isVerified: true,
+    // Allow offline, online, and busy doctors for appointment booking
+    // Patients can book appointments with offline doctors for future consultations
   };
 
   if (speciality) {
     query.speciality = speciality;
   }
 
-  return this.find(query).sort({ rating: -1, totalConsultations: -1 });
+  // Sort by status (online first), then by rating and consultations
+  return this.find(query).sort({ 
+    status: -1, // online/busy doctors first
+    rating: -1, 
+    totalConsultations: -1 
+  });
 };
 
 module.exports = mongoose.model("Doctor", doctorSchema);

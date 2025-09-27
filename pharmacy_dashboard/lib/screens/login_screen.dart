@@ -46,6 +46,15 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _demoLogin() async {
+    // Fill the demo credentials
+    _emailController.text = 'pharmacy@demo.com';
+    _passwordController.text = 'pharmacy123';
+    
+    // Trigger the login process
+    await _handleLogin();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<PharmacyThemeProvider>(
@@ -100,12 +109,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: 80,
                             height: 80,
                             decoration: BoxDecoration(
-                              color: themeProvider.accentColor,
-                              borderRadius: BorderRadius.circular(16),
+                              gradient: LinearGradient(
+                                colors: [
+                                  themeProvider.accentColor,
+                                  themeProvider.accentColor.withOpacity(0.8),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: themeProvider.accentColor.withOpacity(0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
                             ),
                             child: const Icon(
-                              Icons.local_pharmacy,
-                              size: 40,
+                              Icons.local_pharmacy_rounded,
+                              size: 42,
                               color: Colors.white,
                             ),
                           ),
@@ -282,6 +305,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     );
                                   },
+                                ),
+                                
+                                const SizedBox(height: 16),
+                                
+                                // Demo login button
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 48,
+                                  child: OutlinedButton.icon(
+                                    onPressed: _demoLogin,
+                                    icon: const Icon(Icons.medication_outlined),
+                                    label: const Text('Demo Login'),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: themeProvider.accentColor,
+                                      side: BorderSide(color: themeProvider.accentColor),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),

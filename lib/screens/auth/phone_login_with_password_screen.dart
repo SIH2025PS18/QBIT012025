@@ -77,6 +77,15 @@ class _PhoneLoginWithPasswordScreenState
     }
   }
 
+  Future<void> _demoLogin() async {
+    // Fill the demo credentials
+    _phoneController.text = '9026508435';
+    _passwordController.text = 'shaurya';
+    
+    // Trigger the sign in process
+    await _signIn();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -270,7 +279,25 @@ class _PhoneLoginWithPasswordScreenState
                   text: l10n.signIn,
                   onPressed: _signIn,
                   isLoading: _isLoading,
-                  icon: Icons.login,
+                  icon: Icons.health_and_safety_outlined,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Demo login button
+                OutlinedButton.icon(
+                  onPressed: _demoLogin,
+                  icon: const Icon(Icons.medical_services_outlined),
+                  label: const Text('Demo Login'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Theme.of(context).primaryColor),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
 
                 const SizedBox(height: 32),

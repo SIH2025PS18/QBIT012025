@@ -278,7 +278,7 @@ class DoctorService extends ChangeNotifier {
   /// Refresh all doctors from backend
   Future<void> refreshDoctors() async {
     try {
-      final response = await _apiService.get(ApiConfig.doctorsList);
+      final response = await _apiService.get(ApiConfig.doctorsBooking);
 
       if (response.isSuccess && response.data != null) {
         final responseData = response.data;

@@ -63,6 +63,15 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
     }
   }
 
+  void _demoLogin() {
+    // Fill the demo credentials
+    _emailController.text = 'dr.rahul.sharma@sehatsakhi.com';
+    _passwordController.text = 'rahul@123';
+    
+    // Trigger the login process
+    _login();
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<DoctorThemeProvider>(context);
@@ -91,10 +100,17 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.local_hospital,
-                      size: 64,
-                      color: Color(0xFF6366F1),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6366F1).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.medical_services_rounded,
+                        size: 48,
+                        color: Color(0xFF6366F1),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -211,16 +227,18 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () {
-                        // Quick login with demo data
-                        _emailController.text = 'dr.rahul.sharma@sehatsakhi.com';
-                        _passwordController.text = 'rahul@123';
-                      },
-                      child: const Text(
-                        'Use Demo Credentials',
-                        style:
-                            TextStyle(color: Color(0xFF6366F1), fontSize: 14),
+                    OutlinedButton.icon(
+                      onPressed: _demoLogin,
+                      icon: const Icon(Icons.medical_information_outlined),
+                      label: const Text('Demo Login'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF6366F1),
+                        backgroundColor: Colors.transparent,
+                        side: const BorderSide(color: Color(0xFF6366F1)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        minimumSize: const Size(double.infinity, 48),
                       ),
                     ),
                   ],
