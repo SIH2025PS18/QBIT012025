@@ -276,8 +276,8 @@ npm start
 
 ```env
 # Database
-MONGODB_URI=mongodb://localhost:27017/telemedicine
-REDIS_URL=redis://localhost:6379
+
+
 
 # JWT
 JWT_SECRET=your_jwt_secret_key
@@ -335,7 +335,7 @@ python api.py
 ```dart
 // lib/config/api_config.dart
 class ApiConfig {
-  static String get baseUrl => 'http://192.168.1.7:5002/api';
+  static String get baseUrl => 'https://telemed18.onrender.com || http://192.168.1.7:5002/api';
   static String get socketUrl => 'http://192.168.1.7:5002';
 }
 ```

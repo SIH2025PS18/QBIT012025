@@ -68,7 +68,8 @@ class FamilyProfileProvider extends ChangeNotifier {
       medicalConditions: ['Fever'],
     ),
   ];
-  static const String _baseUrl = 'http://192.168.1.7:5002/api';
+  static const String _baseUrl =
+      'https://telemed18.onrender.com || http://192.168.1.7:5002/api';
 
   final AuthService _authService = AuthService();
   late final OfflineDatabase _database;

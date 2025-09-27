@@ -4,7 +4,7 @@ class ApiConfig {
   static String get baseUrl {
     // FORCE LOCAL DEVELOPMENT - Override for testing
     // TODO: Change this for production builds
-    return 'http://192.168.1.7:5002/api';
+    return 'https://telemed18.onrender.com || http://192.168.1.7:5002/api';
   }
 
   // WebSocket URL for real-time features
