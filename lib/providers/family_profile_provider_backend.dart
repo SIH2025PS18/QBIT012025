@@ -7,7 +7,7 @@ import '../services/auth_service.dart';
 
 /// Provider for managing family profiles, caregiver mode, and family health overview
 class FamilyProfileProvider extends ChangeNotifier {
-  static const String _baseUrl = 'http://192.168.1.7:3000/api';
+  static const String _baseUrl = 'https://telemed18.onrender.com/api';
 
   final AuthService _authService = AuthService();
 

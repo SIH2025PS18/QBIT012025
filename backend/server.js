@@ -1,6 +1,8 @@
 const express = require("express");
 // Frontend URL for admin panel hosted on Vercel
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://qbit1admin.vercel.app";
+// Backend URL for deployed service
+const BACKEND_URL = process.env.BACKEND_URL || "https://telemed18.onrender.com";
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
@@ -36,15 +38,18 @@ const server = http.createServer(app);
 // Socket.IO setup
 const io = socketIo(server, {
   cors: {
-    origin: [FRONTEND_URL, "*"],
+    origin: [FRONTEND_URL, BACKEND_URL, "*"],
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
 // Middleware
 app.use(cors({
-  origin: [FRONTEND_URL, "*"],
+  origin: [FRONTEND_URL, BACKEND_URL, "*"],
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
@@ -152,8 +157,9 @@ const PORT = process.env.PORT || 5002;
 
 server.listen(PORT, () => {
   console.log(`🚀 Unified Telemedicine Backend Server running on port ${PORT}`);
-  console.log(`📊 Health Check: https://localhost:${PORT}/api/health`);
-  console.log(`📋 API Endpoints: https://localhost:${PORT}/api`);
+  console.log(`📊 Health Check: ${BACKEND_URL}/api/health`);
+  console.log(`📋 API Endpoints: ${BACKEND_URL}/api`);
   console.log(`🌐 Admin Panel Frontend: ${FRONTEND_URL}`);
+  console.log(`🌐 Backend URL: ${BACKEND_URL}`);
   console.log(`🔌 Socket.IO ready for real-time connections`);
 });
