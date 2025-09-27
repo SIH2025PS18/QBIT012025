@@ -152,8 +152,8 @@ const PORT = process.env.PORT || 5002;
 
 server.listen(PORT, () => {
   console.log(`🚀 Unified Telemedicine Backend Server running on port ${PORT}`);
-  console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
-  console.log(`📋 API Endpoints: http://localhost:${PORT}/api`);
+  console.log(`📊 Health Check: https://localhost:${PORT}/api/health`);
+  console.log(`📋 API Endpoints: https://localhost:${PORT}/api`);
   console.log(`🌐 Admin Panel Frontend: ${FRONTEND_URL}`);
   console.log(`🔌 Socket.IO ready for real-time connections`);
 });
