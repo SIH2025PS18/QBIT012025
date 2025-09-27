@@ -5,8 +5,7 @@ import '../models/prescription_request.dart';
 import '../models/pharmacy.dart';
 
 class PharmacyApiService {
-  static const String baseUrl =
-      'https://telemed18.onrender.com || https://telemed18.onrender.com/api';
+  static const String baseUrl = 'https://telemed18.onrender.com/api';
   static final PharmacyApiService _instance = PharmacyApiService._internal();
   factory PharmacyApiService() => _instance;
   PharmacyApiService._internal();
