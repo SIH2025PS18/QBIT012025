@@ -214,8 +214,8 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                     TextButton(
                       onPressed: () {
                         // Quick login with demo data
-                        _emailController.text = 'doctor@example.com';
-                        _passwordController.text = 'password123';
+                        _emailController.text = 'dr.rahul.sharma@sehatsakhi.com';
+                        _passwordController.text = 'rahul@123';
                       },
                       child: const Text(
                         'Use Demo Credentials',
