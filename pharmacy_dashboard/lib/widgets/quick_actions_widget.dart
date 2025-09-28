@@ -247,12 +247,12 @@ class QuickActionsWidget extends StatelessWidget {
         onTap: enabled ? onTap : null,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: enabled
                       ? color.withOpacity(0.1)
@@ -262,26 +262,31 @@ class QuickActionsWidget extends StatelessWidget {
                 child: Icon(
                   icon,
                   color: enabled ? color : Colors.grey,
-                  size: 32,
+                  size: 24,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 6),
               Text(
                 title,
                 style: TextStyle(
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: enabled ? null : Colors.grey,
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 subtitle,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 10,
                   color: enabled ? Colors.grey[600] : Colors.grey[400],
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

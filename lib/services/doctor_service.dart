@@ -463,18 +463,19 @@ class DoctorService extends ChangeNotifier {
         final List<dynamic> doctorsData = responseData is Map
             ? responseData['data'] ?? []
             : responseData as List<dynamic>;
-        final doctors = doctorsData.map((data) => Doctor.fromMap(data)).toList();
-        
+        final doctors = doctorsData
+            .map((data) => Doctor.fromMap(data))
+            .toList();
+
         if (doctors.isNotEmpty) {
           debugPrint('✅ Booking endpoint returned ${doctors.length} doctors');
           return doctors;
         }
       }
-      
+
       // Fallback: Use createSampleDoctors or hardcoded list for booking
       debugPrint('⚠️ Booking endpoint failed, using fallback doctors');
       return _getFallbackDoctors();
-      
     } catch (e) {
       debugPrint('❌ Error fetching booking doctors: $e');
       debugPrint('⚠️ Using fallback doctors for appointment booking');

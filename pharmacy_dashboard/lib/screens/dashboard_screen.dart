@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import '../providers/pharmacy_provider.dart';
 import '../providers/prescription_provider.dart';
 import '../providers/pharmacy_theme_provider.dart';
+import '../providers/inventory_provider.dart';
 import '../widgets/prescription_request_card.dart';
 import '../widgets/pharmacy_stats_widget.dart';
 import '../widgets/quick_actions_widget.dart';
+import 'inventory_management_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -205,6 +207,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 1:
         return const DashboardOverviewTab();
       case 2:
+        return ChangeNotifierProvider(
+          create: (_) => InventoryProvider(),
+          child: const InventoryManagementScreen(),
+        );
+      case 3:
         return const OrderHistoryTab();
       default:
         return const PrescriptionRequestsTab();
@@ -214,150 +221,174 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildDrawer(PharmacyThemeProvider themeProvider) {
     return Drawer(
       backgroundColor: themeProvider.cardBackgroundColor,
-      child: Column(
-        children: [
-          // Drawer header
-          Consumer<PharmacyProvider>(
-            builder: (context, provider, child) {
-              final pharmacy = provider.pharmacy;
-              return UserAccountsDrawerHeader(
-                decoration: BoxDecoration(color: themeProvider.accentColor),
-                accountName: Text(
-                  pharmacy?.name ?? 'Pharmacy Name',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                accountEmail: Text(
-                  pharmacy?.email ?? 'email@pharmacy.com',
-                  style: const TextStyle(color: Colors.white70),
-                ),
-                currentAccountPicture: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.local_pharmacy,
-                    color: themeProvider.accentColor,
-                    size: 30,
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // Menu items
-          ListTile(
-            leading: Icon(
-              Icons.inbox_outlined,
-              color: themeProvider.primaryTextColor,
-            ),
-            title: Text(
-              'Prescription Requests',
-              style: TextStyle(color: themeProvider.primaryTextColor),
-            ),
-            selected: _selectedIndex == 0,
-            selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
-            onTap: () {
-              setState(() {
-                _selectedIndex = 0;
-              });
-              Navigator.pop(context);
-            },
-            trailing: Consumer<PrescriptionProvider>(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Drawer header
+            Consumer<PharmacyProvider>(
               builder: (context, provider, child) {
-                final count = provider.totalPendingRequests;
-                return count > 0
-                    ? Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: themeProvider.accentColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '$count',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink();
+                final pharmacy = provider.pharmacy;
+                return UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(color: themeProvider.accentColor),
+                  accountName: Text(
+                    pharmacy?.name ?? 'Pharmacy Name',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  accountEmail: Text(
+                    pharmacy?.email ?? 'email@pharmacy.com',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      Icons.local_pharmacy,
+                      color: themeProvider.accentColor,
+                      size: 30,
+                    ),
+                  ),
+                );
               },
             ),
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.dashboard_outlined,
-              color: themeProvider.primaryTextColor,
-            ),
-            title: Text(
-              'Dashboard',
-              style: TextStyle(color: themeProvider.primaryTextColor),
-            ),
-            selected: _selectedIndex == 1,
-            selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
-            onTap: () {
-              setState(() {
-                _selectedIndex = 1;
-              });
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.history, color: themeProvider.primaryTextColor),
-            title: Text(
-              'Order History',
-              style: TextStyle(color: themeProvider.primaryTextColor),
-            ),
-            selected: _selectedIndex == 2,
-            selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
-            onTap: () {
-              setState(() {
-                _selectedIndex = 2;
-              });
-              Navigator.pop(context);
-            },
-          ),
 
-          Divider(color: themeProvider.dividerColor),
-
-          // Quick actions
-          const QuickActionsWidget(),
-
-          const Spacer(),
-
-          // Online status toggle
-          Consumer<PharmacyProvider>(
-            builder: (context, provider, child) {
-              return SwitchListTile(
-                title: Text(
-                  'Online Status',
-                  style: TextStyle(color: themeProvider.primaryTextColor),
-                ),
-                subtitle: Text(
-                  provider.isOnline
-                      ? 'Available for orders'
-                      : 'Not accepting orders',
-                  style: TextStyle(color: themeProvider.secondaryTextColor),
-                ),
-                value: provider.isOnline,
-                onChanged: (value) {
-                  provider.setOnlineStatus(value);
+            // Menu items
+            ListTile(
+              leading: Icon(
+                Icons.inbox_outlined,
+                color: themeProvider.primaryTextColor,
+              ),
+              title: Text(
+                'Prescription Requests',
+                style: TextStyle(color: themeProvider.primaryTextColor),
+              ),
+              selected: _selectedIndex == 0,
+              selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
+              onTap: () {
+                setState(() {
+                  _selectedIndex = 0;
+                });
+                Navigator.pop(context);
+              },
+              trailing: Consumer<PrescriptionProvider>(
+                builder: (context, provider, child) {
+                  final count = provider.totalPendingRequests;
+                  return count > 0
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: themeProvider.accentColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '$count',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink();
                 },
-                secondary: Icon(
-                  provider.isOnline
-                      ? Icons.online_prediction
-                      : Icons.offline_bolt,
-                  color: provider.isOnline ? Colors.green : Colors.grey,
-                ),
-              );
-            },
-          ),
-        ],
+              ),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.dashboard_outlined,
+                color: themeProvider.primaryTextColor,
+              ),
+              title: Text(
+                'Dashboard',
+                style: TextStyle(color: themeProvider.primaryTextColor),
+              ),
+              selected: _selectedIndex == 1,
+              selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
+              onTap: () {
+                setState(() {
+                  _selectedIndex = 1;
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.inventory_2,
+                color: themeProvider.primaryTextColor,
+              ),
+              title: Text(
+                'Inventory Management',
+                style: TextStyle(color: themeProvider.primaryTextColor),
+              ),
+              selected: _selectedIndex == 2,
+              selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
+              onTap: () {
+                setState(() {
+                  _selectedIndex = 2;
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.history,
+                color: themeProvider.primaryTextColor,
+              ),
+              title: Text(
+                'Order History',
+                style: TextStyle(color: themeProvider.primaryTextColor),
+              ),
+              selected: _selectedIndex == 3,
+              selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
+              onTap: () {
+                setState(() {
+                  _selectedIndex = 3;
+                });
+                Navigator.pop(context);
+              },
+            ),
+
+            Divider(color: themeProvider.dividerColor),
+
+            // Quick actions
+            const QuickActionsWidget(),
+
+            const SizedBox(height: 16),
+
+            // Online status toggle
+            Consumer<PharmacyProvider>(
+              builder: (context, provider, child) {
+                return SwitchListTile(
+                  title: Text(
+                    'Online Status',
+                    style: TextStyle(color: themeProvider.primaryTextColor),
+                  ),
+                  subtitle: Text(
+                    provider.isOnline
+                        ? 'Available for orders'
+                        : 'Not accepting orders',
+                    style: TextStyle(color: themeProvider.secondaryTextColor),
+                  ),
+                  value: provider.isOnline,
+                  onChanged: (value) {
+                    provider.setOnlineStatus(value);
+                  },
+                  secondary: Icon(
+                    provider.isOnline
+                        ? Icons.online_prediction
+                        : Icons.offline_bolt,
+                    color: provider.isOnline ? Colors.green : Colors.grey,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }

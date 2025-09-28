@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'providers/pharmacy_provider.dart';
 import 'providers/prescription_provider.dart';
 import 'providers/pharmacy_theme_provider.dart';
+import 'providers/inventory_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
 
@@ -20,6 +21,7 @@ class PharmacyDashboardApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => PharmacyProvider()),
         ChangeNotifierProvider(create: (_) => PrescriptionProvider()),
+        ChangeNotifierProvider(create: (_) => InventoryProvider()),
         ChangeNotifierProvider(
           create: (_) => PharmacyThemeProvider()..initializeTheme(),
         ),

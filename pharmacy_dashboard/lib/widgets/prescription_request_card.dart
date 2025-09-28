@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/prescription_request.dart';
+import '../screens/prescription_response_screen.dart';
 
 class PrescriptionRequestCard extends StatefulWidget {
   final PrescriptionRequest request;
@@ -54,6 +55,16 @@ class _PrescriptionRequestCardState extends State<PrescriptionRequestCard>
     } else {
       _timerController.value = 1.0; // Expired
     }
+  }
+
+  void _navigateToDetailedResponse() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            PrescriptionResponseScreen(request: widget.request),
+      ),
+    );
   }
 
   @override
@@ -265,41 +276,59 @@ class _PrescriptionRequestCardState extends State<PrescriptionRequestCard>
   }
 
   Widget _buildMedicinePreview() {
-    final displayMedicines = widget.request.medicines.take(2).toList();
-
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ...displayMedicines.map(
-          (medicine) => Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Row(
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '${medicine.name} - ${medicine.dosage} (Qty: ${medicine.quantity})',
-                    style: const TextStyle(fontSize: 13),
-                  ),
-                ),
-              ],
+        Row(
+          children: [
+            Icon(Icons.medication, size: 14, color: Colors.blue[600]),
+            const SizedBox(width: 4),
+            Text(
+              '${widget.request.medicines.length} Medicine${widget.request.medicines.length > 1 ? 's' : ''}',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.blue[800],
+              ),
             ),
-          ),
+          ],
         ),
-        if (widget.request.medicines.length > 2)
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 4,
+          runSpacing: 4,
+          children: widget.request.medicines
+              .take(3)
+              .map(
+                (medicine) => Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.blue[200]!),
+                  ),
+                  child: Text(
+                    '${medicine.name} ${medicine.dosage}',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.blue[800],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+        if (widget.request.medicines.length > 3)
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
-              '... and ${widget.request.medicines.length - 2} more',
+              '+${widget.request.medicines.length - 3} more medicines',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 10,
                 color: Colors.grey[600],
                 fontStyle: FontStyle.italic,
               ),
@@ -400,6 +429,37 @@ class _PrescriptionRequestCardState extends State<PrescriptionRequestCard>
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
+
+          // Detailed Response Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _navigateToDetailedResponse(),
+              icon: const Icon(Icons.message),
+              label: const Text('Respond with AI Suggestions'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2E7D32),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'Quick Response',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 8),
+
           if (_isResponding)
             const Center(child: CircularProgressIndicator())
           else

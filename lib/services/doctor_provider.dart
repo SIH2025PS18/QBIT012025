@@ -114,9 +114,7 @@ class DoctorService extends ChangeNotifier {
 
     try {
       // Fetch ALL doctors for appointment booking (includes offline doctors)
-      final bookingResponse = await _apiService.get(
-        ApiConfig.doctorsBooking,
-      );
+      final bookingResponse = await _apiService.get(ApiConfig.doctorsBooking);
 
       // Fetch live/online doctors for real-time display
       final liveResponse = await _apiService.get(ApiConfig.doctorsLive);
@@ -127,14 +125,14 @@ class DoctorService extends ChangeNotifier {
             ? responseData['data'] ?? []
             : responseData as List<dynamic>;
         _allDoctors = doctorsData.map((data) => Doctor.fromMap(data)).toList();
-        
+
         // If booking endpoint returns empty, use fallback doctors
         if (_allDoctors.isEmpty) {
           print('⚠️ Booking endpoint returned empty, using fallback doctors');
           _allDoctors = _getFallbackDoctors();
         }
       } else {
-        // If booking endpoint fails, use fallback doctors  
+        // If booking endpoint fails, use fallback doctors
         print('⚠️ Booking endpoint failed, using fallback doctors');
         _allDoctors = _getFallbackDoctors();
       }
