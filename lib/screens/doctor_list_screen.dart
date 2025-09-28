@@ -43,8 +43,8 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Load doctors from backend API
-      final doctors = await DoctorService.getAvailableDoctors();
+      // Load ALL doctors for appointment booking (includes offline doctors)
+      final doctors = await DoctorService.getBookingDoctors();
       setState(() {
         _doctors = doctors;
         _filteredDoctors = doctors;

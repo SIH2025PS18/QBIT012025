@@ -428,7 +428,7 @@ class DoctorService extends ChangeNotifier {
     }
   }
 
-  /// Get all available doctors from unified backend
+  /// Get all available doctors from unified backend (for live queue - only online)
   static Future<List<Doctor>> getAllDoctors() async {
     try {
       final response = await _apiService.get(ApiConfig.doctorsAvailable);
@@ -447,9 +447,31 @@ class DoctorService extends ChangeNotifier {
     }
   }
 
-  /// Get available doctors (alias for getAllDoctors)
+  /// Get available doctors (alias for getAllDoctors) - for live queue only
   static Future<List<Doctor>> getAvailableDoctors() async {
     return getAllDoctors();
+  }
+
+  /// Get all doctors for appointment booking (includes offline doctors)
+  static Future<List<Doctor>> getBookingDoctors() async {
+    try {
+      final response = await _apiService.get(ApiConfig.doctorsBooking);
+
+      if (response.isSuccess && response.data != null) {
+        final responseData = response.data;
+        final List<dynamic> doctorsData = responseData is Map
+            ? responseData['data'] ?? []
+            : responseData as List<dynamic>;
+        return doctorsData.map((data) => Doctor.fromMap(data)).toList();
+      } else {
+        _showToast('Error loading booking doctors: ${response.error}', isError: true);
+        return [];
+      }
+    } catch (e) {
+      debugPrint('Error fetching booking doctors: $e');
+      _showToast('Error loading booking doctors', isError: true);
+      return [];
+    }
   }
 
   /// Search doctors by speciality using unified backend

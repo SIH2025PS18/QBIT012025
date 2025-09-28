@@ -113,17 +113,19 @@ class DoctorService extends ChangeNotifier {
     _error = null;
 
     try {
-      // Fetch all available doctors for backup/general list
-      final availableResponse = await _apiService.get(
-        ApiConfig.doctorsAvailable,
+      // Fetch ALL doctors for appointment booking (includes offline doctors)
+      final bookingResponse = await _apiService.get(
+        ApiConfig.doctorsBooking,
       );
 
       // Fetch live/online doctors for real-time display
       final liveResponse = await _apiService.get(ApiConfig.doctorsLive);
 
-      if (availableResponse.isSuccess && availableResponse.data != null) {
-        final List<dynamic> doctorsData =
-            availableResponse.data as List<dynamic>;
+      if (bookingResponse.isSuccess && bookingResponse.data != null) {
+        final responseData = bookingResponse.data;
+        final List<dynamic> doctorsData = responseData is Map
+            ? responseData['data'] ?? []
+            : responseData as List<dynamic>;
         _allDoctors = doctorsData.map((data) => Doctor.fromMap(data)).toList();
       }
 
