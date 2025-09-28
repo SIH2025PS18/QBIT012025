@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // Fill the demo credentials
     _emailController.text = 'pharmacy@demo.com';
     _passwordController.text = 'pharmacy123';
-    
+
     // Trigger the login process
     await _handleLogin();
   }
@@ -120,7 +120,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: themeProvider.accentColor.withOpacity(0.3),
+                                  color: themeProvider.accentColor.withOpacity(
+                                    0.3,
+                                  ),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
                                 ),
@@ -306,9 +308,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     );
                                   },
                                 ),
-                                
+
                                 const SizedBox(height: 16),
-                                
+
                                 // Demo login button
                                 SizedBox(
                                   width: double.infinity,
@@ -318,8 +320,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                     icon: const Icon(Icons.medication_outlined),
                                     label: const Text('Demo Login'),
                                     style: OutlinedButton.styleFrom(
-                                      foregroundColor: themeProvider.accentColor,
-                                      side: BorderSide(color: themeProvider.accentColor),
+                                      foregroundColor:
+                                          themeProvider.accentColor,
+                                      side: BorderSide(
+                                        color: themeProvider.accentColor,
+                                      ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),

@@ -3,6 +3,7 @@
 ## 👨‍⚕️ All Doctor Dashboard Credentials
 
 ### **1. Dr. Rahul Sharma (Cardiologist)**
+
 - 📧 **Email:** `dr.rahul.sharma@sehatsakhi.com`
 - 🔑 **Password:** `rahul@123`
 - 🏥 **Speciality:** Cardiologist
@@ -10,6 +11,7 @@
 - 💰 **Consultation Fee:** ₹1,200
 
 ### **2. Dr. Preet Kaur (Pediatrician)**
+
 - 📧 **Email:** `dr.preet.kaur@sehatsakhi.com`
 - 🔑 **Password:** `preet@123`
 - 🏥 **Speciality:** Pediatrician
@@ -17,6 +19,7 @@
 - 💰 **Consultation Fee:** ₹800
 
 ### **3. Dr. Amit Patel (Orthopedic Specialist)**
+
 - 📧 **Email:** `dr.amit.patel@sehatsakhi.com`
 - 🔑 **Password:** `amit@123`
 - 🏥 **Speciality:** Orthopedic
@@ -24,6 +27,7 @@
 - 💰 **Consultation Fee:** ₹1,300
 
 ### **4. Dr. Harjeet Singh (General Practitioner)**
+
 - 📧 **Email:** `dr.harjeet.singh@sehatsakhi.com`
 - 🔑 **Password:** `harjeet@123`
 - 🏥 **Speciality:** General Practitioner
@@ -31,6 +35,7 @@
 - 💰 **Consultation Fee:** ₹600
 
 ### **5. Dr. Sunita Gupta (Gynecologist)**
+
 - 📧 **Email:** `dr.sunita.gupta@sehatsakhi.com`
 - 🔑 **Password:** `sunita@123`
 - 🏥 **Speciality:** Gynecologist
@@ -38,6 +43,7 @@
 - 💰 **Consultation Fee:** ₹1,000
 
 ### **6. Dr. Ravi Dhaliwal (Dermatologist)**
+
 - 📧 **Email:** `dr.ravi.dhaliwal@sehatsakhi.com`
 - 🔑 **Password:** `ravi@123`
 - 🏥 **Speciality:** Dermatologist

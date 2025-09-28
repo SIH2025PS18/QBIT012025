@@ -67,7 +67,7 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
     // Fill the demo credentials
     _emailController.text = 'dr.rahul.sharma@sehatsakhi.com';
     _passwordController.text = 'rahul@123';
-    
+
     // Trigger the login process
     _login();
   }

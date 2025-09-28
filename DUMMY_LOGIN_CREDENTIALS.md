@@ -11,6 +11,7 @@ This file contains test login credentials for demonstrating and testing the Tele
 **User Type:** Patient
 
 ### Login Instructions:
+
 1. Open the patient mobile app (APK available in build folder)
 2. Enter phone number: `9026508435`
 3. Enter password: `shaurya`
@@ -26,12 +27,14 @@ This file contains test login credentials for demonstrating and testing the Tele
 **Speciality:** Cardiologist
 
 ### Login Instructions:
+
 1. Open doctor dashboard: https://qbit1doctordashboard.vercel.app/
 2. Enter email: `dr.rahul.sharma@sehatsakhi.com`
 3. Enter password: `rahul@123`
 4. Select user type: **Doctor**
 
 ### Doctor Profile Details:
+
 - **Name:** Dr. Rahul Sharma
 - **Doctor ID:** D000001
 - **Phone:** +91-9876543210
@@ -62,18 +65,19 @@ This file contains test login credentials for demonstrating and testing the Tele
 
 ## 🌐 Platform URLs
 
-| Service | URL | Status |
-|---------|-----|--------|
-| Backend API | https://telemed18.onrender.com | ✅ Live |
-| Admin Panel | https://qbit1admin.vercel.app | ✅ Deployed |
-| Doctor Dashboard | https://qbit1doctordashboard.vercel.app | ✅ Deployed |
-| Pharmacy Dashboard | https://qbit1pharmacy.vercel.app | ✅ Deployed |
+| Service            | URL                                     | Status      |
+| ------------------ | --------------------------------------- | ----------- |
+| Backend API        | https://telemed18.onrender.com          | ✅ Live     |
+| Admin Panel        | https://qbit1admin.vercel.app           | ✅ Deployed |
+| Doctor Dashboard   | https://qbit1doctordashboard.vercel.app | ✅ Deployed |
+| Pharmacy Dashboard | https://qbit1pharmacy.vercel.app        | ✅ Deployed |
 
 ---
 
 ## 🔍 Testing Scenarios
 
 ### Patient App Testing:
+
 1. **Login:** Use phone `9026508435` and password `shaurya`
 2. **Profile:** View and update patient profile
 3. **Appointments:** Book appointments with available doctors
@@ -81,6 +85,7 @@ This file contains test login credentials for demonstrating and testing the Tele
 5. **Medical Records:** View prescription history and reports
 
 ### Doctor Dashboard Testing:
+
 1. **Login:** Use email `dr.rahul.sharma@sehatsakhi.com` and password `rahul@123`
 2. **Profile:** View doctor profile and update availability
 3. **Patient Queue:** Manage appointment requests
@@ -120,5 +125,5 @@ This file contains test login credentials for demonstrating and testing the Tele
 
 ---
 
-*Last Updated: December 2024*  
-*Generated for Telemedicine Platform v1.0*
+_Last Updated: December 2024_  
+_Generated for Telemedicine Platform v1.0_

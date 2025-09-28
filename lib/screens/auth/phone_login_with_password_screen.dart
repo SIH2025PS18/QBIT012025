@@ -81,7 +81,7 @@ class _PhoneLoginWithPasswordScreenState
     // Fill the demo credentials
     _phoneController.text = '9026508435';
     _passwordController.text = 'shaurya';
-    
+
     // Trigger the sign in process
     await _signIn();
   }
