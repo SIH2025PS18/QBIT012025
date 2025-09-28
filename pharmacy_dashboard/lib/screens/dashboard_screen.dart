@@ -6,7 +6,6 @@ import '../providers/pharmacy_theme_provider.dart';
 import '../providers/inventory_provider.dart';
 import '../widgets/prescription_request_card.dart';
 import '../widgets/pharmacy_stats_widget.dart';
-import '../widgets/quick_actions_widget.dart';
 import 'inventory_management_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -40,163 +39,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Consumer<PharmacyThemeProvider>(
       builder: (context, themeProvider, child) {
         return Scaffold(
-          appBar: _buildAppBar(themeProvider),
-          body: _buildBody(),
-          drawer: _buildDrawer(themeProvider),
-          backgroundColor: themeProvider.primaryBackgroundColor,
+          backgroundColor: const Color(0xFFF5F7FA),
+          body: Row(
+            children: [
+              // Fixed Sidebar
+              _buildFixedSidebar(themeProvider),
+
+              // Main Content Area
+              Expanded(
+                child: Column(
+                  children: [
+                    _buildTopBar(themeProvider),
+                    Expanded(child: _buildBody()),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(PharmacyThemeProvider themeProvider) {
-    return AppBar(
-      title: Text(
-        'Sehat Sarthi Pharmacy',
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: themeProvider.primaryTextColor,
-        ),
-      ),
-      backgroundColor: themeProvider.cardBackgroundColor,
-      foregroundColor: themeProvider.primaryTextColor,
-      elevation: 1,
-      actions: [
-        // Theme toggle button
-        IconButton(
-          onPressed: () => themeProvider.toggleTheme(),
-          icon: Icon(
-            themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-            color: themeProvider.primaryTextColor,
-          ),
-          tooltip: themeProvider.isDarkMode
-              ? 'Switch to Light Mode'
-              : 'Switch to Dark Mode',
-        ),
-
-        // Online status indicator
-        Consumer<PharmacyProvider>(
-          builder: (context, provider, child) {
-            return Container(
-              margin: const EdgeInsets.only(right: 16),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: provider.isOnline ? Colors.green : Colors.grey,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    provider.isOnline ? 'Online' : 'Offline',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: provider.isOnline ? Colors.green : Colors.grey,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-
-        // Notifications
-        Consumer<PrescriptionProvider>(
-          builder: (context, provider, child) {
-            final urgentCount = provider.criticalRequests;
-            return Stack(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.notifications_outlined),
-                  onPressed: () {
-                    setState(() {
-                      _selectedIndex = 0; // Switch to requests tab
-                    });
-                  },
-                ),
-                if (urgentCount > 0)
-                  Positioned(
-                    right: 8,
-                    top: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: Text(
-                        '$urgentCount',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
-
-        // Profile menu
-        PopupMenuButton<String>(
-          onSelected: _handleMenuAction,
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'profile',
-              child: Row(
-                children: [
-                  Icon(Icons.person_outline),
-                  SizedBox(width: 8),
-                  Text('Profile'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'settings',
-              child: Row(
-                children: [
-                  Icon(Icons.settings_outlined),
-                  SizedBox(width: 8),
-                  Text('Settings'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'help',
-              child: Row(
-                children: [
-                  Icon(Icons.help_outline),
-                  SizedBox(width: 8),
-                  Text('Help'),
-                ],
-              ),
-            ),
-            const PopupMenuDivider(),
-            const PopupMenuItem(
-              value: 'logout',
-              child: Row(
-                children: [
-                  Icon(Icons.logout, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Logout', style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 
@@ -218,177 +79,533 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  Widget _buildDrawer(PharmacyThemeProvider themeProvider) {
-    return Drawer(
-      backgroundColor: themeProvider.cardBackgroundColor,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Drawer header
-            Consumer<PharmacyProvider>(
-              builder: (context, provider, child) {
-                final pharmacy = provider.pharmacy;
-                return UserAccountsDrawerHeader(
-                  decoration: BoxDecoration(color: themeProvider.accentColor),
-                  accountName: Text(
-                    pharmacy?.name ?? 'Pharmacy Name',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+  Widget _buildFixedSidebar(PharmacyThemeProvider themeProvider) {
+    return Container(
+      width: 260,
+      height: MediaQuery.of(context).size.height,
+      decoration: const BoxDecoration(
+        color: Color(0xFF1E293B),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(2, 0)),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Sidebar Header
+          Container(
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  accountEmail: Text(
-                    pharmacy?.email ?? 'email@pharmacy.com',
-                    style: const TextStyle(color: Colors.white70),
+                  child: const Icon(
+                    Icons.local_pharmacy,
+                    color: Colors.white,
+                    size: 20,
                   ),
-                  currentAccountPicture: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.local_pharmacy,
-                      color: themeProvider.accentColor,
-                      size: 30,
-                    ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Pharmacy',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                   ),
-                );
-              },
+                ),
+              ],
             ),
+          ),
 
-            // Menu items
-            ListTile(
-              leading: Icon(
-                Icons.inbox_outlined,
-                color: themeProvider.primaryTextColor,
-              ),
-              title: Text(
-                'Prescription Requests',
-                style: TextStyle(color: themeProvider.primaryTextColor),
-              ),
-              selected: _selectedIndex == 0,
-              selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
-              onTap: () {
-                setState(() {
-                  _selectedIndex = 0;
-                });
-                Navigator.pop(context);
-              },
-              trailing: Consumer<PrescriptionProvider>(
-                builder: (context, provider, child) {
-                  final count = provider.totalPendingRequests;
-                  return count > 0
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+          // Main Menu Label
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Row(
+              children: [
+                const Text(
+                  'MAIN MENU',
+                  style: TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF374151),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.keyboard_arrow_up,
+                    color: Color(0xFF9CA3AF),
+                    size: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Navigation Items
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                _buildSidebarItem(
+                  icon: Icons.dashboard_rounded,
+                  title: 'Dashboard',
+                  isSelected: _selectedIndex == 1,
+                  onTap: () => setState(() => _selectedIndex = 1),
+                ),
+                _buildSidebarItem(
+                  icon: Icons.receipt_long_rounded,
+                  title: 'Prescription Requests',
+                  isSelected: _selectedIndex == 0,
+                  onTap: () => setState(() => _selectedIndex = 0),
+                  badge: Consumer<PrescriptionProvider>(
+                    builder: (context, provider, child) {
+                      final count = provider.totalPendingRequests;
+                      return count > 0
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              constraints: const BoxConstraints(
+                                minWidth: 16,
+                                minHeight: 16,
+                              ),
+                              child: Text(
+                                '$count',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          : const SizedBox.shrink();
+                    },
+                  ),
+                ),
+                _buildSidebarItem(
+                  icon: Icons.inventory_2_rounded,
+                  title: 'Products',
+                  isSelected: _selectedIndex == 2,
+                  onTap: () => setState(() => _selectedIndex = 2),
+                ),
+                _buildSidebarItem(
+                  icon: Icons.category_rounded,
+                  title: 'Categories',
+                  isSelected: false,
+                  onTap: () {},
+                ),
+
+                // LEADS Section
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  child: Row(
+                    children: [
+                      Text(
+                        'LEADS',
+                        style: TextStyle(
+                          color: Color(0xFF64748B),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(
+                        Icons.keyboard_arrow_up,
+                        color: Color(0xFF64748B),
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+
+                _buildSidebarItem(
+                  icon: Icons.shopping_cart_rounded,
+                  title: 'Orders',
+                  isSelected: _selectedIndex == 3,
+                  onTap: () => setState(() => _selectedIndex = 3),
+                ),
+                _buildSidebarItem(
+                  icon: Icons.analytics_rounded,
+                  title: 'Sales',
+                  isSelected: false,
+                  onTap: () {},
+                ),
+                _buildSidebarItem(
+                  icon: Icons.people_rounded,
+                  title: 'Customers',
+                  isSelected: false,
+                  onTap: () {},
+                ),
+
+                // COMMS Section
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  child: Row(
+                    children: [
+                      Text(
+                        'COMMS',
+                        style: TextStyle(
+                          color: Color(0xFF64748B),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(
+                        Icons.keyboard_arrow_up,
+                        color: Color(0xFF64748B),
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+
+                _buildSidebarItem(
+                  icon: Icons.payment_rounded,
+                  title: 'Payments',
+                  isSelected: false,
+                  onTap: () {},
+                ),
+                _buildSidebarItem(
+                  icon: Icons.receipt_long_rounded,
+                  title: 'Reports',
+                  isSelected: false,
+                  onTap: () {},
+                ),
+                _buildSidebarItem(
+                  icon: Icons.settings_rounded,
+                  title: 'Settings',
+                  isSelected: false,
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom Profile Section
+          Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF374151),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Consumer<PharmacyProvider>(
+              builder: (context, provider, child) {
+                return Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF10B981),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '90%',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
                           ),
-                          decoration: BoxDecoration(
-                            color: themeProvider.accentColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '$count',
-                            style: const TextStyle(
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Complete Profile',
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        )
-                      : const SizedBox.shrink();
-                },
-              ),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.dashboard_outlined,
-                color: themeProvider.primaryTextColor,
-              ),
-              title: Text(
-                'Dashboard',
-                style: TextStyle(color: themeProvider.primaryTextColor),
-              ),
-              selected: _selectedIndex == 1,
-              selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
-              onTap: () {
-                setState(() {
-                  _selectedIndex = 1;
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.inventory_2,
-                color: themeProvider.primaryTextColor,
-              ),
-              title: Text(
-                'Inventory Management',
-                style: TextStyle(color: themeProvider.primaryTextColor),
-              ),
-              selected: _selectedIndex == 2,
-              selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
-              onTap: () {
-                setState(() {
-                  _selectedIndex = 2;
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.history,
-                color: themeProvider.primaryTextColor,
-              ),
-              title: Text(
-                'Order History',
-                style: TextStyle(color: themeProvider.primaryTextColor),
-              ),
-              selected: _selectedIndex == 3,
-              selectedTileColor: themeProvider.accentColor.withOpacity(0.1),
-              onTap: () {
-                setState(() {
-                  _selectedIndex = 3;
-                });
-                Navigator.pop(context);
-              },
-            ),
-
-            Divider(color: themeProvider.dividerColor),
-
-            // Quick actions
-            const QuickActionsWidget(),
-
-            const SizedBox(height: 16),
-
-            // Online status toggle
-            Consumer<PharmacyProvider>(
-              builder: (context, provider, child) {
-                return SwitchListTile(
-                  title: Text(
-                    'Online Status',
-                    style: TextStyle(color: themeProvider.primaryTextColor),
-                  ),
-                  subtitle: Text(
-                    provider.isOnline
-                        ? 'Available for orders'
-                        : 'Not accepting orders',
-                    style: TextStyle(color: themeProvider.secondaryTextColor),
-                  ),
-                  value: provider.isOnline,
-                  onChanged: (value) {
-                    provider.setOnlineStatus(value);
-                  },
-                  secondary: Icon(
-                    provider.isOnline
-                        ? Icons.online_prediction
-                        : Icons.offline_bolt,
-                    color: provider.isOnline ? Colors.green : Colors.grey,
-                  ),
+                          Text(
+                            'Complete Your Profile to Unlock all Features',
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 10,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
-            const SizedBox(height: 16),
-          ],
+          ),
+
+          // Verify Identity Button
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                'Verify Identity',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSidebarItem({
+    required IconData icon,
+    required String title,
+    required bool isSelected,
+    required VoidCallback onTap,
+    Widget? badge,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: isSelected ? const Color(0xFF10B981) : const Color(0xFF9CA3AF),
+          size: 20,
         ),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: isSelected
+                ? const Color(0xFF10B981)
+                : const Color(0xFF9CA3AF),
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 14,
+          ),
+        ),
+        trailing: badge,
+        selected: isSelected,
+        selectedTileColor: const Color(0xFF10B981).withOpacity(0.1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        dense: true,
+        onTap: onTap,
+      ),
+    );
+  }
+
+  Widget _buildTopBar(PharmacyThemeProvider themeProvider) {
+    return Container(
+      height: 70,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
+      ),
+      child: Row(
+        children: [
+          // Search Bar
+          Container(
+            width: 300,
+            height: 38,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search',
+                hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Colors.grey[500],
+                  size: 18,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+              ),
+            ),
+          ),
+
+          const Spacer(),
+
+          // Right side icons and profile
+          Row(
+            children: [
+              Consumer<PrescriptionProvider>(
+                builder: (context, provider, child) {
+                  return Stack(
+                    children: [
+                      IconButton(
+                        onPressed: () => setState(() => _selectedIndex = 0),
+                        icon: const Icon(Icons.notifications_outlined),
+                        iconSize: 22,
+                        color: const Color(0xFF64748B),
+                      ),
+                      if (provider.totalPendingRequests > 0)
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            child: Text(
+                              '${provider.totalPendingRequests}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+
+              const SizedBox(width: 8),
+
+              PopupMenuButton<String>(
+                onSelected: _handleMenuAction,
+                child: Consumer<PharmacyProvider>(
+                  builder: (context, provider, child) {
+                    return Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: const Color(0xFF10B981),
+                          child: Text(
+                            'B',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Budiono Siregar',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
+                            Text(
+                              'budiono.siregar@gmail.com',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Color(0xFF64748B),
+                          size: 18,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'profile',
+                    child: Row(
+                      children: [
+                        Icon(Icons.person_outline),
+                        SizedBox(width: 8),
+                        Text('Profile'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'settings',
+                    child: Row(
+                      children: [
+                        Icon(Icons.settings_outlined),
+                        SizedBox(width: 8),
+                        Text('Settings'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'help',
+                    child: Row(
+                      children: [
+                        Icon(Icons.help_outline),
+                        SizedBox(width: 8),
+                        Text('Help'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem(
+                    value: 'logout',
+                    child: Row(
+                      children: [
+                        Icon(Icons.logout, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('Logout', style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

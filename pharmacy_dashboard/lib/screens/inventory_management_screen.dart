@@ -31,150 +31,395 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        title: const Text(
-          'Inventory Management',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 1,
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: const Color(0xFF2E7D32),
-          unselectedLabelColor: Colors.grey[600],
-          indicatorColor: const Color(0xFF2E7D32),
-          tabs: const [
-            Tab(text: 'All Medicines', icon: Icon(Icons.medication)),
-            Tab(text: 'Low Stock', icon: Icon(Icons.warning_amber)),
-            Tab(text: 'Expiring', icon: Icon(Icons.schedule)),
-            Tab(text: 'Analytics', icon: Icon(Icons.analytics)),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => _showAddMedicineDialog(),
-            icon: const Icon(Icons.add),
-            tooltip: 'Add Medicine',
+    return Container(
+      color: const Color(0xFFF8F9FA),
+      child: Column(
+        children: [
+          // Header with tabs and add button
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Title and add button
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.inventory_2_rounded,
+                          color: Color(0xFF10B981),
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Inventory Management',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                          Text(
+                            'Manage your medicine stock and inventory',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      ElevatedButton.icon(
+                        onPressed: () => _showAddMedicineDialog(),
+                        icon: const Icon(Icons.add, size: 20),
+                        label: const Text('Add Medicine'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF10B981),
+                          foregroundColor: Colors.white,
+                          elevation: 2,
+                          shadowColor: const Color(0xFF10B981).withOpacity(0.3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Tabs
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: SizedBox(
+                    height: 56,
+                    child: TabBar(
+                      controller: _tabController,
+                      labelColor: Colors.white,
+                      unselectedLabelColor: Colors.grey[600],
+                      indicator: BoxDecoration(
+                        color: const Color(0xFF10B981),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      indicatorPadding: const EdgeInsets.symmetric(
+                        vertical: 2,
+                        horizontal: 4,
+                      ),
+                      labelStyle: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                      unselectedLabelStyle: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                      ),
+                      dividerColor: Colors.transparent,
+                      labelPadding: EdgeInsets.zero,
+                      tabs: [
+                        Tab(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              SizedBox(height: 2),
+                              Icon(Icons.medication_rounded, size: 18),
+                              SizedBox(height: 1),
+                              Text('All Medicines'),
+                              SizedBox(height: 2),
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              SizedBox(height: 2),
+                              Icon(Icons.warning_amber_rounded, size: 18),
+                              SizedBox(height: 1),
+                              Text('Low Stock'),
+                              SizedBox(height: 2),
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              SizedBox(height: 2),
+                              Icon(Icons.schedule_rounded, size: 18),
+                              SizedBox(height: 1),
+                              Text('Expiring'),
+                              SizedBox(height: 2),
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              SizedBox(height: 2),
+                              Icon(Icons.analytics_rounded, size: 18),
+                              SizedBox(height: 1),
+                              Text('Analytics'),
+                              SizedBox(height: 2),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Content
+          Expanded(
+            child: Consumer<InventoryProvider>(
+              builder: (context, provider, child) {
+                return NestedScrollView(
+                  headerSliverBuilder:
+                      (BuildContext context, bool innerBoxIsScrolled) {
+                        return [
+                          SliverToBoxAdapter(
+                            child: Column(
+                              children: [
+                                _buildSearchAndFilters(provider),
+                                _buildStatsOverview(provider),
+                              ],
+                            ),
+                          ),
+                        ];
+                      },
+                  body: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildAllMedicinesTab(provider),
+                      _buildLowStockTab(provider),
+                      _buildExpiringTab(provider),
+                      _buildAnalyticsTab(provider),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ],
-      ),
-      body: Consumer<InventoryProvider>(
-        builder: (context, provider, child) {
-          return Column(
-            children: [
-              _buildSearchAndFilters(provider),
-              _buildStatsOverview(provider),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildAllMedicinesTab(provider),
-                    _buildLowStockTab(provider),
-                    _buildExpiringTab(provider),
-                    _buildAnalyticsTab(provider),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
       ),
     );
   }
 
   Widget _buildSearchAndFilters(InventoryProvider provider) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Search bar
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search medicines, brands, or manufacturers...',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              filled: true,
-              fillColor: Colors.grey[50],
+          // Enhanced search bar
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            onChanged: provider.searchMedicines,
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search medicines, brands, or manufacturers...',
+                hintStyle: TextStyle(color: Colors.grey[500]),
+                prefixIcon: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: const Icon(
+                    Icons.search_rounded,
+                    color: Color(0xFF10B981),
+                    size: 20,
+                  ),
+                ),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        onPressed: () {
+                          _searchController.clear();
+                          provider.searchMedicines('');
+                        },
+                        icon: const Icon(Icons.clear_rounded, size: 18),
+                      )
+                    : null,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+              ),
+              onChanged: provider.searchMedicines,
+            ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
-          // Filters
+          // Enhanced filters
           Row(
             children: [
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: provider.selectedCategory,
-                  decoration: InputDecoration(
-                    labelText: 'Category',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
+                flex: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  items:
-                      [
-                            'All',
-                            'Prescription',
-                            'Over-the-counter',
-                            'Supplement',
-                            'Diabetic',
-                            'Ayurvedic',
-                            'Surgical',
-                          ]
-                          .map(
-                            (category) => DropdownMenuItem(
-                              value: category,
-                              child: Text(category),
-                            ),
-                          )
-                          .toList(),
-                  onChanged: (value) => provider.filterByCategory(value!),
+                  child: DropdownButtonFormField<String>(
+                    value: provider.selectedCategory,
+                    decoration: const InputDecoration(
+                      labelText: 'Category',
+                      labelStyle: TextStyle(
+                        color: Color(0xFF64748B),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.category_rounded,
+                        color: Color(0xFF10B981),
+                        size: 18,
+                      ),
+                    ),
+                    items:
+                        [
+                              'All',
+                              'Prescription',
+                              'Over-the-counter',
+                              'Supplement',
+                              'Diabetic',
+                              'Ayurvedic',
+                              'Surgical',
+                            ]
+                            .map(
+                              (category) => DropdownMenuItem(
+                                value: category,
+                                child: Text(
+                                  category,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (value) => provider.filterByCategory(value!),
+                  ),
                 ),
               ),
 
               const SizedBox(width: 12),
 
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: provider.sortBy,
-                  decoration: InputDecoration(
-                    labelText: 'Sort By',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
+                flex: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'name', child: Text('Name')),
-                    DropdownMenuItem(
-                      value: 'stock',
-                      child: Text('Stock Level'),
+                  child: DropdownButtonFormField<String>(
+                    value: provider.sortBy,
+                    decoration: const InputDecoration(
+                      labelText: 'Sort By',
+                      labelStyle: TextStyle(
+                        color: Color(0xFF64748B),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.sort_rounded,
+                        color: Color(0xFF10B981),
+                        size: 18,
+                      ),
                     ),
-                    DropdownMenuItem(
-                      value: 'expiry',
-                      child: Text('Expiry Date'),
-                    ),
-                    DropdownMenuItem(value: 'rating', child: Text('Rating')),
-                  ],
-                  onChanged: (value) => provider.sortMedicines(value!),
+                    items: const [
+                      DropdownMenuItem(value: 'name', child: Text('Name')),
+                      DropdownMenuItem(
+                        value: 'stock',
+                        child: Text('Stock Level'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'expiry',
+                        child: Text('Expiry Date'),
+                      ),
+                      DropdownMenuItem(value: 'rating', child: Text('Rating')),
+                    ],
+                    onChanged: (value) => provider.sortMedicines(value!),
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              // Filter button
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: const Color(0xFF10B981).withOpacity(0.3),
+                  ),
+                ),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.tune_rounded,
+                    color: Color(0xFF10B981),
+                    size: 20,
+                  ),
+                  tooltip: 'More Filters',
                 ),
               ),
             ],
@@ -188,91 +433,130 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen>
     final stats = provider.stats;
 
     return Container(
-      margin: const EdgeInsets.all(16),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 120,
-              child: _buildStatCard(
-                'Total Items',
-                stats.totalMedicines.toString(),
-                Icons.inventory_2,
-                Colors.blue,
-              ),
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 120,
-              child: _buildStatCard(
-                'Low Stock',
-                stats.lowStockItems.toString(),
-                Icons.warning,
-                Colors.orange,
-              ),
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 120,
-              child: _buildStatCard(
-                'Expiring',
-                stats.expiringSoonItems.toString(),
-                Icons.schedule,
-                Colors.red,
-              ),
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 120,
-              child: _buildStatCard(
-                'Value',
-                '₹${(stats.totalInventoryValue / 1000).toStringAsFixed(0)}K',
-                Icons.account_balance_wallet,
-                Colors.green,
-              ),
-            ),
-          ],
-        ),
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: GridView.count(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: 4,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 1.2,
+        children: [
+          _buildModernStatCard(
+            'Total Items',
+            stats.totalMedicines.toString(),
+            Icons.inventory_2_rounded,
+            const Color(0xFF3B82F6),
+            '↗ 12%',
+            true,
+          ),
+          _buildModernStatCard(
+            'Low Stock',
+            stats.lowStockItems.toString(),
+            Icons.warning_amber_rounded,
+            const Color(0xFFF59E0B),
+            '↑ 3%',
+            false,
+          ),
+          _buildModernStatCard(
+            'Expiring',
+            stats.expiringSoonItems.toString(),
+            Icons.schedule_rounded,
+            const Color(0xFFEF4444),
+            '→ 0%',
+            null,
+          ),
+          _buildModernStatCard(
+            'Total Value',
+            '₹${(stats.totalInventoryValue / 1000).toStringAsFixed(0)}K',
+            Icons.account_balance_wallet_rounded,
+            const Color(0xFF10B981),
+            '↗ 8%',
+            true,
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildStatCard(
+  Widget _buildModernStatCard(
     String title,
     String value,
     IconData icon,
     Color color,
+    String change,
+    bool? isPositive,
   ) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: Colors.grey.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isPositive == null
+                      ? Colors.grey[100]
+                      : isPositive
+                      ? Colors.green[50]
+                      : Colors.red[50],
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  change,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: isPositive == null
+                        ? Colors.grey[600]
+                        : isPositive
+                        ? Colors.green[600]
+                        : Colors.red[600],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           Text(
             value,
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
               color: color,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -284,13 +568,17 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen>
       return const Center(child: Text('No medicines found'));
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: provider.medicines.length,
-      itemBuilder: (context, index) {
-        final medicine = provider.medicines[index];
-        return _buildMedicineCard(medicine, provider);
-      },
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Wrap(
+          spacing: 16,
+          runSpacing: 16,
+          children: provider.medicines.map((medicine) {
+            return _buildMedicineCard(medicine, provider);
+          }).toList(),
+        ),
+      ),
     );
   }
 
@@ -317,13 +605,21 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen>
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: lowStockMedicines.length,
-      itemBuilder: (context, index) {
-        final medicine = lowStockMedicines[index];
-        return _buildMedicineCard(medicine, provider, showLowStockAlert: true);
-      },
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Wrap(
+          spacing: 16,
+          runSpacing: 16,
+          children: lowStockMedicines.map((medicine) {
+            return _buildMedicineCard(
+              medicine,
+              provider,
+              showLowStockAlert: true,
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 
@@ -350,13 +646,21 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen>
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: expiringMedicines.length,
-      itemBuilder: (context, index) {
-        final medicine = expiringMedicines[index];
-        return _buildMedicineCard(medicine, provider, showExpiryAlert: true);
-      },
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Wrap(
+          spacing: 16,
+          runSpacing: 16,
+          children: expiringMedicines.map((medicine) {
+            return _buildMedicineCard(
+              medicine,
+              provider,
+              showExpiryAlert: true,
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 
@@ -559,81 +863,56 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen>
     bool showExpiryAlert = false,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      width: 280,
+      margin: const EdgeInsets.only(right: 16, bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: showLowStockAlert
-              ? Colors.orange.withOpacity(0.3)
+              ? Colors.orange.withOpacity(0.4)
               : showExpiryAlert
-              ? Colors.red.withOpacity(0.3)
+              ? Colors.red.withOpacity(0.4)
               : Colors.grey.withOpacity(0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.05),
-            blurRadius: 2,
-            offset: const Offset(0, 1),
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Alert indicator
-            if (showLowStockAlert || showExpiryAlert)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                margin: const EdgeInsets.only(bottom: 6),
-                decoration: BoxDecoration(
-                  color: showLowStockAlert ? Colors.orange : Colors.red,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      showLowStockAlert ? Icons.warning : Icons.schedule,
-                      color: Colors.white,
-                      size: 10,
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      showLowStockAlert ? 'Low Stock' : 'Expiring',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with medicine icon and category
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: _getCategoryColor(medicine.category).withOpacity(0.05),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
-
-            // Main content
-            Row(
+            ),
+            child: Row(
               children: [
-                // Medicine icon
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _getCategoryColor(
                       medicine.category,
                     ).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     _getCategoryIcon(medicine.category),
                     color: _getCategoryColor(medicine.category),
-                    size: 16,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(width: 8),
-
-                // Medicine info
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -641,126 +920,236 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen>
                       Text(
                         medicine.brandName,
                         style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      const SizedBox(height: 4),
                       Text(
-                        '${medicine.genericName} • ${medicine.strength}',
-                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                        medicine.genericName,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
+                // Alert indicator
+                if (showLowStockAlert || showExpiryAlert)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: showLowStockAlert ? Colors.orange : Colors.red,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      showLowStockAlert ? Icons.warning : Icons.schedule,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // Medicine details
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Strength and form
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${medicine.strength} • ${medicine.dosageForm}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
 
                 // Stock and price info
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: medicine.isLowStock
-                            ? Colors.red[50]
-                            : Colors.green[50],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '${medicine.quantityInStock} units',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: medicine.isLowStock
-                              ? Colors.red[700]
-                              : Colors.green[700],
-                        ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Stock',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: medicine.isLowStock
+                                  ? Colors.red[50]
+                                  : Colors.green[50],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '${medicine.quantityInStock} units',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: medicine.isLowStock
+                                    ? Colors.red[700]
+                                    : Colors.green[700],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      medicine.formattedSellingPrice,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.blue[700],
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Price',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            medicine.formattedSellingPrice,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.blue[700],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(width: 8),
+                const SizedBox(height: 12),
 
-                // Rating
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.amber[50],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.star, color: Colors.amber, size: 10),
-                      const SizedBox(width: 1),
-                      Text(
-                        medicine.rating.toStringAsFixed(1),
-                        style: const TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w600,
+                // Rating and manufacturer
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.amber[50],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.star, color: Colors.amber, size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            medicine.rating.toStringAsFixed(1),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        medicine.manufacturer,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Action buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () =>
+                            _showStockUpdateDialog(medicine, provider),
+                        icon: const Icon(Icons.edit, size: 16),
+                        label: const Text('Update'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[50],
+                          foregroundColor: Colors.blue[700],
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(color: Colors.blue[200]!),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showMedicineDetailsDialog(medicine),
+                        icon: const Icon(Icons.info_outline, size: 16),
+                        label: const Text('Details'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[50],
+                          foregroundColor: Colors.green[700],
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(color: Colors.green[200]!),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-
-            const SizedBox(height: 8),
-
-            // Action buttons row
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _showStockUpdateDialog(medicine, provider),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      side: BorderSide(color: Colors.blue[300]!),
-                    ),
-                    child: Text(
-                      'Update',
-                      style: TextStyle(fontSize: 11, color: Colors.blue[700]),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _showMedicineDetailsDialog(medicine),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      side: BorderSide(color: Colors.green[300]!),
-                    ),
-                    child: Text(
-                      'Details',
-                      style: TextStyle(fontSize: 11, color: Colors.green[700]),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
