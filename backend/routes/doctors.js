@@ -144,7 +144,7 @@ router.get("/booking", async (req, res) => {
     }
 
     console.log("🔍 Query:", JSON.stringify(query));
-    const doctors = await Doctor.find(query).select("-password");
+    const doctors = await Doctor.find(query).select("-password").lean();
     console.log(`✅ Found ${doctors.length} doctors for booking`);
 
     res.json({
