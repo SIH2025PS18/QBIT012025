@@ -130,6 +130,7 @@ router.get("/live", async (req, res) => {
 // @access  Public
 router.get("/booking", async (req, res) => {
   try {
+    console.log("📋 Fetching doctors for booking...");
     const { speciality } = req.query;
 
     const query = {
@@ -142,14 +143,9 @@ router.get("/booking", async (req, res) => {
       query.speciality = speciality;
     }
 
-    const doctors = await Doctor.find(query)
-      .select("-password")
-      .sort({ 
-        // Online doctors first, then by rating
-        status: -1,
-        rating: -1, 
-        totalConsultations: -1 
-      });
+    console.log("🔍 Query:", JSON.stringify(query));
+    const doctors = await Doctor.find(query).select("-password");
+    console.log(`✅ Found ${doctors.length} doctors for booking`);
 
     res.json({
       success: true,
@@ -171,10 +167,11 @@ router.get("/booking", async (req, res) => {
       })),
     });
   } catch (error) {
-    console.error("Error fetching doctors for booking:", error);
+    console.error("❌ Error fetching doctors for booking:", error);
     res.status(500).json({
       success: false,
       message: "Server error fetching doctors for booking",
+      error: error.message,
     });
   }
 });
