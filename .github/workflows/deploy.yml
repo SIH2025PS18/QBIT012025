@@ -23,13 +23,46 @@ jobs:
     - name: Get dependencies
       run: flutter pub get
       
-    - name: Build for web
-      run: flutter build web --release --base-href "/telemed18/"
-      
-    - name: Copy simulator files
+    - name: Copy static files (temporary - until web build is fixed)
       run: |
+        mkdir -p build/web
         cp simulator.html build/web/
         cp index.html build/web/demo.html
+        # Create main index.html with status page
+        cat > build/web/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Telemed - Rural Healthcare Platform</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+                .container { text-align: center; padding: 2rem; max-width: 800px; }
+                .logo { width: 120px; height: 120px; background: rgba(255, 255, 255, 0.2); border-radius: 24px; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; font-size: 60px; }
+                h1 { font-size: 3.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+                .subtitle { font-size: 1.5rem; opacity: 0.9; margin-bottom: 2rem; }
+                .btn { padding: 1rem 2rem; background: white; color: #10B981; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; text-decoration: none; display: inline-block; margin: 0.5rem; }
+                .status { background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 8px; margin: 2rem 0; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">🏥</div>
+                <h1>Telemed</h1>
+                <p class="subtitle">Rural Healthcare Platform</p>
+                <div class="status">
+                    <strong>🚧 Development Status:</strong> Patient mobile app simulator ready for testing.<br>
+                    Full Flutter web app coming soon.
+                </div>
+                <a href="./simulator.html" class="btn">📱 Try Patient App Simulator</a>
+                <a href="https://github.com/SIH2025PS18/QBIT012025" class="btn">💻 View Source Code</a>
+                <p style="margin-top: 2rem; opacity: 0.8;">🏥 Bringing Healthcare to Every Village</p>
+            </div>
+        </body>
+        </html>
+        EOF
         
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
