@@ -104,31 +104,50 @@ class _PhoneLoginWithPasswordScreenState
             builder: (context, languageProvider, child) {
               return Container(
                 margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildLanguageButton(
-                      languageProvider,
-                      'en',
-                      'English',
-                      isSelected: languageProvider.currentLanguageCode == 'en',
-                    ),
-                    _buildLanguageButton(
-                      languageProvider,
-                      'hi',
-                      'हिंदी',
-                      isSelected: languageProvider.currentLanguageCode == 'hi',
-                    ),
-                    _buildLanguageButton(
-                      languageProvider,
-                      'pa',
-                      'ਪੰਜਾਬੀ',
-                      isSelected: languageProvider.currentLanguageCode == 'pa',
+                    ...[
+                      {'code': 'en', 'label': 'English'},
+                      {'code': 'hi', 'label': 'हिंदी'},
+                      {'code': 'pa', 'label': 'ਪੰਜਾਬੀ'},
+                    ].map(
+                      (lang) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: ChoiceChip(
+                          label: Text(
+                            lang['label']!,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          selected:
+                              languageProvider.currentLanguageCode ==
+                              lang['code'],
+                          selectedColor: Theme.of(context).primaryColor,
+                          backgroundColor: Colors.grey[200],
+                          labelStyle: TextStyle(
+                            color:
+                                languageProvider.currentLanguageCode ==
+                                    lang['code']
+                                ? Colors.white
+                                : Colors.black87,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          onSelected: (_) =>
+                              languageProvider.changeLanguage(lang['code']!),
+                          elevation: 0,
+                          pressElevation: 0,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -285,19 +304,13 @@ class _PhoneLoginWithPasswordScreenState
                 const SizedBox(height: 16),
 
                 // Demo login button
-                OutlinedButton.icon(
+                CustomButton(
+                  text: 'Demo Login',
                   onPressed: _demoLogin,
-                  icon: const Icon(Icons.medical_services_outlined),
-                  label: const Text('Demo Login'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Theme.of(context).primaryColor,
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Theme.of(context).primaryColor),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  icon: Icons.medical_services_outlined,
+                  backgroundColor: Colors.deepPurple,
+                  textColor: Colors.white,
+                  width: double.infinity,
                 ),
 
                 const SizedBox(height: 32),

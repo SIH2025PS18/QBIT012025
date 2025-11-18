@@ -1,6 +1,18 @@
-# telemed
+# 🏥 Telemed - Rural Healthcare Platform
 
-A new Flutter project.
+[![Deploy to GitHub Pages](https://github.com/SIH2025PS18/telemed18/actions/workflows/deploy.yml/badge.svg)](https://github.com/SIH2025PS18/telemed18/actions/workflows/deploy.yml)
+
+**Live Demo:** [https://sih2025ps18.github.io/telemed18/](https://sih2025ps18.github.io/telemed18/)
+
+## 🌟 Overview
+
+Telemed is a comprehensive telemedicine platform designed for rural healthcare, specifically targeting 173 villages in Nabha region. The platform provides AI-powered healthcare solutions with multilingual support.
+
+## 📱 Live App Simulator
+
+Experience the full Telemed patient app in your browser:
+- **Patient App Simulator:** [https://sih2025ps18.github.io/telemed18/simulator.html](https://sih2025ps18.github.io/telemed18/simulator.html)
+- **Direct App Access:** [https://sih2025ps18.github.io/telemed18/](https://sih2025ps18.github.io/telemed18/)
 
 ## Getting Started
 
