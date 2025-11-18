@@ -18,21 +18,83 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Telemed - Comprehensive rural healthcare platform with video consultations, appointment booking, and offline-first design.">
+  <meta name="keywords" content="telemedicine, rural healthcare, video consultation, flutter, web app">
+  <meta name="author" content="SIH2025 Team PS18">
+  <meta name="theme-color" content="#10B981">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="telemed">
+  <meta name="apple-mobile-web-app-title" content="Telemed">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>telemed</title>
+  <title>Telemed - Rural Healthcare Platform</title>
   <link rel="manifest" href="manifest.json">
+  
+  <!-- Loading styles -->
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    .loading {
+      text-align: center;
+      color: white;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .loading-subtext {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+  </style>
 </head>
 <body>
+  <!-- Loading screen -->
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading Telemed Platform</div>
+    <div class="loading-subtext">Rural Healthcare Solution</div>
+  </div>
+  
   <script src="flutter_bootstrap.js" async></script>
+  
+  <script>
+    // Hide loading screen once Flutter app loads
+    window.addEventListener('flutter-first-frame', function () {
+      const loading = document.getElementById('loading');
+      if (loading) {
+        loading.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>

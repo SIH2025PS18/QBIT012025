@@ -22,7 +22,20 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    print('🌟 Building splash screen...');
+    
+    // Try to get localizations, but provide fallbacks if they fail
+    String appTitle = 'Sehat Sarthi';
+    String welcomeMessage = 'Welcome to TeleMed - Your Health, Our Priority';
+    
+    try {
+      final l10n = AppLocalizations.of(context);
+      appTitle = l10n.appTitle;
+      welcomeMessage = l10n.welcomeMessage;
+      print('✅ Localizations loaded successfully');
+    } catch (e) {
+      print('⚠️ Error loading localizations: $e');
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFF2563EB),
@@ -45,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 32),
             Text(
-              l10n.appTitle,
+              appTitle,
               style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
@@ -54,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              l10n.welcomeMessage,
+              welcomeMessage,
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white.withOpacity(0.9),

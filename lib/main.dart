@@ -32,14 +32,53 @@ import 'generated/l10n/app_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize service locator for dependency injection
-  await initializeServiceLocator();
+  try {
+    // Initialize service locator for dependency injection
+    print('🚀 Initializing service locator...');
+    await initializeServiceLocator();
+    print('✅ Service locator initialized');
 
-  // Initialize auth service
-  final authService = AuthService();
-  await authService.initialize();
+    // Initialize auth service
+    print('🔐 Initializing auth service...');
+    final authService = AuthService();
+    await authService.initialize();
+    print('✅ Auth service initialized');
 
-  runApp(const TelemedApp());
+    print('🎯 Starting TelemedApp...');
+    runApp(const TelemedApp());
+  } catch (e, stackTrace) {
+    print('❌ Error during app initialization: $e');
+    print('📍 Stack trace: $stackTrace');
+    
+    // Run a minimal app if initialization fails
+    runApp(MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.red,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error, size: 64, color: Colors.white),
+              SizedBox(height: 16),
+              Text(
+                'Initialization Error',
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
+              SizedBox(height: 8),
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'Error: $e',
+                  style: TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ));
+  }
 }
 
 class TelemedApp extends StatelessWidget {
@@ -47,62 +86,104 @@ class TelemedApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('🏗️ Building TelemedApp...');
+    
     return MultiProvider(
       providers: [
         // Theme provider
         ChangeNotifierProvider<ThemeProvider>(
-          create: (_) => ThemeProvider()..initializeTheme(),
+          create: (_) {
+            print('🎨 Creating ThemeProvider...');
+            return ThemeProvider()..initializeTheme();
+          },
         ),
 
         // Language provider
         ChangeNotifierProvider<LanguageProvider>(
-          create: (_) => LanguageProvider()..initializeLanguage(),
+          create: (_) {
+            print('🌐 Creating LanguageProvider...');
+            return LanguageProvider()..initializeLanguage();
+          },
         ),
 
         // Connectivity service
         ChangeNotifierProvider<ConnectivityService>(
-          create: (_) => ConnectivityService()..initialize(),
+          create: (_) {
+            print('📡 Creating ConnectivityService...');
+            return ConnectivityService()..initialize();
+          },
         ),
 
         // Auth service
-        ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
+        ChangeNotifierProvider<AuthService>(
+          create: (_) {
+            print('🔐 Creating AuthService...');
+            return AuthService();
+          },
+        ),
 
         // Doctor service
-        ChangeNotifierProvider<DoctorService>(create: (_) => DoctorService()),
+        ChangeNotifierProvider<DoctorService>(
+          create: (_) {
+            print('👩‍⚕️ Creating DoctorService...');
+            return DoctorService();
+          },
+        ),
 
         // Facility service
         ChangeNotifierProvider<FacilityService>(
-          create: (_) => FacilityService(),
+          create: (_) {
+            print('🏥 Creating FacilityService...');
+            return FacilityService();
+          },
         ),
 
         // Patient profile provider
         ChangeNotifierProvider<PatientProfileProvider>(
-          create: (_) => PatientProfileProvider(),
+          create: (_) {
+            print('👤 Creating PatientProfileProvider...');
+            return PatientProfileProvider();
+          },
         ),
 
         // Emergency data provider
         ChangeNotifierProvider<EmergencyDataProvider>(
-          create: (_) => EmergencyDataProvider(),
+          create: (_) {
+            print('🚨 Creating EmergencyDataProvider...');
+            return EmergencyDataProvider();
+          },
         ),
 
         // Family profile provider
         ChangeNotifierProvider<FamilyProfileProvider>(
-          create: (_) => FamilyProfileProvider(),
+          create: (_) {
+            print('👨‍👩‍👧‍👦 Creating FamilyProfileProvider...');
+            return FamilyProfileProvider();
+          },
         ),
 
         // Smart pharmacy provider
         ChangeNotifierProvider<SmartPharmacyProvider>(
-          create: (_) => SmartPharmacyProvider(),
+          create: (_) {
+            print('💊 Creating SmartPharmacyProvider...');
+            return SmartPharmacyProvider();
+          },
         ),
 
         // Video consultation service
         ChangeNotifierProvider<VideoConsultationService>(
-          create: (context) =>
-              VideoConsultationService(context.read<ConnectivityService>()),
+          create: (context) {
+            print('📹 Creating VideoConsultationService...');
+            return VideoConsultationService(context.read<ConnectivityService>());
+          },
         ),
       ],
       child: Consumer2<LanguageProvider, ThemeProvider>(
         builder: (context, languageProvider, themeProvider, child) {
+          print('🎯 Building MaterialApp with theme and locale...');
+          print('🌐 Current locale: ${languageProvider.currentLocale}');
+          print('🎨 Dark mode: ${themeProvider.isDarkMode}');
+          
           return MaterialApp(
             title: 'Sehat Sarthi',
             theme: themeProvider.lightTheme,

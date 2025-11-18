@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../services/auth_service.dart';
-import '../database/offline_database.dart';
+import '../database/offline_database.dart' if (dart.library.html) '../utils/web_stub.dart';
 import '../core/service_locator.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:typed_data';
@@ -302,20 +303,32 @@ class PhoneAuthService {
     Map<String, dynamic> userData,
   ) async {
     try {
+      print('💾 Storing user data offline...');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_userDataKey, jsonEncode(userData));
       await prefs.setString(_phoneKey, userData['phone_number']);
+      print('✅ User data stored in SharedPreferences');
 
-      // Also store in local database
-      // Get database from service locator with fallback
-      late final OfflineDatabase db;
-      try {
-        db = await serviceLocator.getAsync<OfflineDatabase>();
-      } catch (e) {
-        // Fallback to direct instantiation if service locator fails
-        db = OfflineDatabase();
+      // Also store in local database (mobile only)
+      if (!kIsWeb) {
+        try {
+          // Get database from service locator with fallback
+          late final OfflineDatabase db;
+          try {
+            db = await serviceLocator.getAsync<OfflineDatabase>();
+          } catch (e) {
+            // Fallback to direct instantiation if service locator fails
+            db = OfflineDatabase();
+          }
+          await db.insertOrUpdateUser(userData);
+          print('✅ User data stored in local database');
+        } catch (e) {
+          print('⚠️ Error storing user data in database: $e');
+          // Continue without database storage for web
+        }
+      } else {
+        print('🌐 Web platform: Skipping database storage');
       }
-      await db.insertOrUpdateUser(userData);
     } catch (e) {
       print('❌ Error storing user data offline: $e');
     }
@@ -414,26 +427,43 @@ class PhoneAuthService {
   // Sign out using unified backend
   static Future<void> signOut() async {
     try {
+      print('🔓 Starting sign out process...');
+      
       // Sign out from unified backend
       await _authService.logout();
+      print('✅ Signed out from backend');
 
       // Clear local storage
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_userDataKey);
       await prefs.remove(_phoneKey);
       await prefs.remove(_isLoggedInKey);
+      await prefs.remove('login_timestamp');
+      print('✅ Local storage cleared');
 
-      // Clear local database
-      try {
-        final db = await serviceLocator.getAsync<OfflineDatabase>();
-        await db.clearUserData();
-      } catch (e) {
-        // Fallback if service locator fails
-        final db = OfflineDatabase();
-        await db.clearUserData();
+      // Clear local database (mobile only)
+      if (!kIsWeb) {
+        try {
+          final db = await serviceLocator.getAsync<OfflineDatabase>();
+          await db.clearUserData();
+          print('✅ Local database cleared');
+        } catch (e) {
+          print('⚠️ Error clearing database via service locator: $e');
+          try {
+            // Fallback if service locator fails
+            final db = OfflineDatabase();
+            await db.clearUserData();
+            print('✅ Local database cleared (fallback)');
+          } catch (fallbackError) {
+            print('⚠️ Error clearing database (fallback): $fallbackError');
+          }
+        }
+      } else {
+        print('🌐 Web platform: Skipping database cleanup');
       }
 
       _showToast('Signed out successfully');
+      print('🎉 Sign out completed successfully');
     } catch (e) {
       print('❌ Error signing out: $e');
       _showToast('Error signing out: $e', isError: true);

@@ -1,20 +1,21 @@
 import 'package:get_it/get_it.dart';
-import 'package:drift/drift.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart';
+// import 'package:drift/drift.dart'; // Commented out for web compatibility
+import 'dart:io' if (dart.library.html) 'dart:html';
+import 'package:path_provider/path_provider.dart' if (dart.library.html) 'package:universal_html/html.dart';
 import 'package:path/path.dart' as p;
 
-import '../database/local_database.dart';
-import '../database/offline_database.dart';
+import '../database/local_database.dart' if (dart.library.html) '../utils/web_stub.dart';
+import '../database/offline_database.dart' if (dart.library.html) '../utils/web_stub.dart';
 import '../repositories/patient_profile_repository.dart';
-import '../repositories/offline_patient_profile_repository.dart';
-import '../repositories/offline_appointment_repository.dart';
-import '../repositories/offline_health_record_repository.dart';
+import '../repositories/offline_patient_profile_repository.dart' if (dart.library.html) '../utils/web_stub.dart';
+import '../repositories/offline_appointment_repository.dart' if (dart.library.html) '../utils/web_stub.dart';
+import '../repositories/offline_health_record_repository.dart' if (dart.library.html) '../utils/web_stub.dart';
 import '../services/phone_auth_service.dart';
 import '../services/connectivity_service.dart';
-import '../services/sync_service.dart';
+import '../services/sync_service.dart' if (dart.library.html) '../utils/web_stub.dart';
 import '../services/image_upload_service.dart';
-import '../services/todo_service.dart'; // Add this import
+import '../services/todo_service.dart' if (dart.library.html) '../utils/web_stub.dart';
 import '../utils/network_utils.dart';
 import '../providers/auth_provider.dart';
 import '../providers/patient_profile_provider.dart';
@@ -24,11 +25,17 @@ import '../providers/language_provider.dart';
 /// This allows for easy testing and swapping of implementations
 final GetIt serviceLocator = GetIt.instance;
 
-/// Create the database connection with error handling for schema migrations
-Future<LocalDatabase> _createLocalDatabase() async {
+/// Create the database connection with error handling for schema migrations (mobile only)
+Future<dynamic> _createLocalDatabase() async {
+  if (kIsWeb) {
+    print('🌐 Web platform: Skipping database creation');
+    return null;
+  }
+  
   try {
     return LocalDatabase();
   } catch (e) {
+    print('❌ Error creating local database: $e');
     // If there's a schema migration error, we'll delete the database file and recreate it
     if (e.toString().contains('schema version')) {
       print('Database schema mismatch detected. Recreating database...');
@@ -55,11 +62,17 @@ Future<LocalDatabase> _createLocalDatabase() async {
   }
 }
 
-/// Create the offline database connection with error handling for schema migrations
-Future<OfflineDatabase> _createOfflineDatabase() async {
+/// Create the offline database connection with error handling for schema migrations (mobile only)
+Future<dynamic> _createOfflineDatabase() async {
+  if (kIsWeb) {
+    print('🌐 Web platform: Skipping offline database creation');
+    return null;
+  }
+  
   try {
     return OfflineDatabase();
   } catch (e) {
+    print('❌ Error creating offline database: $e');
     // If there's a schema migration error, we'll delete the database file and recreate it
     if (e.toString().contains('schema version')) {
       print(
@@ -90,64 +103,100 @@ Future<OfflineDatabase> _createOfflineDatabase() async {
 
 /// Initialize all services and dependencies
 Future<void> initializeServiceLocator() async {
-  // Database with error handling
-  serviceLocator.registerLazySingletonAsync<LocalDatabase>(() async {
-    return await _createLocalDatabase();
-  });
+  print('🔧 Initializing service locator for ${kIsWeb ? 'Web' : 'Mobile'} platform...');
+  
+  try {
+    // Database with error handling (mobile only)
+    if (!kIsWeb) {
+      print('📱 Registering databases for mobile platform...');
+      serviceLocator.registerLazySingletonAsync<LocalDatabase>(() async {
+        return await _createLocalDatabase();
+      });
 
-  // Offline Database with error handling
-  serviceLocator.registerLazySingletonAsync<OfflineDatabase>(() async {
-    return await _createOfflineDatabase();
-  });
+      serviceLocator.registerLazySingletonAsync<OfflineDatabase>(() async {
+        return await _createOfflineDatabase();
+      });
+      print('✅ Databases registered');
+    }
 
-  // Core Services
-  serviceLocator.registerLazySingleton<NetworkUtils>(() => NetworkUtils());
-  serviceLocator.registerLazySingleton<ConnectivityService>(
-    () => ConnectivityService(),
-  );
-  serviceLocator.registerLazySingleton<SyncService>(() => SyncService());
+    // Core Services (platform-independent)
+    print('🌐 Registering core services...');
+    serviceLocator.registerLazySingleton<NetworkUtils>(() => NetworkUtils());
+    serviceLocator.registerLazySingleton<ConnectivityService>(
+      () => ConnectivityService(),
+    );
+    print('✅ Core services registered');
 
-  // Authentication Services
-  serviceLocator.registerLazySingleton<PhoneAuthService>(
-    () => PhoneAuthService(),
-  );
+    // Platform-specific services
+    if (!kIsWeb) {
+      print('📱 Registering mobile-specific services...');
+      serviceLocator.registerLazySingleton<SyncService>(() => SyncService());
+      serviceLocator.registerLazySingleton<TodoService>(() => TodoService());
+      print('✅ Mobile services registered');
+    }
 
-  // Repositories (Offline-first implementations)
-  serviceLocator.registerLazySingleton<PatientProfileRepository>(
-    () => OfflinePatientProfileRepository(),
-  );
-  serviceLocator.registerLazySingleton<AppointmentRepository>(
-    () => OfflineAppointmentRepository(),
-  );
-  serviceLocator.registerLazySingleton<HealthRecordRepository>(
-    () => OfflineHealthRecordRepository(),
-  );
+    // Authentication Services (platform-independent)
+    print('🔐 Registering auth services...');
+    serviceLocator.registerLazySingleton<PhoneAuthService>(
+      () => PhoneAuthService(),
+    );
+    print('✅ Auth services registered');
 
-  // Other Services
-  serviceLocator.registerLazySingleton<ImageUploadService>(
-    () => ImageUploadService(),
-  );
-  serviceLocator.registerLazySingleton<TodoService>(
-    // Add this line
-    () => TodoService(),
-  );
+    // Repositories (mobile only)
+    if (!kIsWeb) {
+      print('📱 Registering repositories for mobile platform...');
+      serviceLocator.registerLazySingleton<PatientProfileRepository>(
+        () => OfflinePatientProfileRepository(),
+      );
+      serviceLocator.registerLazySingleton<AppointmentRepository>(
+        () => OfflineAppointmentRepository(),
+      );
+      serviceLocator.registerLazySingleton<HealthRecordRepository>(
+        () => OfflineHealthRecordRepository(),
+      );
+      print('✅ Repositories registered');
+    }
 
-  // Providers (as singletons for state management)
-  serviceLocator.registerLazySingleton<AuthProvider>(() => AuthProvider());
-  serviceLocator.registerLazySingleton<PatientProfileProvider>(
-    () => PatientProfileProvider(),
-  );
-  serviceLocator.registerLazySingleton<LanguageProvider>(
-    () => LanguageProvider(),
-  );
+    // Other Services (platform-independent)
+    print('🛠️ Registering additional services...');
+    serviceLocator.registerLazySingleton<ImageUploadService>(
+      () => ImageUploadService(),
+    );
+    print('✅ Additional services registered');
 
-  // Initialize core services first
-  await serviceLocator<ConnectivityService>().initialize();
-  await serviceLocator<SyncService>().initialize();
+    // Providers (as singletons for state management)
+    print('🎯 Registering providers...');
+    serviceLocator.registerLazySingleton<AuthProvider>(() => AuthProvider());
+    serviceLocator.registerLazySingleton<PatientProfileProvider>(
+      () => PatientProfileProvider(),
+    );
+    serviceLocator.registerLazySingleton<LanguageProvider>(
+      () => LanguageProvider(),
+    );
+    print('✅ Providers registered');
 
-  // Initialize providers
-  await serviceLocator<AuthProvider>().initialize();
-  await serviceLocator<LanguageProvider>().initializeLanguage();
+    // Initialize core services first
+    print('🚀 Initializing core services...');
+    await serviceLocator<ConnectivityService>().initialize();
+    print('✅ Connectivity service initialized');
+    
+    if (!kIsWeb) {
+      await serviceLocator<SyncService>().initialize();
+      print('✅ Sync service initialized');
+    }
+
+    // Initialize providers
+    print('🎯 Initializing providers...');
+    await serviceLocator<AuthProvider>().initialize();
+    await serviceLocator<LanguageProvider>().initializeLanguage();
+    print('✅ Providers initialized');
+    
+    print('🎉 Service locator initialization completed successfully!');
+  } catch (e, stackTrace) {
+    print('❌ Error during service locator initialization: $e');
+    print('📍 Stack trace: $stackTrace');
+    rethrow;
+  }
 }
 
 /// Reset service locator (useful for testing)
